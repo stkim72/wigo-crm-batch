@@ -141,19 +141,7 @@
 		</dependency>
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>maven-public</id>
-			<url>http://nxs.ceragem.com/repository/maven-public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
+	
 	<build>
         <plugins>
             <plugin>
