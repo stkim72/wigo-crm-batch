@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.PromEventDao">
+
+	<select id="getBosOrderAll" resultType="HashMap">
+		SELECT * FROM ( 
+			SELECT 
+				/*com.ceragem.batch.crm.dao.PromEventDao.getBosOrderAll*/
+				TEM.ITG_CUST_NO
+				, TEM.SALE_TY_CD
+				, TEM.SALE_ORGZ_CUST_CD
+				, ST.STOR_NM
+				, ST.STOR_CHL_CD
+				, CASE
+		            WHEN TEM.SALE_TY_CD = '1401' OR TEM.SALE_TY_CD = '1402' OR TEM.SALE_TY_CD = '1403' OR TEM.SALE_TY_CD = '1404' THEN (TEM.SETL_AMT + TEM.RENT_AMT) * TEM.CNTR_PD_VAL
+		            WHEN TEM.SALE_TY_CD = '2101' OR TEM.SALE_TY_CD = '2102' OR TEM.SALE_TY_CD = '2103' OR TEM.SALE_TY_CD = '2104' OR TEM.SALE_TY_CD = '1202' THEN TEM.SETL_AMT
+		            WHEN TEM.SALE_TY_CD = '2401' THEN TEM.SETL_AMT
+		        END TOT_ORD_AMT
+				, TEM.SETL_AMT
+				, TEM.CNTR_PD_VAL
+				, TEM.RENT_AMT
+				, CUS.MSHIP_GRADE_CD
+				, CUS.MSHIP_SBSC_YN
+				, CUS.CPRT_CMP_NO
+				, CUS.MSHIP_TYPE_CD
+			FROM (
+		        SELECT 
+		            ITG_CUST_NO
+		            , SUM(SETL_AMT) AS SETL_AMT
+		            , SUM(ORD_AMT) AS ORD_AMT
+		            , SUM(CNTR_PD_VAL) AS CNTR_PD_VAL
+		            , SUM(RENT_AMT) AS RENT_AMT
+		            , SALE_TY_CD
+		            , SALE_ORGZ_CUST_CD
+		        FROM CRM_CUST_BOS_CNTRT_HST A JOIN CRM_BOS_GODS_BAS B ON A.ITEM_CD = B.BOS_GODS_NO
+	                WHERE IST_DCS_DE IS NOT NULL 
+	                	AND IST_DCS_DE <![CDATA[>=]]> #{PROM_STA_YMD} AND IST_DCS_DE <![CDATA[<=]]> #{PROM_END_YMD}
+	                	AND SALE_ORGZ_CUST_CD IN (SELECT STOR_NO FROM CRM_MSHIP_APPLY_STOR_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO})
+                   		AND BASE_ITEM_CD IN (SELECT GODS_NO FROM CRM_MSHIP_APPLY_GODS_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO})
+	                    AND CNTR_STS_DTL_CD = '32'  /*매출확정*/  
+	                    AND SETL_STS_CD = '20'      /*결제완료*/ 
+	                    AND IST_STS_CD = '50'       /*설치확정*/ 
+	                    AND IST_DCS_YN = 'Y'        /*설치확정여부*/ 
+		            GROUP BY ITG_CUST_NO , SALE_TY_CD , SALE_ORGZ_CUST_CD , ORD_NO
+		            ORDER BY ITG_CUST_NO DESC 
+		    ) TEM JOIN CRM_STOR_BAS ST ON 
+		        TEM.SALE_ORGZ_CUST_CD = ST.STOR_NO
+	            JOIN CRM_CUST_BAS CUS ON
+	            TEM.ITG_CUST_NO = CUS.ITG_CUST_NO
+        	<trim prefix="AND (" prefixOverrides="OR" suffix=")">
+	            <if test="typeCd != null and typeCd != ''" >
+					OR CUS.MSHIP_TYPE_CD      IN 
+					<foreach item="item" index="index" collection="typeCd" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+				<if test="gradeCd != null and gradeCd != ''">
+					OR CUS.MSHIP_GRADE_CD      IN 
+					<foreach item="item" index="index" collection="gradeCd" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+				<if test="cmpNo != null and cmpNo != ''">
+		    		OR CUS.CPRT_CMP_NO = #{cmpNo}
+		    	</if>
+           </trim>
+	    ) TEM1
+	    	WHERE (
+	    	<if test="FROM_APPLY_SALE_COND_CD eq '01'">
+	    		TEM1.TOT_ORD_AMT <![CDATA[>=]]> #{FROM_APPLY_SALE_AMT}
+	    	</if>
+	    	<if test="FROM_APPLY_SALE_COND_CD eq '02'">
+	    		TEM1.TOT_ORD_AMT <![CDATA[>]]> #{FROM_APPLY_SALE_AMT}
+	    	</if>
+	    	<if test="TO_APPLY_SALE_COND_CD eq '01'">
+	    		AND TEM1.TOT_ORD_AMT <![CDATA[<=]]> #{TO_APPLY_SALE_AMT}
+	    	</if>
+	    	<if test="TO_APPLY_SALE_COND_CD eq '02'">
+	    		AND TEM1.TOT_ORD_AMT <![CDATA[<]]> #{TO_APPLY_SALE_AMT}
+	    	</if>
+	    	)
+	</select>
+	
+	<select id="getBosAndPosOrderCust" resultType="HashMap">
+		SELECT 
+		    CUT.ITG_CUST_NO
+	        , CUT.CUST_NM
+	        , CUT.GNDR_CD
+	        , CUT.BIRTHDAY
+	        , RE.TOT_ORD_AMT
+	        , DAMO.DECRYPT_VAR_B64('AES_256',CUT.MPHON_NO,'') AS MPHON_NO
+		 FROM (
+		    SELECT 
+		        GRP.ITG_CUST_NO
+		        ,SUM(GRP.TOT_ORD_AMT) AS TOT_ORD_AMT
+		     FROM (
+		        SELECT 
+		            TEM.ITG_CUST_NO
+		            , CASE
+		                WHEN TEM.SALE_TY_CD = '1401' OR TEM.SALE_TY_CD = '1402' OR TEM.SALE_TY_CD = '1403' OR TEM.SALE_TY_CD = '1404' THEN (TEM.SETL_AMT + TEM.RENT_AMT) * TEM.CNTR_PD_VAL
+		                WHEN TEM.SALE_TY_CD = '2101' OR TEM.SALE_TY_CD = '2102' OR TEM.SALE_TY_CD = '2103' OR TEM.SALE_TY_CD = '2104' OR TEM.SALE_TY_CD = '1202' THEN TEM.SETL_AMT
+		                WHEN TEM.SALE_TY_CD = '2401' THEN TEM.SETL_AMT
+		            END TOT_ORD_AMT
+		        FROM (
+		            SELECT 
+		                ITG_CUST_NO
+		                , SUM(SETL_AMT) AS SETL_AMT
+		                , SUM(CNTR_PD_VAL) AS CNTR_PD_VAL
+		                , SUM(RENT_AMT) AS RENT_AMT
+		                , SALE_TY_CD
+		                , SALE_ORGZ_CUST_CD
+		                , ORD_NO
+		            FROM CRM_CUST_BOS_CNTRT_HST A 
+		                WHERE IST_DCS_DE IS NOT NULL 
+		                    AND IST_DCS_DE <![CDATA[>=]]> #{PROM_STA_YMD} AND IST_DCS_DE <![CDATA[<=]]> #{PROM_END_YMD}
+		                    AND SALE_ORGZ_CUST_CD IN (SELECT STOR_NO FROM CRM_MSHIP_APPLY_STOR_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO})
+		                    AND BASE_ITEM_CD IN (SELECT GODS_NO FROM CRM_MSHIP_APPLY_GODS_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO})
+		                    AND CNTR_STS_DTL_CD = '32'  /*매출확정*/  
+		                    AND SETL_STS_CD = '20'      /*결제완료*/ 
+		                    AND IST_STS_CD = '50'       /*설치확정*/ 
+		                    AND IST_DCS_YN = 'Y'        /*설치확정여부*/ 
+		                GROUP BY ITG_CUST_NO , SALE_TY_CD , SALE_ORGZ_CUST_CD , ORD_NO
+		                ORDER BY ITG_CUST_NO DESC 
+		        )TEM
+		        
+		        UNION ALL 
+		        
+		        SELECT 
+		            TEM.ITG_CUST_NO 
+		            , TEM.TOT_AMT AS TOT_ORD_AMT
+		         FROM (
+		            SELECT
+		                A.SALE_DATE
+		                , A.STOR_NO
+		                , A.POS_NO
+		                , A.DEAL_NO
+		                , B.ITG_CUST_NO   
+		                , SUM(A.TOT_SALE_AMT) AS TOT_AMT
+		                , SUM(A.DC_AMT) AS DC_AMT
+		             FROM CRM_CUST_POS_SALE_DTL A JOIN CRM_CUST_POS_SALE_HST B ON A.SALE_DATE = B.SALE_DATE
+		                AND A.STOR_NO = B.STOR_NO 
+		                AND A.POS_NO = B.POS_NO
+		                AND A.DEAL_NO = B.DEAL_NO
+		                AND B.ITG_CUST_NO IS NOT NULL
+		                AND A.STOR_NO IN (SELECT STOR_NO FROM CRM_MSHIP_APPLY_STOR_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO})
+		                AND A.GODS_NO IN (SELECT GODS_NO FROM CRM_MSHIP_APPLY_GODS_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO})
+		                AND A.SALE_DATE <![CDATA[>=]]> #{PROM_STA_YMD} AND A.SALE_DATE <![CDATA[<=]]> #{PROM_END_YMD}
+		                AND A.DEAL_DIV_CD = 0
+		                GROUP BY A.SALE_DATE , A.STOR_NO , A.POS_NO , A.DEAL_NO , B.ITG_CUST_NO 
+		        ) TEM
+		    ) GRP GROUP BY GRP.ITG_CUST_NO
+		) RE  JOIN CRM_CUST_BAS CUT ON RE.ITG_CUST_NO = CUT.ITG_CUST_NO
+			AND  CUT.CUST_STATUS_CD != '003'
+         <trim prefix="AND (" prefixOverrides="AND" suffix=")">
+           <if test="FROM_APPLY_SALE_COND_CD eq '01'">
+	    		AND RE.TOT_ORD_AMT <![CDATA[>=]]> #{FROM_APPLY_SALE_AMT}
+	    	</if>
+	    	<if test="FROM_APPLY_SALE_COND_CD eq '02'">
+	    		AND RE.TOT_ORD_AMT <![CDATA[>]]> #{FROM_APPLY_SALE_AMT}
+	    	</if>
+	    	<if test="TO_APPLY_SALE_COND_CD eq '01'">
+	    		AND RE.TOT_ORD_AMT <![CDATA[<=]]> #{TO_APPLY_SALE_AMT}
+	    	</if>
+	    	<if test="TO_APPLY_SALE_COND_CD eq '02'">
+	    		AND RE.TOT_ORD_AMT <![CDATA[<]]> #{TO_APPLY_SALE_AMT}
+	    	</if>
+          </trim>
+          
+          <trim prefix="AND (" prefixOverrides="OR" suffix=")">
+            <if test="typeCd != null and typeCd != ''" >
+				OR CUT.MSHIP_TYPE_CD      IN 
+				<foreach item="item" index="index" collection="typeCd" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="gradeCd != null and gradeCd != ''">
+				OR CUT.MSHIP_GRADE_CD      IN 
+				<foreach item="item" index="index" collection="gradeCd" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="cmpNo != null and cmpNo != ''">
+	    		OR CUT.CPRT_CMP_NO = #{cmpNo}
+	    	</if>
+          </trim>
+	</select>
+	
+	<select id="getPromEventAll" resultType="HashMap">
+		 SELECT
+		 	/*com.ceragem.batch.crm.dao.PromEventDao.getPromEventAll*/ 
+		    MSHIP_PROM_BAS_NO
+		    , FROM_APPLY_SALE_AMT
+		    , FROM_APPLY_SALE_COND_CD
+		    , TO_APPLY_SALE_AMT
+		    , TO_APPLY_SALE_COND_CD
+		    , FROM_APPLY_PAY_AMT
+		    , FROM_APPLY_PAY_COND_CD
+		    , TO_APPLY_PAY_AMT
+		    , TO_APPLY_PAY_COND_CD
+		    , APPLY_BNFIT_CD
+		    , PRV_COUPN_BAS_NO
+		    , APPLY_POINT_SCORE
+		    , APPLY_MSHP_GRADE_CTNTS
+		    , CPRT_CMP_NO
+		    , PROM_STA_YMD
+		    , PROM_END_YMD
+		    , MSHIP_TYPE_CDS
+		 FROM CRM_MSHIP_PROM_BAS WHERE STATUS_CD = '002'
+		    AND TO_CHAR(SYSDATE-1,'YYYYMMDD') <![CDATA[<]]> PROM_END_YMD    
+	</select>
+	
+	<select id="getItemNos" resultType="String">
+		SELECT GODS_NO FROM CRM_MSHIP_APPLY_GODS_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO}
+	</select>
+	
+	<select id="getStorNos" resultType="String">
+		SELECT STOR_NO FROM CRM_MSHIP_APPLY_STOR_REL WHERE MSHIP_PROM_BAS_NO = #{MSHIP_PROM_BAS_NO}
+	</select>
+	
+	<select id="checkPointHst" resultType="int">
+		SELECT COUNT(1) AS CNT FROM CRM_POINT_HST WHERE PROM_NO = #{PROM_NO} AND ITG_CUST_NO = #{ITG_CUST_NO}
+	</select>
+	
+	<select id="checkCoupnHst" resultType="int">
+		SELECT COUNT(1) AS CNT FROM CRM_COUPN_PBLS_HST WHERE MSHIP_COUPN_BAS_NO = #{COUPN_BAS_NO} AND ITG_CUST_NO = #{ITG_CUST_NO} AND PROM_NO = #{PROM_NO}
+	</select>
+	
+	<insert id="savePromEventCoupn">
+		INSERT /* com.ceragem.batch.crm.dao.PromEventDao.savePromEventCoupn */ INTO  CRM_COUPN_PBLS_HST ( 
+			COUPN_PBLS_HST_SEQ
+			, COUPN_PBLS_BAS_NO
+			, ITG_CUST_NO
+			, MSHIP_COUPN_BAS_NO
+			, COUPN_KND_CD
+			, COUPN_TGT_CD
+			, COUPN_APPLY_DIV_CD1
+			, COUPN_APPLY_DIV_CD2
+			, FROM_PBLS_STD_DAY
+			, TO_PBLS_STD_DAY
+			, USE_STD_DAY_COND_CD
+			, FROM_USE_STD_DAY
+			, TO_USE_STD_DAY
+			, GIFT_POSS_YN
+			, COUPN_ISSUE_METH_CD
+			, ISSUE_RSTRTN_CNT
+			, MAX_ISSUE_CNT
+			, MAX_USE_CNT
+			, APPLY_AMT
+			, APPLY_RATE
+			, MIN_BUY_AMT
+			, MAX_DC_AMT
+			, APPLY_CNT
+			, PRSNTTN_GODS_CD
+			, USE_DOW
+			, FROM_USE_HOUR
+			, TO_USE_HOUR
+			, USE_CHL_CD
+			, DUP_USE_YN
+			, USE_DIV_CD
+			, USE_YN
+			, COUPN_BAS_NM
+			, COUPN_BAS_CTNTS
+			, ADMT_METH_CD
+			, ADMT_AMT
+			, COUPN_TYPE_CD
+			, COUPN_USE_POSS_DAY
+			, COUPN_USE_POSS_YN
+			, COUPN_USE_POSS_DAY_CNT
+			, COUPN_CLASS_CD
+			, DOW_1_USE_YN
+			, DOW_2_USE_YN
+			, DOW_3_USE_YN
+			, DOW_4_USE_YN
+			, DOW_5_USE_YN
+			, DOW_6_USE_YN
+			, DOW_7_USE_YN
+			, MSHP_GRADE_CD
+			, AMDR_ID
+			, AMD_DT
+			, REGR_ID
+			, REG_DT
+			, REG_CHL_CD
+			, STOR_NO
+			, PROM_NO
+		)
+		SELECT 
+			FN_CRM_AUTO_SEQ('CPN')
+			, FN_LUHN_COUPN( DECODE(MSHIP_GRADE_CD, '001', '01', '002', '51', '003', '05', NULL, '05') ) COUPN_PBLS_BAS_NO
+			, #{ITG_CUST_NO} AS ITG_CUST_NO
+			, MSHIP_COUPN_BAS_NO
+			, COUPN_KND_CD
+			, COUPN_TGT_CD
+			, COUPN_APPLY_DIV_CD1
+			, COUPN_APPLY_DIV_CD2
+			, FROM_PBLS_STD_DAY
+			, TO_PBLS_STD_DAY
+			, USE_STD_DAY_COND_CD
+			, FROM_USE_STD_DAY
+			, TO_USE_STD_DAY
+			, GIFT_POSS_YN
+			, COUPN_ISSUE_METH_CD
+			, ISSUE_RSTRTN_CNT
+			, MAX_ISSUE_CNT
+			, MAX_USE_CNT
+			, APPLY_AMT
+			, APPLY_RATE
+			, MIN_BUY_AMT
+			, MAX_DC_AMT
+			, APPLY_CNT
+			, PRSNTTN_GODS_CD
+			, USE_DOW
+			, FROM_USE_HOUR
+			, TO_USE_HOUR
+			, USE_CHL_CD
+			, DUP_USE_YN
+			, USE_DIV_CD
+			, 'N' AS USE_YN
+			, COUPN_BAS_NM
+			, COUPN_BAS_CTNTS
+			, ADMT_METH_CD
+			, ADMT_AMT
+			, COUPN_TYPE_CD
+			, COUPN_USE_POSS_DAY
+			, COUPN_USE_POSS_YN
+			, COUPN_USE_POSS_DAY_CNT
+			, COUPN_CLASS_CD
+			, DOW_1_USE_YN
+			, DOW_2_USE_YN
+			, DOW_3_USE_YN
+			, DOW_4_USE_YN
+			, DOW_5_USE_YN
+			, DOW_6_USE_YN
+			, DOW_7_USE_YN
+			, MSHP_GRADE_CD
+			, AMDR_ID
+			, AMD_DT
+			, 'CRM' AS REGR_ID
+			, SYSDATE 
+			, REG_CHL_CD 
+			, '141359' AS STOR_NO
+			, #{PROM_NO} AS PROM_NO
+		FROM CRM_MSHIP_COUPN_BAS  
+			WHERE MSHIP_COUPN_BAS_NO = #{COUPN_BAS_NO}
+	</insert>
+	
+	<select id="selectStor" resultType="Map">
+		SELECT STOR_CHL_CD,STOR_NO,STOR_NM  FROM CRM_STOR_BAS WHERE STOR_NO = #{storNo}
+	</select>
+	
+	<select id="selectMaster" resultType="Map">
+    	SELECT /* com.ceragem.batch.crm.dao.PromEventDao.selectMaster */
+    		MSHIP_COUPN_BAS_NO
+			, COUPN_KND_CD
+			, COUPN_TGT_CD
+			, COUPN_APPLY_DIV_CD1
+			, COUPN_APPLY_DIV_CD2
+			, FROM_PBLS_STD_DAY
+			, TO_PBLS_STD_DAY
+			, USE_STD_DAY_COND_CD
+			, FROM_USE_STD_DAY
+			, TO_USE_STD_DAY
+			, GIFT_POSS_YN
+			, COUPN_ISSUE_METH_CD
+			, ISSUE_RSTRTN_CNT
+			, MAX_ISSUE_CNT
+			, MAX_USE_CNT
+			, APPLY_AMT
+			, APPLY_RATE
+			, MIN_BUY_AMT
+			, MAX_DC_AMT
+			, APPLY_CNT
+			, PRSNTTN_GODS_CD
+			, USE_DOW
+			, FROM_USE_HOUR
+			, TO_USE_HOUR
+			, USE_CHL_CD
+			, DUP_USE_YN
+			, USE_DIV_CD
+			, USE_YN
+			, COUPN_BAS_NM
+			, COUPN_BAS_CTNTS
+			, ADMT_METH_CD
+			, ADMT_AMT
+			, COUPN_TYPE_CD
+			, COUPN_USE_POSS_DAY
+			, COUPN_USE_POSS_YN
+			, COUPN_USE_POSS_DAY_CNT
+			, COUPN_CLASS_CD
+			, DOW_1_USE_YN
+			, DOW_2_USE_YN
+			, DOW_3_USE_YN
+			, DOW_4_USE_YN
+			, DOW_5_USE_YN
+			, DOW_6_USE_YN
+			, DOW_7_USE_YN
+			, MSHP_GRADE_CD
+			, REG_CHL_CD
+			, MSHIP_GRADE_CD
+			, CPRT_CMP_NO
+			, APPLY_MSHP_GRADE_CTNTS
+			, MSHIP_TYPE_CDS
+    	FROM CRM_MSHIP_COUPN_BAS
+    		WHERE MSHIP_COUPN_BAS_NO = #{COUPN_BAS_NO}
+    			AND USE_YN = 'Y'
+    </select>
+	
+	<select id="getDayCoupnCnt" resultType="int">
+    	SELECT /* com.ceragem.batch.crm.dao.PromEventDao.getDayCoupnCnt */ COUNT(*) AS CNT 
+    	FROM CRM_COUPN_PBLS_HST WHERE MSHIP_COUPN_BAS_NO = #{COUPN_BAS_NO}    
+    		AND TO_CHAR(REG_DT,'YYYYMMDD') = TO_CHAR(SYSDATE,'YYYYMMDD')
+    </select>
+    
+    <select id="getCustInfo" resultType="Map">
+    	SELECT /* com.ceragem.batch.crm.dao.PromEventDao.getCustInfo */
+		    ITG_CUST_NO
+		    , MSHIP_TYPE_CD
+		    , MSHIP_GRADE_CD
+		    , CPRT_CMP_NO
+		 FROM CRM_CUST_BAS 
+		    WHERE ITG_CUST_NO = #{ITG_CUST_NO} 
+		        AND CUST_STATUS_CD != '003'
+    </select>
+    
+   	<select id="getAutoSeq" resultType="String">
+        SELECT FN_CRM_AUTO_SEQ(#{prefix}) 
+          FROM DUAL
+    </select>
+</mapper>

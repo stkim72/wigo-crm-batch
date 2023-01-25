@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CrmBosRmnyCancelTxnDao">
+    <sql id="sqlPkConditions">
+                WHERE SELNGNO           =       #{selngno}
+                  AND RCIVNO            =       #{rcivno}
+    </sql>
+    <sql id="sqlCols">
+                      COMPLEXYN                    /*복합결제 여부        */
+                    , SELNGNO                    /*매출 번호        */
+                    , DMDTME                    /*청구 회차        */
+                    , DMDTMESN                    /*청구 회차 순번        */
+                    , DMDTYCD                    /*청구 유형 코드(FI012)        */
+                    , DMDTYCDNM                    /*청구 유형 코드명        */
+                    , ORDNO                    /*주문 번호        */
+                    , CNTRNO                    /*계약 번호        */
+                    , CUSTNO                    /*고객 번호        */
+                    , CUSTNM                    /*고객명        */
+                    , CRMCUSTNO                    /*통합고객번호        */
+                    , RCIVENDYN                    /*수납완료여부        */
+                    , RCIVNO                    /*수납 번호        */
+                    , RCIVMTHCD                    /*수납 방법 코드(FI001)        */
+                    , RCIVMTHCDNM                    /*수납 방법 코드명        */
+                    , DPSSECD                    /*입금 구분 코드(FI002)        */
+                    , DPSSECDNM                    /*입금 구분 코드명        */
+                    , DPSTYCD                    /*입금 유형 코드(FI003)        */
+                    , DPSTYCDNM                    /*입금 유형 코드명        */
+                    , RCIVDE                    /*수납 일자        */
+                    , RCIVAMT                    /*수납 금액        */
+                    , RCIVCHRGR                    /*수납 담당자        */
+                    , RCIVCHRGRNM                    /*수납 담당자명        */
+                    , CNCLYN                    /*취소 여부        */
+                    , CNCLRCIVNO                    /*취소 수납 번호        */
+                    , PARTCNCLYN                    /*부분 취소 여부        */
+                    , RCIPTNO                    /*영수증 번호        */
+                    , BANKCD                    /*(현금)은행 코드(FI004)        */
+                    , ACCTNO                    /*(현금)계좌 번호        */
+                    , ACCTFULLTXTNO                    /*(현금)계좌 전문 번호        */
+                    , REMITDE                    /*(현금)송금 일자        */
+                    , VACCTNO                    /*(가상계좌)가상계좌번호        */
+                    , DEALDT                    /*(가상계좌)거래일시        */
+                    , DEALBANKCD                    /*(가상계좌)거래은행코드(FI054)        */
+                    , DEALBANKCDNM                    /*(가상계좌)거래은행코드명        */
+                    , VACCTDEALTYCD                    /*(가상계좌)가상계좌거래구분코드(FI057)        */
+                    , VACCTDEALTYCDNM                    /*(가상계좌)가상계좌거래구분코드명        */
+                    , TIDSN                    /*(가상계좌)거래ID 순번        */
+                    , CARDAUTHNO                    /*(카드)카드 승인 번호        */
+                    , CARDAUTHDEALNO                    /*(카드)카드 승인 거래 번호        */
+                    , AUTHDEALNOSN                    /*(카드)승인 거래 번호 순번        */
+                    , ACCTDEALNO                    /*(즉시이체)이체 거래 순번        */
+                    , CARDREPNO                    /*카드대체내역 번호        */
+                    , REGUSRID                    /*등록자 ID        */
+                    , REGDT                    /*등록 일시        */
+                    , UPDUSRID                    /*수정자 ID        */
+                    , UPDDT                    /*수정 일시        */
+    </sql>
+    <sql id="sqlSelectCols">
+                       A.COMPLEXYN                    /*복합결제 여부        */
+                    , A.SELNGNO                    /*매출 번호        */
+                    , A.DMDTME                    /*청구 회차        */
+                    , A.DMDTMESN                    /*청구 회차 순번        */
+                    , A.DMDTYCD                    /*청구 유형 코드(FI012)        */
+                    , A.DMDTYCDNM                    /*청구 유형 코드명        */
+                    , A.ORDNO                    /*주문 번호        */
+                    , A.CNTRNO                    /*계약 번호        */
+                    , A.CUSTNO                    /*고객 번호        */
+                    , A.CUSTNM                    /*고객명        */
+                    , A.CRMCUSTNO                    /*통합고객번호        */
+                    , A.RCIVENDYN                    /*수납완료여부        */
+                    , A.RCIVNO                    /*수납 번호        */
+                    , A.RCIVMTHCD                    /*수납 방법 코드(FI001)        */
+                    , A.RCIVMTHCDNM                    /*수납 방법 코드명        */
+                    , A.DPSSECD                    /*입금 구분 코드(FI002)        */
+                    , A.DPSSECDNM                    /*입금 구분 코드명        */
+                    , A.DPSTYCD                    /*입금 유형 코드(FI003)        */
+                    , A.DPSTYCDNM                    /*입금 유형 코드명        */
+                    , A.RCIVDE                    /*수납 일자        */
+                    , A.RCIVAMT                    /*수납 금액        */
+                    , A.RCIVCHRGR                    /*수납 담당자        */
+                    , A.RCIVCHRGRNM                    /*수납 담당자명        */
+                    , A.CNCLYN                    /*취소 여부        */
+                    , A.CNCLRCIVNO                    /*취소 수납 번호        */
+                    , A.PARTCNCLYN                    /*부분 취소 여부        */
+                    , A.RCIPTNO                    /*영수증 번호        */
+                    , A.BANKCD                    /*(현금)은행 코드(FI004)        */
+                    , A.ACCTNO                    /*(현금)계좌 번호        */
+                    , A.ACCTFULLTXTNO                    /*(현금)계좌 전문 번호        */
+                    , A.REMITDE                    /*(현금)송금 일자        */
+                    , A.VACCTNO                    /*(가상계좌)가상계좌번호        */
+                    , A.DEALDT                    /*(가상계좌)거래일시        */
+                    , A.DEALBANKCD                    /*(가상계좌)거래은행코드(FI054)        */
+                    , A.DEALBANKCDNM                    /*(가상계좌)거래은행코드명        */
+                    , A.VACCTDEALTYCD                    /*(가상계좌)가상계좌거래구분코드(FI057)        */
+                    , A.VACCTDEALTYCDNM                    /*(가상계좌)가상계좌거래구분코드명        */
+                    , A.TIDSN                    /*(가상계좌)거래ID 순번        */
+                    , A.CARDAUTHNO                    /*(카드)카드 승인 번호        */
+                    , A.CARDAUTHDEALNO                    /*(카드)카드 승인 거래 번호        */
+                    , A.AUTHDEALNOSN                    /*(카드)승인 거래 번호 순번        */
+                    , A.ACCTDEALNO                    /*(즉시이체)이체 거래 순번        */
+                    , A.CARDREPNO                    /*카드대체내역 번호        */
+                    , A.REGUSRID                    /*등록자 ID        */
+                    , A.REGDT                    /*등록 일시        */
+                    , A.UPDUSRID                    /*수정자 ID        */
+                    , A.UPDDT                    /*수정 일시        */
+    </sql>
+    <sql id="sqlConditions">
+         <where>
+            <if test="complexyn != null and complexyn != ''">
+                      AND A.COMPLEXYN       =       #{complexyn}
+            </if>
+            <if test="selngno != null and selngno != ''">
+                      AND A.SELNGNO         =       #{selngno}
+            </if>
+            <if test="dmdtme != null and dmdtme != ''">
+                      AND A.DMDTME          =       #{dmdtme}
+            </if>
+            <if test="dmdtmesn != null and dmdtmesn != ''">
+                      AND A.DMDTMESN        =       #{dmdtmesn}
+            </if>
+            <if test="dmdtycd != null and dmdtycd != ''">
+                      AND A.DMDTYCD         =       #{dmdtycd}
+            </if>
+            <if test="dmdtycdnm != null and dmdtycdnm != ''">
+                      AND A.DMDTYCDNM       =       #{dmdtycdnm}
+            </if>
+            <if test="ordno != null and ordno != ''">
+                      AND A.ORDNO           =       #{ordno}
+            </if>
+            <if test="cntrno != null and cntrno != ''">
+                      AND A.CNTRNO          =       #{cntrno}
+            </if>
+            <if test="custno != null and custno != ''">
+                      AND A.CUSTNO          =       #{custno}
+            </if>
+            <if test="custnm != null and custnm != ''">
+                      AND A.CUSTNM          =       #{custnm}
+            </if>
+            <if test="crmcustno != null and crmcustno != ''">
+                      AND A.CRMCUSTNO       =       #{crmcustno}
+            </if>
+            <if test="rcivendyn != null and rcivendyn != ''">
+                      AND A.RCIVENDYN       =       #{rcivendyn}
+            </if>
+            <if test="rcivno != null and rcivno != ''">
+                      AND A.RCIVNO          =       #{rcivno}
+            </if>
+            <if test="rcivmthcd != null and rcivmthcd != ''">
+                      AND A.RCIVMTHCD       =       #{rcivmthcd}
+            </if>
+            <if test="rcivmthcdnm != null and rcivmthcdnm != ''">
+                      AND A.RCIVMTHCDNM     =       #{rcivmthcdnm}
+            </if>
+            <if test="dpssecd != null and dpssecd != ''">
+                      AND A.DPSSECD         =       #{dpssecd}
+            </if>
+            <if test="dpssecdnm != null and dpssecdnm != ''">
+                      AND A.DPSSECDNM       =       #{dpssecdnm}
+            </if>
+            <if test="dpstycd != null and dpstycd != ''">
+                      AND A.DPSTYCD         =       #{dpstycd}
+            </if>
+            <if test="dpstycdnm != null and dpstycdnm != ''">
+                      AND A.DPSTYCDNM       =       #{dpstycdnm}
+            </if>
+            <if test="rcivde != null and rcivde != ''">
+                      AND A.RCIVDE          =       #{rcivde}
+            </if>
+            <if test="rcivamt != null and rcivamt != ''">
+                      AND A.RCIVAMT         =       #{rcivamt}
+            </if>
+            <if test="rcivchrgr != null and rcivchrgr != ''">
+                      AND A.RCIVCHRGR       =       #{rcivchrgr}
+            </if>
+            <if test="rcivchrgrnm != null and rcivchrgrnm != ''">
+                      AND A.RCIVCHRGRNM     =       #{rcivchrgrnm}
+            </if>
+            <if test="cnclyn != null and cnclyn != ''">
+                      AND A.CNCLYN          =       #{cnclyn}
+            </if>
+            <if test="cnclrcivno != null and cnclrcivno != ''">
+                      AND A.CNCLRCIVNO      =       #{cnclrcivno}
+            </if>
+            <if test="partcnclyn != null and partcnclyn != ''">
+                      AND A.PARTCNCLYN      =       #{partcnclyn}
+            </if>
+            <if test="rciptno != null and rciptno != ''">
+                      AND A.RCIPTNO         =       #{rciptno}
+            </if>
+            <if test="bankcd != null and bankcd != ''">
+                      AND A.BANKCD          =       #{bankcd}
+            </if>
+            <if test="acctno != null and acctno != ''">
+                      AND A.ACCTNO          =       #{acctno}
+            </if>
+            <if test="acctfulltxtno != null and acctfulltxtno != ''">
+                      AND A.ACCTFULLTXTNO   =       #{acctfulltxtno}
+            </if>
+            <if test="remitde != null and remitde != ''">
+                      AND A.REMITDE         =       #{remitde}
+            </if>
+            <if test="vacctno != null and vacctno != ''">
+                      AND A.VACCTNO         =       #{vacctno}
+            </if>
+            <if test="dealdt != null and dealdt != ''">
+                      AND A.DEALDT          =       #{dealdt}
+            </if>
+            <if test="dealbankcd != null and dealbankcd != ''">
+                      AND A.DEALBANKCD      =       #{dealbankcd}
+            </if>
+            <if test="dealbankcdnm != null and dealbankcdnm != ''">
+                      AND A.DEALBANKCDNM    =       #{dealbankcdnm}
+            </if>
+            <if test="vacctdealtycd != null and vacctdealtycd != ''">
+                      AND A.VACCTDEALTYCD   =       #{vacctdealtycd}
+            </if>
+            <if test="vacctdealtycdnm != null and vacctdealtycdnm != ''">
+                      AND A.VACCTDEALTYCDNM =       #{vacctdealtycdnm}
+            </if>
+            <if test="tidsn != null and tidsn != ''">
+                      AND A.TIDSN           =       #{tidsn}
+            </if>
+            <if test="cardauthno != null and cardauthno != ''">
+                      AND A.CARDAUTHNO      =       #{cardauthno}
+            </if>
+            <if test="cardauthdealno != null and cardauthdealno != ''">
+                      AND A.CARDAUTHDEALNO  =       #{cardauthdealno}
+            </if>
+            <if test="authdealnosn != null and authdealnosn != ''">
+                      AND A.AUTHDEALNOSN    =       #{authdealnosn}
+            </if>
+            <if test="acctdealno != null and acctdealno != ''">
+                      AND A.ACCTDEALNO      =       #{acctdealno}
+            </if>
+            <if test="cardrepno != null and cardrepno != ''">
+                      AND A.CARDREPNO       =       #{cardrepno}
+            </if>
+            <if test="regusrid != null and regusrid != ''">
+                      AND A.REGUSRID        =       #{regusrid}
+            </if>
+            <if test="regdt != null and regdt != ''">
+                      AND A.REGDT           =       #{regdt}
+            </if>
+            <if test="updusrid != null and updusrid != ''">
+                      AND A.UPDUSRID        =       #{updusrid}
+            </if>
+            <if test="upddt != null and upddt != ''">
+                      AND A.UPDDT           =       #{upddt}
+            </if>
+        </where>
+    </sql>
+    
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.CrmBosRmnyCancelTxnDao.selectListCount */ COUNT(1)
+                 FROM CRM_BOS_RMNY_CANCEL_TXN A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.bos.model.BosCrmRmnyCancelTxnVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosRmnyCancelTxnDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_RMNY_CANCEL_TXN A
+        <include refid="sqlConditions"/>
+                ORDER BY REG_DT DESC
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.bos.model.BosCrmRmnyCancelTxnVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosRmnyCancelTxnDao.select */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_RMNY_CANCEL_TXN A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT /* com.ceragem.batch.crm.dao.CrmBosRmnyCancelTxnDao.insert */ INTO CRM_BOS_RMNY_CANCEL_TXN (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{complexyn}
+                     , #{selngno}
+                     , #{dmdtme}
+                     , #{dmdtmesn}
+                     , #{dmdtycd}
+                     , #{dmdtycdnm}
+                     , #{ordno}
+                     , #{cntrno}
+                     , #{custno}
+                     , #{custnm}
+                     , #{crmcustno}
+                     , #{rcivendyn}
+                     , #{rcivno}
+                     , #{rcivmthcd}
+                     , #{rcivmthcdnm}
+                     , #{dpssecd}
+                     , #{dpssecdnm}
+                     , #{dpstycd}
+                     , #{dpstycdnm}
+                     , #{rcivde}
+                     , #{rcivamt}
+                     , #{rcivchrgr}
+                     , #{rcivchrgrnm}
+                     , #{cnclyn}
+                     , #{cnclrcivno}
+                     , #{partcnclyn}
+                     , #{rciptno}
+                     , #{bankcd}
+                     , #{acctno}
+                     , #{acctfulltxtno}
+                     , #{remitde}
+                     , #{vacctno}
+                     , #{dealdt}
+                     , #{dealbankcd}
+                     , #{dealbankcdnm}
+                     , #{vacctdealtycd}
+                     , #{vacctdealtycdnm}
+                     , #{tidsn}
+                     , #{cardauthno}
+                     , #{cardauthdealno}
+                     , #{authdealnosn}
+                     , #{acctdealno}
+                     , #{cardrepno}
+                     , #{regusrid}
+                     , TO_DATE(#{regdt},'YYYY-MM-DD HH24:MI:SS')
+                     , #{updusrid}
+                     , TO_DATE(#{upddt},'YYYY-MM-DD HH24:MI:SS')
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.CrmBosRmnyCancelTxnDao.update */ CRM_BOS_RMNY_CANCEL_TXN
+                  SET COMPLEXYN                               =         #{complexyn}
+                    , DMDTME                                  =         #{dmdtme}
+                    , DMDTMESN                                =         #{dmdtmesn}
+                    , DMDTYCD                                 =         #{dmdtycd}
+                    , DMDTYCDNM                               =         #{dmdtycdnm}
+                    , ORDNO                                   =         #{ordno}
+                    , CNTRNO                                  =         #{cntrno}
+                    , CUSTNO                                  =         #{custno}
+                    , CUSTNM                                  =         #{custnm}
+                    , CRMCUSTNO                               =         #{crmcustno}
+                    , RCIVENDYN                               =         #{rcivendyn}
+                    , RCIVMTHCD                               =         #{rcivmthcd}
+                    , RCIVMTHCDNM                             =         #{rcivmthcdnm}
+                    , DPSSECD                                 =         #{dpssecd}
+                    , DPSSECDNM                               =         #{dpssecdnm}
+                    , DPSTYCD                                 =         #{dpstycd}
+                    , DPSTYCDNM                               =         #{dpstycdnm}
+                    , RCIVDE                                  =         #{rcivde}
+                    , RCIVAMT                                 =         #{rcivamt}
+                    , RCIVCHRGR                               =         #{rcivchrgr}
+                    , RCIVCHRGRNM                             =         #{rcivchrgrnm}
+                    , CNCLYN                                  =         #{cnclyn}
+                    , CNCLRCIVNO                              =         #{cnclrcivno}
+                    , PARTCNCLYN                              =         #{partcnclyn}
+                    , RCIPTNO                                 =         #{rciptno}
+                    , BANKCD                                  =         #{bankcd}
+                    , ACCTNO                                  =         #{acctno}
+                    , ACCTFULLTXTNO                           =         #{acctfulltxtno}
+                    , REMITDE                                 =         #{remitde}
+                    , VACCTNO                                 =         #{vacctno}
+                    , DEALDT                                  =         #{dealdt}
+                    , DEALBANKCD                              =         #{dealbankcd}
+                    , DEALBANKCDNM                            =         #{dealbankcdnm}
+                    , VACCTDEALTYCD                           =         #{vacctdealtycd}
+                    , VACCTDEALTYCDNM                         =         #{vacctdealtycdnm}
+                    , TIDSN                                   =         #{tidsn}
+                    , CARDAUTHNO                              =         #{cardauthno}
+                    , CARDAUTHDEALNO                          =         #{cardauthdealno}
+                    , AUTHDEALNOSN                            =         #{authdealnosn}
+                    , ACCTDEALNO                              =         #{acctdealno}
+                    , CARDREPNO                               =         #{cardrepno}
+                    , REGUSRID                                =         #{regusrid}
+                    , REGDT                                   =         TO_DATE(#{regdt},'YYYY-MM-DD HH24:MI:SS')
+                    , UPDUSRID                                =         #{updusrid}
+                    , UPDDT                                   =         TO_DATE(#{upddt},'YYYY-MM-DD HH24:MI:SS')
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.CrmBosRmnyCancelTxnDao.delete */
+                 FROM CRM_BOS_RMNY_CANCEL_TXN
+        <include refid="sqlPkConditions"/>
+    </delete>
+</mapper>

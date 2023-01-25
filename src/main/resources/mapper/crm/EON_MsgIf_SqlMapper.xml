@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.MsgIfDao">
+    <sql id="sqlPkConditions">
+                WHERE CLIENT            =       #{client}
+                  AND CAMPAIGN_ID       =       #{campaignId}
+                  AND MEMBER_SEQ        =       #{memberSeq}
+    </sql>
+    <sql id="sqlCols">
+                      CLIENT                    /*CLIENT        */
+                    , CAMPAIGN_ID                    /*CAMPAIGN_ID        */
+                    , MEMBER_SEQ                    /*MEMBER_SEQ        */
+                    , SEND_TYPE                    /*SEND_TYPE        */
+                    , SUBJECT                    /*SUBJECT        */
+                    , MSG                    /*MSG        */
+                    , DESTEL                    /*DESTEL        */
+                    , SRCTEL                    /*SRCTEL        */
+<!--                     , RESERVETIME                    /*RESERVETIME        */ -->
+<!--                     , SENDTIME                    /*SENDTIME        */ -->
+<!--                     , REVTIME                    /*REVTIME        */ -->
+                    , SENDRESULT                    /*SENDRESULT        */
+<!--                     , TRANSRESULT                    /*TRANSRESULT        */ -->
+<!--                     , FILE_CNT                    /*FILE_CNT        */ -->
+<!--                     , FILE_CNT_REAL                    /*FILE_CNT_REAL        */ -->
+<!--                     , FILE_TYPE1                    /*FILE_TYPE1        */ -->
+<!--                     , FILE_PATH1                    /*FILE_PATH1        */ -->
+<!--                     , FILE_TYPE2                    /*FILE_TYPE2        */ -->
+<!--                     , FILE_PATH2                    /*FILE_PATH2        */ -->
+<!--                     , FILE_TYPE3                    /*FILE_TYPE3        */ -->
+<!--                     , FILE_PATH3                    /*FILE_PATH3        */ -->
+<!--                     , INTERFACE_DATE                    /*INTERFACE_DATE        */ -->
+<!--                     , INTERFACE_FL                    /*INTERFACE_FL        */ -->
+<!--                     , SMS_TEST                    /*SMS_TEST        */ -->
+                    , ETC3                    /*ETC3        */
+                    , DUMMY1                    /*DUMMY1        */
+                    , DUMMY2                    /*DUMMY2        */
+                    , DUMMY3                    /*DUMMY3        */
+                    , DUMMY4                    /*DUMMY4        */
+                    , DUMMY5                    /*DUMMY5        */
+                    , DUMMY6                    /*DUMMY1        */
+                    , DUMMY7                    /*DUMMY2        */
+                    , DUMMY8                    /*DUMMY3        */
+                    , DUMMY9                    /*DUMMY4        */
+                    , DUMMY10                    /*DUMMY5        */
+                    , SENDER_KEY                    /*SENDER_KEY        */
+                    , TEMPLATE_CODE                    /*TEMPLATE_CODE        */
+                    , K_MSG                    /*K_MSG        */
+                    , K_RESERVETIME                    /*K_RESERVETIME        */
+<!--                     , K_SENDTIME                    /*K_SENDTIME        */ -->
+<!--                     , K_RSLTDATE                    /*K_RSLTDATE        */ -->
+<!--                     , K_TRANSRESULT                    /*K_TRANSRESULT        */ -->
+                    , K_ERR_ISSEND                    /*K_ERR_ISSEND        */
+                    , MSG_TYPE                    /*MSG_TYPE        */
+                    , KKO_HEADER                    /*KKO_HEADER        */
+                    , KKO_BTN_TYPE                    /*KKO_BTN_TYPE        */
+                    , KKO_BTN_INFO                    /*KKO_BTN_INFO        */
+                    , IMG_URL                    /*IMG_URL        */
+                    , IMG_LINK                    /*IMG_LINK        */
+<!--                     , K_WIDE                    /*K_WIDE        */ -->
+                    , K_TITLE                    /*K_TITLE        */
+                    , AD_FLAG                    /*AD_FLAG        */
+                    , REV_ID                    /*REV_ID        */
+<!--                     , MSG_JDT                    /*MSG_JDT        */ -->
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.CLIENT                    /*CLIENT        */
+                    , A.CAMPAIGN_ID                    /*CAMPAIGN_ID        */
+                    , A.MEMBER_SEQ                    /*MEMBER_SEQ        */
+                    , A.SEND_TYPE                    /*SEND_TYPE        */
+                    , A.SUBJECT                    /*SUBJECT        */
+                    , A.MSG                    /*MSG        */
+                    , A.DESTEL                    /*DESTEL        */
+                    , A.SRCTEL                    /*SRCTEL        */
+                    , A.RESERVETIME                    /*RESERVETIME        */
+                    , A.SENDTIME                    /*SENDTIME        */
+                    , A.REVTIME                    /*REVTIME        */
+                    , A.SENDRESULT                    /*SENDRESULT        */
+                    , A.TRANSRESULT                    /*TRANSRESULT        */
+                    , A.FILE_CNT                    /*FILE_CNT        */
+                    , A.FILE_CNT_REAL                    /*FILE_CNT_REAL        */
+                    , A.FILE_TYPE1                    /*FILE_TYPE1        */
+                    , A.FILE_PATH1                    /*FILE_PATH1        */
+                    , A.FILE_TYPE2                    /*FILE_TYPE2        */
+                    , A.FILE_PATH2                    /*FILE_PATH2        */
+                    , A.FILE_TYPE3                    /*FILE_TYPE3        */
+                    , A.FILE_PATH3                    /*FILE_PATH3        */
+                    , A.INTERFACE_DATE                    /*INTERFACE_DATE        */
+                    , A.INTERFACE_FL                    /*INTERFACE_FL        */
+                    , A.SMS_TEST                    /*SMS_TEST        */
+                    , A.ETC3                    /*ETC3        */
+                    , A.DUMMY1                    /*DUMMY1        */
+                    , A.DUMMY2                    /*DUMMY2        */
+                    , A.DUMMY3                    /*DUMMY3        */
+                    , A.DUMMY4                    /*DUMMY4        */
+                    , A.DUMMY5                    /*DUMMY5        */
+                    , A.DUMMY6                    /*DUMMY1        */
+                    , A.DUMMY7                    /*DUMMY2        */
+                    , A.DUMMY8                    /*DUMMY3        */
+                    , A.DUMMY9                    /*DUMMY4        */
+                    , A.DUMMY10                    /*DUMMY5        */
+                    , A.SENDER_KEY                    /*SENDER_KEY        */
+                    , A.TEMPLATE_CODE                    /*TEMPLATE_CODE        */
+                    , A.K_MSG                    /*K_MSG        */
+                    , A.K_RESERVETIME                    /*K_RESERVETIME        */
+                    , A.K_SENDTIME                    /*K_SENDTIME        */
+                    , A.K_RSLTDATE                    /*K_RSLTDATE        */
+                    , A.K_TRANSRESULT                    /*K_TRANSRESULT        */
+                    , A.K_ERR_ISSEND                    /*K_ERR_ISSEND        */
+                    , A.MSG_TYPE                    /*MSG_TYPE        */
+                    , A.KKO_HEADER                    /*KKO_HEADER        */
+                    , A.KKO_BTN_TYPE                    /*KKO_BTN_TYPE        */
+                    , A.KKO_BTN_INFO                    /*KKO_BTN_INFO        */
+                    , A.IMG_URL                    /*IMG_URL        */
+                    , A.IMG_LINK                    /*IMG_LINK        */
+                    , A.K_WIDE                    /*K_WIDE        */
+                    , A.K_TITLE                    /*K_TITLE        */
+                    , A.AD_FLAG                    /*AD_FLAG        */
+                    , A.REV_ID                    /*REV_ID        */
+                    , A.MSG_JDT                    /*MSG_JDT        */
+    </sql>
+    <sql id="sqlConditions">
+       <where>
+        <if test="client != null and client != ''">
+                  AND A.CLIENT          =       #{client}
+        </if>
+        <if test="campaignId != null and campaignId != ''">
+                  AND A.CAMPAIGN_ID     =       #{campaignId}
+        </if>
+        <if test="memberSeq != null and memberSeq != ''">
+                  AND A.MEMBER_SEQ      =       #{memberSeq}
+        </if>
+        <if test="sendType != null and sendType != ''">
+                  AND A.SEND_TYPE       =       #{sendType}
+        </if>
+        <if test="subject != null and subject != ''">
+                  AND A.SUBJECT         =       #{subject}
+        </if>
+        <if test="msg != null and msg != ''">
+                  AND A.MSG             =       #{msg}
+        </if>
+        <if test="destel != null and destel != ''">
+                  AND A.DESTEL          =       #{destel}
+        </if>
+        <if test="srctel != null and srctel != ''">
+                  AND A.SRCTEL          =       #{srctel}
+        </if>
+        <if test="reservetime != null and reservetime != ''">
+                  AND A.RESERVETIME     =       #{reservetime}
+        </if>
+        <if test="sendtime != null and sendtime != ''">
+                  AND A.SENDTIME        =       #{sendtime}
+        </if>
+        <if test="revtime != null and revtime != ''">
+                  AND A.REVTIME         =       #{revtime}
+        </if>
+        <if test="sendresult != null and sendresult != ''">
+                  AND A.SENDRESULT      =       #{sendresult}
+        </if>
+        <if test="transresult != null and transresult != ''">
+                  AND A.TRANSRESULT     =       #{transresult}
+        </if>
+        <if test="fileCnt != null and fileCnt != ''">
+                  AND A.FILE_CNT        =       #{fileCnt}
+        </if>
+        <if test="fileCntReal != null and fileCntReal != ''">
+                  AND A.FILE_CNT_REAL   =       #{fileCntReal}
+        </if>
+        <if test="fileType1 != null and fileType1 != ''">
+                  AND A.FILE_TYPE1      =       #{fileType1}
+        </if>
+        <if test="filePath1 != null and filePath1 != ''">
+                  AND A.FILE_PATH1      =       #{filePath1}
+        </if>
+        <if test="fileType2 != null and fileType2 != ''">
+                  AND A.FILE_TYPE2      =       #{fileType2}
+        </if>
+        <if test="filePath2 != null and filePath2 != ''">
+                  AND A.FILE_PATH2      =       #{filePath2}
+        </if>
+        <if test="fileType3 != null and fileType3 != ''">
+                  AND A.FILE_TYPE3      =       #{fileType3}
+        </if>
+        <if test="filePath3 != null and filePath3 != ''">
+                  AND A.FILE_PATH3      =       #{filePath3}
+        </if>
+        <if test="interfaceDate != null and interfaceDate != ''">
+                  AND A.INTERFACE_DATE  =       #{interfaceDate}
+        </if>
+        <if test="interfaceFl != null and interfaceFl != ''">
+                  AND A.INTERFACE_FL    =       #{interfaceFl}
+        </if>
+        <if test="smsTest != null and smsTest != ''">
+                  AND A.SMS_TEST        =       #{smsTest}
+        </if>
+        <if test="etc3 != null and etc3 != ''">
+                  AND A.ETC3            =       #{etc3}
+        </if>
+        <if test="dummy1 != null and dummy1 != ''">
+                  AND A.DUMMY1          =       #{dummy1}
+        </if>
+        <if test="dummy2 != null and dummy2 != ''">
+                  AND A.DUMMY2          =       #{dummy2}
+        </if>
+        <if test="dummy3 != null and dummy3 != ''">
+                  AND A.DUMMY3          =       #{dummy3}
+        </if>
+        <if test="dummy4 != null and dummy4 != ''">
+                  AND A.DUMMY4          =       #{dummy4}
+        </if>
+        <if test="dummy5 != null and dummy5 != ''">
+                  AND A.DUMMY5          =       #{dummy5}
+        </if>
+        <if test="senderKey != null and senderKey != ''">
+                  AND A.SENDER_KEY      =       #{senderKey}
+        </if>
+        <if test="templateCode != null and templateCode != ''">
+                  AND A.TEMPLATE_CODE   =       #{templateCode}
+        </if>
+        <if test="kMsg != null and kMsg != ''">
+                  AND A.K_MSG           =       #{kMsg}
+        </if>
+        <if test="kReservetime != null and kReservetime != ''">
+                  AND A.K_RESERVETIME   =       #{kReservetime}
+        </if>
+        <if test="kSendtime != null and kSendtime != ''">
+                  AND A.K_SENDTIME      =       #{kSendtime}
+        </if>
+        <if test="kRsltdate != null and kRsltdate != ''">
+                  AND A.K_RSLTDATE      =       #{kRsltdate}
+        </if>
+        <if test="kTransresult != null and kTransresult != ''">
+                  AND A.K_TRANSRESULT   =       #{kTransresult}
+        </if>
+        <if test="kErrIssend != null and kErrIssend != ''">
+                  AND A.K_ERR_ISSEND    =       #{kErrIssend}
+        </if>
+        <if test="msgType != null and msgType != ''">
+                  AND A.MSG_TYPE        =       #{msgType}
+        </if>
+        <if test="kkoHeader != null and kkoHeader != ''">
+                  AND A.KKO_HEADER      =       #{kkoHeader}
+        </if>
+        <if test="kkoBtnType != null and kkoBtnType != ''">
+                  AND A.KKO_BTN_TYPE    =       #{kkoBtnType}
+        </if>
+        <if test="kkoBtnInfo != null and kkoBtnInfo != ''">
+                  AND A.KKO_BTN_INFO    =       #{kkoBtnInfo}
+        </if>
+        <if test="imgUrl != null and imgUrl != ''">
+                  AND A.IMG_URL         =       #{imgUrl}
+        </if>
+        <if test="imgLink != null and imgLink != ''">
+                  AND A.IMG_LINK        =       #{imgLink}
+        </if>
+        <if test="kWide != null and kWide != ''">
+                  AND A.K_WIDE          =       #{kWide}
+        </if>
+        <if test="kTitle != null and kTitle != ''">
+                  AND A.K_TITLE         =       #{kTitle}
+        </if>
+        <if test="adFlag != null and adFlag != ''">
+                  AND A.AD_FLAG         =       #{adFlag}
+        </if>
+        <if test="revId != null and revId != ''">
+                  AND A.REV_ID          =       #{revId}
+        </if>
+        <if test="msgJdt != null and msgJdt != ''">
+                  AND A.MSG_JDT         =       #{msgJdt}
+        </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('client')">
+                ORDER BY      CLIENT
+            </when>
+            <when test="colSortName.equals('campaignId')">
+                ORDER BY      CAMPAIGN_ID
+            </when>
+            <when test="colSortName.equals('memberSeq')">
+                ORDER BY      MEMBER_SEQ
+            </when>
+            <when test="colSortName.equals('sendType')">
+                ORDER BY      SEND_TYPE
+            </when>
+            <when test="colSortName.equals('subject')">
+                ORDER BY      SUBJECT
+            </when>
+            <when test="colSortName.equals('msg')">
+                ORDER BY      MSG
+            </when>
+            <when test="colSortName.equals('destel')">
+                ORDER BY      DESTEL
+            </when>
+            <when test="colSortName.equals('srctel')">
+                ORDER BY      SRCTEL
+            </when>
+            <when test="colSortName.equals('reservetime')">
+                ORDER BY      RESERVETIME
+            </when>
+            <when test="colSortName.equals('sendtime')">
+                ORDER BY      SENDTIME
+            </when>
+            <when test="colSortName.equals('revtime')">
+                ORDER BY      REVTIME
+            </when>
+            <when test="colSortName.equals('sendresult')">
+                ORDER BY      SENDRESULT
+            </when>
+            <when test="colSortName.equals('transresult')">
+                ORDER BY      TRANSRESULT
+            </when>
+            <when test="colSortName.equals('fileCnt')">
+                ORDER BY      FILE_CNT
+            </when>
+            <when test="colSortName.equals('fileCntReal')">
+                ORDER BY      FILE_CNT_REAL
+            </when>
+            <when test="colSortName.equals('fileType1')">
+                ORDER BY      FILE_TYPE1
+            </when>
+            <when test="colSortName.equals('filePath1')">
+                ORDER BY      FILE_PATH1
+            </when>
+            <when test="colSortName.equals('fileType2')">
+                ORDER BY      FILE_TYPE2
+            </when>
+            <when test="colSortName.equals('filePath2')">
+                ORDER BY      FILE_PATH2
+            </when>
+            <when test="colSortName.equals('fileType3')">
+                ORDER BY      FILE_TYPE3
+            </when>
+            <when test="colSortName.equals('filePath3')">
+                ORDER BY      FILE_PATH3
+            </when>
+            <when test="colSortName.equals('interfaceDate')">
+                ORDER BY      INTERFACE_DATE
+            </when>
+            <when test="colSortName.equals('interfaceFl')">
+                ORDER BY      INTERFACE_FL
+            </when>
+            <when test="colSortName.equals('smsTest')">
+                ORDER BY      SMS_TEST
+            </when>
+            <when test="colSortName.equals('etc3')">
+                ORDER BY      ETC3
+            </when>
+            <when test="colSortName.equals('dummy1')">
+                ORDER BY      DUMMY1
+            </when>
+            <when test="colSortName.equals('dummy2')">
+                ORDER BY      DUMMY2
+            </when>
+            <when test="colSortName.equals('dummy3')">
+                ORDER BY      DUMMY3
+            </when>
+            <when test="colSortName.equals('dummy4')">
+                ORDER BY      DUMMY4
+            </when>
+            <when test="colSortName.equals('dummy5')">
+                ORDER BY      DUMMY5
+            </when>
+            <when test="colSortName.equals('senderKey')">
+                ORDER BY      SENDER_KEY
+            </when>
+            <when test="colSortName.equals('templateCode')">
+                ORDER BY      TEMPLATE_CODE
+            </when>
+            <when test="colSortName.equals('kMsg')">
+                ORDER BY      K_MSG
+            </when>
+            <when test="colSortName.equals('kReservetime')">
+                ORDER BY      K_RESERVETIME
+            </when>
+            <when test="colSortName.equals('kSendtime')">
+                ORDER BY      K_SENDTIME
+            </when>
+            <when test="colSortName.equals('kRsltdate')">
+                ORDER BY      K_RSLTDATE
+            </when>
+            <when test="colSortName.equals('kTransresult')">
+                ORDER BY      K_TRANSRESULT
+            </when>
+            <when test="colSortName.equals('kErrIssend')">
+                ORDER BY      K_ERR_ISSEND
+            </when>
+            <when test="colSortName.equals('msgType')">
+                ORDER BY      MSG_TYPE
+            </when>
+            <when test="colSortName.equals('kkoHeader')">
+                ORDER BY      KKO_HEADER
+            </when>
+            <when test="colSortName.equals('kkoBtnType')">
+                ORDER BY      KKO_BTN_TYPE
+            </when>
+            <when test="colSortName.equals('kkoBtnInfo')">
+                ORDER BY      KKO_BTN_INFO
+            </when>
+            <when test="colSortName.equals('imgUrl')">
+                ORDER BY      IMG_URL
+            </when>
+            <when test="colSortName.equals('imgLink')">
+                ORDER BY      IMG_LINK
+            </when>
+            <when test="colSortName.equals('kWide')">
+                ORDER BY      K_WIDE
+            </when>
+            <when test="colSortName.equals('kTitle')">
+                ORDER BY      K_TITLE
+            </when>
+            <when test="colSortName.equals('adFlag')">
+                ORDER BY      AD_FLAG
+            </when>
+            <when test="colSortName.equals('revId')">
+                ORDER BY      REV_ID
+            </when>
+            <when test="colSortName.equals('msgJdt')">
+                ORDER BY      MSG_JDT
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.MsgIfDao.selectListCount */ COUNT(1)
+                 FROM EON.MSG_IF A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.model.MsgIfVo">
+               SELECT /* com.ceragem.batch.crm.dao.MsgIfDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM EON.MSG_IF A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.model.MsgIfVo">
+               SELECT /* com.ceragem.batch.crm.dao.MsgIfDao.select */ <include refid="sqlSelectCols"/>
+                 FROM EON.MSG_IF A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT /* com.ceragem.batch.crm.dao.MsgIfDao.insert */ INTO EON.MSG_IF (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{client}
+                     , #{campaignId}
+                     , #{memberSeq}
+                     , #{sendType}
+                     , #{subject}
+                     , #{msg}
+                     , #{destel}
+                     , #{srctel}
+<!--                      , #{reservetime} -->
+<!--                      , #{sendtime} -->
+<!--                      , #{revtime} -->
+                     , #{sendresult}
+<!--                      , #{transresult} -->
+<!--                      , #{fileCnt} -->
+<!--                      , #{fileCntReal} -->
+<!--                      , #{fileType1} -->
+<!--                      , #{filePath1} -->
+<!--                      , #{fileType2} -->
+<!--                      , #{filePath2} -->
+<!--                      , #{fileType3} -->
+<!--                      , #{filePath3} -->
+<!--                      , #{interfaceDate} -->
+<!--                      , #{interfaceFl} -->
+<!--                      , #{smsTest} -->
+                     , #{etc3}
+                     , #{dummy1}
+                     , #{dummy2}
+                     , #{dummy3}
+                     , #{dummy4}
+                     , #{dummy5}
+                     , #{dummy6}
+                     , #{dummy7}
+                     , #{dummy8}
+                     , #{dummy9}
+                     , #{dummy10}
+                     , #{senderKey}
+                     , #{templateCode}
+                     , #{kMsg}
+                     , #{kReservetime}
+<!--                      , #{kSendtime} -->
+<!--                      , #{kRsltdate} -->
+<!--                      , #{kTransresult} -->
+                     , #{kErrIssend}
+                     , #{msgType}
+                     , #{kkoHeader}
+                     , #{kkoBtnType}
+                     , #{kkoBtnInfo}
+                     , #{imgUrl}
+                     , #{imgLink}
+<!--                      , #{kWide} -->
+<!--                      , #{kTitle} -->
+                     , NULL
+                     , #{adFlag}
+                     , #{revId}
+<!--                      , #{msgJdt} -->
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.MsgIfDao.update */ EON.MSG_IF
+                  SET SEND_TYPE                               =         #{sendType}
+                    , SUBJECT                                 =         #{subject}
+                    , MSG                                     =         #{msg}
+                    , DESTEL                                  =         #{destel}
+                    , SRCTEL                                  =         #{srctel}
+                    , RESERVETIME                             =         #{reservetime}
+                    , SENDTIME                                =         #{sendtime}
+                    , REVTIME                                 =         #{revtime}
+                    , SENDRESULT                              =         #{sendresult}
+                    , TRANSRESULT                             =         #{transresult}
+                    , FILE_CNT                                =         #{fileCnt}
+                    , FILE_CNT_REAL                           =         #{fileCntReal}
+                    , FILE_TYPE1                              =         #{fileType1}
+                    , FILE_PATH1                              =         #{filePath1}
+                    , FILE_TYPE2                              =         #{fileType2}
+                    , FILE_PATH2                              =         #{filePath2}
+                    , FILE_TYPE3                              =         #{fileType3}
+                    , FILE_PATH3                              =         #{filePath3}
+                    , INTERFACE_DATE                          =         #{interfaceDate}
+                    , INTERFACE_FL                            =         #{interfaceFl}
+                    , SMS_TEST                                =         #{smsTest}
+                    , ETC3                                    =         #{etc3}
+                    , DUMMY1                                  =         #{dummy1}
+                    , DUMMY2                                  =         #{dummy2}
+                    , DUMMY3                                  =         #{dummy3}
+                    , DUMMY4                                  =         #{dummy4}
+                    , DUMMY5                                  =         #{dummy5}
+                    , SENDER_KEY                              =         #{senderKey}
+                    , TEMPLATE_CODE                           =         #{templateCode}
+                    , K_MSG                                   =         #{kMsg}
+                    , K_RESERVETIME                           =         #{kReservetime}
+                    , K_SENDTIME                              =         #{kSendtime}
+                    , K_RSLTDATE                              =         #{kRsltdate}
+                    , K_TRANSRESULT                           =         #{kTransresult}
+                    , K_ERR_ISSEND                            =         #{kErrIssend}
+                    , MSG_TYPE                                =         #{msgType}
+                    , KKO_HEADER                              =         #{kkoHeader}
+                    , KKO_BTN_TYPE                            =         #{kkoBtnType}
+                    , KKO_BTN_INFO                            =         #{kkoBtnInfo}
+                    , IMG_URL                                 =         #{imgUrl}
+                    , IMG_LINK                                =         #{imgLink}
+                    , K_WIDE                                  =         #{kWide}
+                    , K_TITLE                                 =         #{kTitle}
+                    , AD_FLAG                                 =         #{adFlag}
+                    , REV_ID                                  =         #{revId}
+                    , MSG_JDT                                 =         #{msgJdt}
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.MsgIfDao.delete */
+                 FROM EON.MSG_IF
+        <include refid="sqlPkConditions"/>
+    </delete>
+    
+    <select id="selectCodeList" resultType="com.ceragem.batch.crm.model.CrmComnCodeVo">
+               SELECT A.COMN_CD                    /*공통코드        */
+                    , A.TOP_COMN_CD                    /*최상위공통코드        */
+                    , A.COMN_CD_LVL_NO                    /*공통코드레벨번호        */
+                    , A.COMN_CD_ODRG                    /*공통코드순번        */
+                    , A.PRNTS_COMN_CD                    /*부모공통코드        */
+                    , A.COMN_CD_NM                    /*공통코드명        */
+                    , A.USE_YN                    /*사용여부        */
+                    , A.RFRN_1_COMN_CD                    /*참조1공통코드        */
+                    , A.RFRN_2_COMN_CD                    /*참조2공통코드        */
+                    , A.RFRN_3_COMN_CD                    /*참조3공통코드        */
+                    , A.RFRN_4_COMN_CD                    /*참조4공통코드        */
+                    , A.RFRN_5_COMN_CD                    /*참조5공통코드        */
+                    , A.RFRN_6_COMN_CD                    /*참조6공통코드        */
+                    , A.RFRN_7_COMN_CD                    /*참조7공통코드        */
+                    , A.RFRN_8_COMN_CD                    /*참조8공통코드        */
+                    , A.RFRN_9_COMN_CD                    /*참조9공통코드        */
+                    , A.COMN_CD_1_USE_YN                    /*공통코드1사용여부        */
+                    , A.COMN_CD_2_USE_YN                    /*공통코드2사용여부        */
+                    , A.COMN_CD_3_USE_YN                    /*공통코드3사용여부        */
+                    , A.COMN_CD_4_USE_YN                    /*공통코드4사용여부        */
+                    , A.COMN_CD_5_USE_YN                    /*공통코드5사용여부        */
+                    , A.COMN_CD_6_USE_YN                    /*공통코드6사용여부        */
+                    , A.COMN_CD_7_USE_YN                    /*공통코드7사용여부        */
+                    , A.COMN_CD_8_USE_YN                    /*공통코드8사용여부        */
+                    , A.COMN_CD_9_USE_YN                    /*공통코드9사용여부        */
+                    , B.TEMPLATE_CODE
+                    , B.TRAN_SYS_DCD
+                    , B.SEND_PROFILE_KEY
+                    , B.REQ_USER_ID
+                    , B.REQ_DEPT
+                    , B.SUBJECT
+                    , B.CONTENT
+                    , B.BTN_INFO
+                    , B.ISP_STATUS_CODE
+                    , B.TMPL_STATUS_CODE
+                    , B.ISP_CPL_YN
+                    , B.ERR_MSG
+                    , B.ETC1
+                    , B.ETC2
+                    , B.ETC3
+                    , B.ETC4
+                    , B.ETC5
+                    , B.EAI_STATUS
+                    , B.CREATE_DATE
+                    , B.MODIFY_DATE
+                 FROM CRM_COMN_CD_BAS A
+            LEFT JOIN EON.KKO_TMPL_BASE B ON A.RFRN_1_COMN_CD = B.TEMPLATE_CODE 
+                WHERE A.TOP_COMN_CD = 'S170'
+                  AND A.COMN_CD_LVL_NO = 2
+                  AND A.USE_YN = 'Y'
+                ORDER BY A.COMN_CD_ODRG
+    </select>
+</mapper>

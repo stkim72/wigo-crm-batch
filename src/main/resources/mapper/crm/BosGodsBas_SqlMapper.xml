@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CrmBosGodsBasDao">
+    <sql id="sqlPkConditions">
+                WHERE BOS_GODS_NO       =       #{bosGodsNo}
+    </sql>
+    <sql id="sqlCols">
+                      BOS_GODS_NO                    /*BOS제품번호        */
+                    , BOS_GODS_NM                    /*BOS제품명        */
+                    , BOS_GODS_GRP_CD                    /*BOS제품그룹코드        */
+                    , BOS_GODS_GRP_NM                    /*BOS제품그룹명        */
+                    , BOS_GODS_TYPE_CD                    /*BOS제품유형코드        */
+                    , BOS_GODS_TYPE_NM                    /*BOS제품유형명        */
+                    , BOS_GODS_DTL_TYPE_CD                    /*BOS제품상세유형코드        */
+                    , BOS_GODS_DTL_TYPE_NM                    /*BOS제품상세유형명        */
+                    , GODS_NO                    /*제품번호        */
+                    , COLR_NM                    /*색상명        */
+                    , USE_YN                    /*사용여부        */
+                    , SERIAL_USE_YN                    /*시리얼사용여부        */
+                    , SALES_YN                    /*판매여부        */
+                    , EXPRY_USE_YN                    /*유통기한사용여부        */
+                    , CNSR_AMT                    /*소비자금액        */
+                    , CURR_CD                    /*통화코드        */
+                    , AS_GRNT_PERD                    /*AS보증기간        */
+                    , DURYEAR_CNT                    /*내용연수수        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.BOS_GODS_NO                    /*BOS제품번호        */
+                    , A.BOS_GODS_NM                    /*BOS제품명        */
+                    , A.BOS_GODS_GRP_CD                    /*BOS제품그룹코드        */
+                    , A.BOS_GODS_GRP_NM                    /*BOS제품그룹명        */
+                    , A.BOS_GODS_TYPE_CD                    /*BOS제품유형코드        */
+                    , A.BOS_GODS_TYPE_NM                    /*BOS제품유형명        */
+                    , A.BOS_GODS_DTL_TYPE_CD                    /*BOS제품상세유형코드        */
+                    , A.BOS_GODS_DTL_TYPE_NM                    /*BOS제품상세유형명        */
+                    , A.GODS_NO                    /*제품번호        */
+                    , A.COLR_NM                    /*색상명        */
+                    , A.USE_YN                    /*사용여부        */
+                    , A.SERIAL_USE_YN                    /*시리얼사용여부        */
+                    , A.SALES_YN                    /*판매여부        */
+                    , A.EXPRY_USE_YN                    /*유통기한사용여부        */
+                    , A.CNSR_AMT                    /*소비자금액        */
+                    , A.CURR_CD                    /*통화코드        */
+                    , A.AS_GRNT_PERD                    /*AS보증기간        */
+                    , A.DURYEAR_CNT                    /*내용연수수        */
+                    , A.AMDR_ID                    /*수정자ID        */
+                    , TO_CHAR(A.AMD_DT,'YYYYMMDDHH24MISS')    AMD_DT                    /*수정일시        */
+                    , A.REGR_ID                    /*등록자ID        */
+                    , TO_CHAR(A.REG_DT,'YYYYMMDDHH24MISS')    REG_DT                    /*등록일시        */
+    </sql>
+    <sql id="sqlConditions">
+    <where>
+        <if test="bosGodsNo != null and bosGodsNo != ''">
+                  AND A.BOS_GODS_NO     =       #{bosGodsNo}
+        </if>
+        <if test="bosGodsNm != null and bosGodsNm != ''">
+                  AND A.BOS_GODS_NM     =       #{bosGodsNm}
+        </if>
+        <if test="bosGodsGrpCd != null and bosGodsGrpCd != ''">
+            <choose>
+                <when test="bosGodsGrpCd instanceof String">
+                    AND A.BOS_GODS_GRP_CD =       #{bosGodsGrpCd}
+                </when>
+                <otherwise>
+                    AND A.BOS_GODS_GRP_CD IN
+                    <foreach item="item" index="index" collection="bosGodsGrpCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="bosGodsGrpNm != null and bosGodsGrpNm != ''">
+                  AND A.BOS_GODS_GRP_NM =       #{bosGodsGrpNm}
+        </if>
+        <if test="bosGodsTypeCd != null and bosGodsTypeCd != ''">
+            <choose>
+                <when test="bosGodsTypeCd instanceof String">
+                    AND A.BOS_GODS_TYPE_CD=       #{bosGodsTypeCd}
+                </when>
+                <otherwise>
+                    AND A.BOS_GODS_TYPE_CDIN
+                    <foreach item="item" index="index" collection="bosGodsTypeCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="bosGodsTypeNm != null and bosGodsTypeNm != ''">
+                  AND A.BOS_GODS_TYPE_NM=       #{bosGodsTypeNm}
+        </if>
+        <if test="bosGodsDtlTypeCd != null and bosGodsDtlTypeCd != ''">
+            <choose>
+                <when test="bosGodsDtlTypeCd instanceof String">
+                    AND A.BOS_GODS_DTL_TYPE_CD=       #{bosGodsDtlTypeCd}
+                </when>
+                <otherwise>
+                    AND A.BOS_GODS_DTL_TYPE_CDIN
+                    <foreach item="item" index="index" collection="bosGodsDtlTypeCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="bosGodsDtlTypeNm != null and bosGodsDtlTypeNm != ''">
+                  AND A.BOS_GODS_DTL_TYPE_NM=       #{bosGodsDtlTypeNm}
+        </if>
+        <if test="godsNo != null and godsNo != ''">
+                  AND A.GODS_NO         =       #{godsNo}
+        </if>
+        <if test="colrNm != null and colrNm != ''">
+                  AND A.COLR_NM         =       #{colrNm}
+        </if>
+        <if test="useYn != null and useYn != ''">
+                  AND A.USE_YN          =       #{useYn}
+        </if>
+        <if test="serialUseYn != null and serialUseYn != ''">
+                  AND A.SERIAL_USE_YN   =       #{serialUseYn}
+        </if>
+        <if test="salesYn != null and salesYn != ''">
+                  AND A.SALES_YN        =       #{salesYn}
+        </if>
+        <if test="expryUseYn != null and expryUseYn != ''">
+                  AND A.EXPRY_USE_YN    =       #{expryUseYn}
+        </if>
+        <if test="cnsrAmt != null and cnsrAmt != ''">
+                  AND A.CNSR_AMT        =       #{cnsrAmt}
+        </if>
+        <if test="currCd != null and currCd != ''">
+            <choose>
+                <when test="currCd instanceof String">
+                    AND A.CURR_CD         =       #{currCd}
+                </when>
+                <otherwise>
+                    AND A.CURR_CD         IN
+                    <foreach item="item" index="index" collection="currCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="asGrntPerd != null and asGrntPerd != ''">
+                  AND A.AS_GRNT_PERD    =       #{asGrntPerd}
+        </if>
+        <if test="duryearCnt != null and duryearCnt != ''">
+                  AND A.DURYEAR_CNT     =       #{duryearCnt}
+        </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('bosGodsNo')">
+                ORDER BY      BOS_GODS_NO
+            </when>
+            <when test="colSortName.equals('bosGodsNm')">
+                ORDER BY      BOS_GODS_NM
+            </when>
+            <when test="colSortName.equals('bosGodsGrpCd')">
+                ORDER BY      BOS_GODS_GRP_CD
+            </when>
+            <when test="colSortName.equals('bosGodsGrpNm')">
+                ORDER BY      BOS_GODS_GRP_NM
+            </when>
+            <when test="colSortName.equals('bosGodsTypeCd')">
+                ORDER BY      BOS_GODS_TYPE_CD
+            </when>
+            <when test="colSortName.equals('bosGodsTypeNm')">
+                ORDER BY      BOS_GODS_TYPE_NM
+            </when>
+            <when test="colSortName.equals('bosGodsDtlTypeCd')">
+                ORDER BY      BOS_GODS_DTL_TYPE_CD
+            </when>
+            <when test="colSortName.equals('bosGodsDtlTypeNm')">
+                ORDER BY      BOS_GODS_DTL_TYPE_NM
+            </when>
+            <when test="colSortName.equals('godsNo')">
+                ORDER BY      GODS_NO
+            </when>
+            <when test="colSortName.equals('colrNm')">
+                ORDER BY      COLR_NM
+            </when>
+            <when test="colSortName.equals('useYn')">
+                ORDER BY      USE_YN
+            </when>
+            <when test="colSortName.equals('serialUseYn')">
+                ORDER BY      SERIAL_USE_YN
+            </when>
+            <when test="colSortName.equals('salesYn')">
+                ORDER BY      SALES_YN
+            </when>
+            <when test="colSortName.equals('expryUseYn')">
+                ORDER BY      EXPRY_USE_YN
+            </when>
+            <when test="colSortName.equals('cnsrAmt')">
+                ORDER BY      CNSR_AMT
+            </when>
+            <when test="colSortName.equals('currCd')">
+                ORDER BY      CURR_CD
+            </when>
+            <when test="colSortName.equals('asGrntPerd')">
+                ORDER BY      AS_GRNT_PERD
+            </when>
+            <when test="colSortName.equals('duryearCnt')">
+                ORDER BY      DURYEAR_CNT
+            </when>
+            <when test="colSortName.equals('amdrId')">
+                ORDER BY      AMDR_ID
+            </when>
+            <when test="colSortName.equals('amdDt')">
+                ORDER BY      AMD_DT
+            </when>
+            <when test="colSortName.equals('regrId')">
+                ORDER BY      REGR_ID
+            </when>
+            <when test="colSortName.equals('regDt')">
+                ORDER BY      REG_DT
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.CrmBosGodsBasDao.selectListCount */ COUNT(1)
+                 FROM CRM_BOS_GODS_BAS A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.bos.model.BosItemVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosGodsBasDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_GODS_BAS A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.bos.model.BosItemVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosGodsBasDao.select */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_GODS_BAS A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT /* com.ceragem.batch.crm.dao.CrmBosGodsBasDao.insert */ INTO CRM_BOS_GODS_BAS (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{bosGodsNo}
+                     , #{bosGodsNm}
+                     , #{bosGodsGrpCd}
+                     , #{bosGodsGrpNm}
+                     , #{bosGodsTypeCd}
+                     , #{bosGodsTypeNm}
+                     , #{bosGodsDtlTypeCd}
+                     , #{bosGodsDtlTypeNm}
+                     , #{godsNo}
+                     , #{colrNm}
+                     , #{useYn}
+                     , #{serialUseYn}
+                     , #{salesYn}
+                     , #{expryUseYn}
+                     , #{cnsrAmt}
+                     , #{currCd}
+                     , #{asGrntPerd}
+                     , #{duryearCnt}
+                     , #{amdrId}
+                     , SYSDATE
+                     , #{regrId}
+                     , SYSDATE
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.CrmBosGodsBasDao.update */ CRM_BOS_GODS_BAS
+                  SET BOS_GODS_NM                             =         #{bosGodsNm}
+                    , BOS_GODS_GRP_CD                         =         #{bosGodsGrpCd}
+                    , BOS_GODS_GRP_NM                         =         #{bosGodsGrpNm}
+                    , BOS_GODS_TYPE_CD                        =         #{bosGodsTypeCd}
+                    , BOS_GODS_TYPE_NM                        =         #{bosGodsTypeNm}
+                    , BOS_GODS_DTL_TYPE_CD                    =         #{bosGodsDtlTypeCd}
+                    , BOS_GODS_DTL_TYPE_NM                    =         #{bosGodsDtlTypeNm}
+                    , GODS_NO                                 =         #{godsNo}
+                    , COLR_NM                                 =         #{colrNm}
+                    , USE_YN                                  =         #{useYn}
+                    , SERIAL_USE_YN                           =         #{serialUseYn}
+                    , SALES_YN                                =         #{salesYn}
+                    , EXPRY_USE_YN                            =         #{expryUseYn}
+                    , CNSR_AMT                                =         #{cnsrAmt}
+                    , CURR_CD                                 =         #{currCd}
+                    , AS_GRNT_PERD                            =         #{asGrntPerd}
+                    , DURYEAR_CNT                             =         #{duryearCnt}
+                    , AMDR_ID                                 =         #{amdrId}
+                    , AMD_DT                                  =         SYSDATE
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.CrmBosGodsBasDao.delete */
+                 FROM CRM_BOS_GODS_BAS
+        <include refid="sqlPkConditions"/>
+    </delete>
+    <update id="updateDeleteAll">
+        UPDATE /* com.ceragem.batch.crm.dao.CrmBosGodsBasDao.updateDeleteAll */ CRM_BOS_GODS_BAS
+           SET USE_YN = 'N'
+    </update>
+</mapper>

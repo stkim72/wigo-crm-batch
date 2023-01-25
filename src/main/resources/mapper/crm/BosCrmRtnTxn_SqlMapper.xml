@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CrmBosRtnTxnDao">
+    <sql id="sqlPkConditions">
+                WHERE CNTRNO            =       #{cntrno}
+                  AND RTNSN             =       #{rtnsn}
+                  AND CUSTNO            =       #{custno}
+                  AND ORDNO             =       #{ordno}
+    </sql>
+    <sql id="sqlCols">
+                      CNTRNO                    /*계약번호        */
+                    , RTNSN                    /*반환순번        */
+                    , CUSTNO                    /*고객번호        */
+                    , ORDNO                    /*주문번호        */
+                    , RTNTYCD                    /*반환유형코드        */
+                    , RTNTYCDNM                    /*반환유형        */
+                    , RTNSTSCD                    /*반환상태코드        */
+                    , RTNSTSCDNM                    /*반환상태        */
+                    , RTNSTSDTLCD                    /*반환상태상세코드        */
+                    , RTNSTSDTLCDNM                    /*반환상태상세        */
+                    , RTNRSNCD                    /*반환사유코드        */
+                    , RTNRSNCDNM                    /*반환사유        */
+                    , RM                    /*비고        */
+                    , RTNSETLSTSCD                    /*반환결제상태코드        */
+                    , RTNSETLSTSCDNM                    /*반환결제상태        */
+                    , RTNCNTCSN                    /*반환컨택순번        */
+                    , RTNCNTCTYCD                    /*반환컨택유형코드        */
+                    , RTNCNTCTYCDNM                    /*반환컨택유형        */
+                    , RTNCNTCSTSCD                    /*반환컨택상태코드        */
+                    , RTNCNTCSTSCDNM                    /*반환컨택상태        */
+                    , ITEMCD                    /*품목코드        */
+                    , BASEITEMCD                    /*품목 코드(SAP코드)        */
+                    , ITEMGRPCD                    /*품목그룹코드        */
+                    , ITEMGRPCDNM                    /*품목그룹        */
+                    , SALETYCD                    /*판매유형코드        */
+                    , SALETYCDNM                    /*판매유형        */
+                    , SALESECD                    /*판매구분코드        */
+                    , SALESECDNM                    /*판매구분        */
+                    , AGRPDCD                    /*약정기간코드        */
+                    , AGRPDCDNM                    /*약정기간        */
+                    , CNTRPDVAL                    /*계약기간값        */
+                    , USEDAYCO                    /*사용일수        */
+                    , USEMNCO                    /*사용개월수        */
+                    , REMNDAYCO                    /*잔여일수        */
+                    , REMNMNCO                    /*잔여개월수        */
+                    , RTNREQDE                    /*반환요청일자        */
+                    , RTNACPTDE                    /*반환접수일자        */
+                    , RTNACPTDCSDE                    /*반환접수확정일자        */
+                    , RTNENDDE                    /*반환완료일자        */
+                    , RTNCNCLDE                    /*반환취소일자        */
+                    , RTNCNCLRSNCD                    /*반환취소사유코드        */
+                    , RTNCNCLRSNCDNM                    /*반환취소사유        */
+                    , ISTRVLYN                    /*설치회수여부        */
+                    , PRCPLCNO                    /*가격정책번호        */
+                    , PENLTYPLCNO                    /*위약금정책번호        */
+                    , BASEMTRENTFEE                    /*원월렌탈료        */
+                    , BASEPREPAYAMT                    /*원선납금액        */
+                    , BASESALEAMT                    /*원판매금액        */
+                    , BASEREGFEE                    /*원등록비        */
+                    , BASEISTCT                    /*원설치비        */
+                    , BASEDFEE                    /*원해체비        */
+                    , RTNTOTRCIVAMT                    /*반환총수납금액        */
+                    , RTNMTRENTFEE                    /*반환월렌탈료        */
+                    , RTNPREPAYAMT                    /*반환선납금액        */
+                    , RTNSALEAMT                    /*반환판매금액        */
+                    , RTNREGFEE                    /*반환등록비        */
+                    , RTNISTCT                    /*반환설치비        */
+                    , RTNDFEE                    /*반환해체비        */
+                    , BAPAMT                    /*위약금액        */
+                    , MDFBAPAMT                    /*조정위약금액        */
+                    , LASTBAPAMT                    /*최종위약금액        */
+                    , PENLTYRT                    /*위약금율        */
+                    , PKGBAPAMT                    /*패키지위약금액        */
+                    , LSTYN                    /*분실여부        */
+                    , LSTAMT                    /*분실금액        */
+                    , MDFLSTAMT                    /*조정분실금액        */
+                    , LASTLSTAMT                    /*최종분실금액        */
+                    , POSTNO                    /*우편번호        */
+                    , BASSADDR                    /*기본주소        */
+                    , DTLADDR                    /*상세주소        */
+                    , SERIALNO                    /*시리얼번호        */
+                    , HQSECD                    /*본부구분코드        */
+                    , SALEORGZ                    /*판매조직        */
+                    , SELLER                    /*판매인        */
+                    , RTNDUEORGZ                    /*반환예정조직        */
+                    , RTNDUEENGR                    /*반환예정기사        */
+                    , RTNORGZ                    /*반환조직        */
+                    , RTNWRHCD                    /*반환창고코드        */
+                    , RTNENGR                    /*반환기사        */
+                    , RTNDUEDE                    /*반환예정일자        */
+                    , RTNDE                    /*반환일자        */
+                    , PREPAYRENTFEESELNGNO                    /*선납렌탈료매출번호        */
+                    , PENLTYSELNGNO                    /*위약금매출번호        */
+                    , LSTCTSELNGNO                    /*분실비용매출번호        */
+                    , DFEESELNGNO                    /*해체비매출번호        */
+                    , RENTFEESELNGNO                    /*렌탈료매출번호        */
+                    , PKGENDYN                    /*패키지해지여부        */
+                    , CNTRQY                    /*계약수량        */
+                    , RTNQY                    /*반환수량        */
+                    , REGUSRID                    /*등록자Id        */
+                    , REGDT                    /*등록일시        */
+                    , UPDUSRID                    /*수정자Id        */
+                    , UPDDT                    /*수정일시        */
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.CNTRNO                    /*계약번호        */
+                    , A.RTNSN                    /*반환순번        */
+                    , A.CUSTNO                    /*고객번호        */
+                    , A.ORDNO                    /*주문번호        */
+                    , A.RTNTYCD                    /*반환유형코드        */
+                    , A.RTNTYCDNM                    /*반환유형        */
+                    , A.RTNSTSCD                    /*반환상태코드        */
+                    , A.RTNSTSCDNM                    /*반환상태        */
+                    , A.RTNSTSDTLCD                    /*반환상태상세코드        */
+                    , A.RTNSTSDTLCDNM                    /*반환상태상세        */
+                    , A.RTNRSNCD                    /*반환사유코드        */
+                    , A.RTNRSNCDNM                    /*반환사유        */
+                    , A.RM                    /*비고        */
+                    , A.RTNSETLSTSCD                    /*반환결제상태코드        */
+                    , A.RTNSETLSTSCDNM                    /*반환결제상태        */
+                    , A.RTNCNTCSN                    /*반환컨택순번        */
+                    , A.RTNCNTCTYCD                    /*반환컨택유형코드        */
+                    , A.RTNCNTCTYCDNM                    /*반환컨택유형        */
+                    , A.RTNCNTCSTSCD                    /*반환컨택상태코드        */
+                    , A.RTNCNTCSTSCDNM                    /*반환컨택상태        */
+                    , A.ITEMCD                    /*품목코드        */
+                    , A.BASEITEMCD                    /*품목 코드(SAP코드)        */
+                    , A.ITEMGRPCD                    /*품목그룹코드        */
+                    , A.ITEMGRPCDNM                    /*품목그룹        */
+                    , A.SALETYCD                    /*판매유형코드        */
+                    , A.SALETYCDNM                    /*판매유형        */
+                    , A.SALESECD                    /*판매구분코드        */
+                    , A.SALESECDNM                    /*판매구분        */
+                    , A.AGRPDCD                    /*약정기간코드        */
+                    , A.AGRPDCDNM                    /*약정기간        */
+                    , A.CNTRPDVAL                    /*계약기간값        */
+                    , A.USEDAYCO                    /*사용일수        */
+                    , A.USEMNCO                    /*사용개월수        */
+                    , A.REMNDAYCO                    /*잔여일수        */
+                    , A.REMNMNCO                    /*잔여개월수        */
+                    , A.RTNREQDE                    /*반환요청일자        */
+                    , A.RTNACPTDE                    /*반환접수일자        */
+                    , A.RTNACPTDCSDE                    /*반환접수확정일자        */
+                    , A.RTNENDDE                    /*반환완료일자        */
+                    , A.RTNCNCLDE                    /*반환취소일자        */
+                    , A.RTNCNCLRSNCD                    /*반환취소사유코드        */
+                    , A.RTNCNCLRSNCDNM                    /*반환취소사유        */
+                    , A.ISTRVLYN                    /*설치회수여부        */
+                    , A.PRCPLCNO                    /*가격정책번호        */
+                    , A.PENLTYPLCNO                    /*위약금정책번호        */
+                    , A.BASEMTRENTFEE                    /*원월렌탈료        */
+                    , A.BASEPREPAYAMT                    /*원선납금액        */
+                    , A.BASESALEAMT                    /*원판매금액        */
+                    , A.BASEREGFEE                    /*원등록비        */
+                    , A.BASEISTCT                    /*원설치비        */
+                    , A.BASEDFEE                    /*원해체비        */
+                    , A.RTNTOTRCIVAMT                    /*반환총수납금액        */
+                    , A.RTNMTRENTFEE                    /*반환월렌탈료        */
+                    , A.RTNPREPAYAMT                    /*반환선납금액        */
+                    , A.RTNSALEAMT                    /*반환판매금액        */
+                    , A.RTNREGFEE                    /*반환등록비        */
+                    , A.RTNISTCT                    /*반환설치비        */
+                    , A.RTNDFEE                    /*반환해체비        */
+                    , A.BAPAMT                    /*위약금액        */
+                    , A.MDFBAPAMT                    /*조정위약금액        */
+                    , A.LASTBAPAMT                    /*최종위약금액        */
+                    , A.PENLTYRT                    /*위약금율        */
+                    , A.PKGBAPAMT                    /*패키지위약금액        */
+                    , A.LSTYN                    /*분실여부        */
+                    , A.LSTAMT                    /*분실금액        */
+                    , A.MDFLSTAMT                    /*조정분실금액        */
+                    , A.LASTLSTAMT                    /*최종분실금액        */
+                    , A.POSTNO                    /*우편번호        */
+                    , A.BASSADDR                    /*기본주소        */
+                    , A.DTLADDR                    /*상세주소        */
+                    , A.SERIALNO                    /*시리얼번호        */
+                    , A.HQSECD                    /*본부구분코드        */
+                    , A.SALEORGZ                    /*판매조직        */
+                    , A.SELLER                    /*판매인        */
+                    , A.RTNDUEORGZ                    /*반환예정조직        */
+                    , A.RTNDUEENGR                    /*반환예정기사        */
+                    , A.RTNORGZ                    /*반환조직        */
+                    , A.RTNWRHCD                    /*반환창고코드        */
+                    , A.RTNENGR                    /*반환기사        */
+                    , A.RTNDUEDE                    /*반환예정일자        */
+                    , A.RTNDE                    /*반환일자        */
+                    , A.PREPAYRENTFEESELNGNO                    /*선납렌탈료매출번호        */
+                    , A.PENLTYSELNGNO                    /*위약금매출번호        */
+                    , A.LSTCTSELNGNO                    /*분실비용매출번호        */
+                    , A.DFEESELNGNO                    /*해체비매출번호        */
+                    , A.RENTFEESELNGNO                    /*렌탈료매출번호        */
+                    , A.PKGENDYN                    /*패키지해지여부        */
+                    , A.CNTRQY                    /*계약수량        */
+                    , A.RTNQY                    /*반환수량        */
+                    , A.REGUSRID                    /*등록자Id        */
+                    , A.REGDT                    /*등록일시        */
+                    , A.UPDUSRID                    /*수정자Id        */
+                    , A.UPDDT                    /*수정일시        */
+    </sql>
+    <sql id="sqlConditions">
+        <where>
+            <if test="cntrno != null and cntrno != ''">
+                      AND A.CNTRNO          =       #{cntrno}
+            </if>
+            <if test="rtnsn != null and rtnsn != ''">
+                      AND A.RTNSN           =       #{rtnsn}
+            </if>
+            <if test="custno != null and custno != ''">
+                      AND A.CUSTNO          =       #{custno}
+            </if>
+            <if test="ordno != null and ordno != ''">
+                      AND A.ORDNO           =       #{ordno}
+            </if>
+            <if test="rtntycd != null and rtntycd != ''">
+                      AND A.RTNTYCD         =       #{rtntycd}
+            </if>
+            <if test="rtntycdnm != null and rtntycdnm != ''">
+                      AND A.RTNTYCDNM       =       #{rtntycdnm}
+            </if>
+            <if test="rtnstscd != null and rtnstscd != ''">
+                      AND A.RTNSTSCD        =       #{rtnstscd}
+            </if>
+            <if test="rtnstscdnm != null and rtnstscdnm != ''">
+                      AND A.RTNSTSCDNM      =       #{rtnstscdnm}
+            </if>
+            <if test="rtnstsdtlcd != null and rtnstsdtlcd != ''">
+                      AND A.RTNSTSDTLCD     =       #{rtnstsdtlcd}
+            </if>
+            <if test="rtnstsdtlcdnm != null and rtnstsdtlcdnm != ''">
+                      AND A.RTNSTSDTLCDNM   =       #{rtnstsdtlcdnm}
+            </if>
+            <if test="rtnrsncd != null and rtnrsncd != ''">
+                      AND A.RTNRSNCD        =       #{rtnrsncd}
+            </if>
+            <if test="rtnrsncdnm != null and rtnrsncdnm != ''">
+                      AND A.RTNRSNCDNM      =       #{rtnrsncdnm}
+            </if>
+            <if test="rm != null and rm != ''">
+                      AND A.RM              =       #{rm}
+            </if>
+            <if test="rtnsetlstscd != null and rtnsetlstscd != ''">
+                      AND A.RTNSETLSTSCD    =       #{rtnsetlstscd}
+            </if>
+            <if test="rtnsetlstscdnm != null and rtnsetlstscdnm != ''">
+                      AND A.RTNSETLSTSCDNM  =       #{rtnsetlstscdnm}
+            </if>
+            <if test="rtncntcsn != null and rtncntcsn != ''">
+                      AND A.RTNCNTCSN       =       #{rtncntcsn}
+            </if>
+            <if test="rtncntctycd != null and rtncntctycd != ''">
+                      AND A.RTNCNTCTYCD     =       #{rtncntctycd}
+            </if>
+            <if test="rtncntctycdnm != null and rtncntctycdnm != ''">
+                      AND A.RTNCNTCTYCDNM   =       #{rtncntctycdnm}
+            </if>
+            <if test="rtncntcstscd != null and rtncntcstscd != ''">
+                      AND A.RTNCNTCSTSCD    =       #{rtncntcstscd}
+            </if>
+            <if test="rtncntcstscdnm != null and rtncntcstscdnm != ''">
+                      AND A.RTNCNTCSTSCDNM  =       #{rtncntcstscdnm}
+            </if>
+            <if test="itemcd != null and itemcd != ''">
+                      AND A.ITEMCD          =       #{itemcd}
+            </if>
+            <if test="baseitemcd != null and baseitemcd != ''">
+                      AND A.BASEITEMCD      =       #{baseitemcd}
+            </if>
+            <if test="itemgrpcd != null and itemgrpcd != ''">
+                      AND A.ITEMGRPCD       =       #{itemgrpcd}
+            </if>
+            <if test="itemgrpcdnm != null and itemgrpcdnm != ''">
+                      AND A.ITEMGRPCDNM     =       #{itemgrpcdnm}
+            </if>
+            <if test="saletycd != null and saletycd != ''">
+                      AND A.SALETYCD        =       #{saletycd}
+            </if>
+            <if test="saletycdnm != null and saletycdnm != ''">
+                      AND A.SALETYCDNM      =       #{saletycdnm}
+            </if>
+            <if test="salesecd != null and salesecd != ''">
+                      AND A.SALESECD        =       #{salesecd}
+            </if>
+            <if test="salesecdnm != null and salesecdnm != ''">
+                      AND A.SALESECDNM      =       #{salesecdnm}
+            </if>
+            <if test="agrpdcd != null and agrpdcd != ''">
+                      AND A.AGRPDCD         =       #{agrpdcd}
+            </if>
+            <if test="agrpdcdnm != null and agrpdcdnm != ''">
+                      AND A.AGRPDCDNM       =       #{agrpdcdnm}
+            </if>
+            <if test="cntrpdval != null and cntrpdval != ''">
+                      AND A.CNTRPDVAL       =       #{cntrpdval}
+            </if>
+            <if test="usedayco != null and usedayco != ''">
+                      AND A.USEDAYCO        =       #{usedayco}
+            </if>
+            <if test="usemnco != null and usemnco != ''">
+                      AND A.USEMNCO         =       #{usemnco}
+            </if>
+            <if test="remndayco != null and remndayco != ''">
+                      AND A.REMNDAYCO       =       #{remndayco}
+            </if>
+            <if test="remnmnco != null and remnmnco != ''">
+                      AND A.REMNMNCO        =       #{remnmnco}
+            </if>
+            <if test="rtnreqde != null and rtnreqde != ''">
+                      AND A.RTNREQDE        =       #{rtnreqde}
+            </if>
+            <if test="rtnacptde != null and rtnacptde != ''">
+                      AND A.RTNACPTDE       =       #{rtnacptde}
+            </if>
+            <if test="rtnacptdcsde != null and rtnacptdcsde != ''">
+                      AND A.RTNACPTDCSDE    =       #{rtnacptdcsde}
+            </if>
+            <if test="rtnendde != null and rtnendde != ''">
+                      AND A.RTNENDDE        =       #{rtnendde}
+            </if>
+            <if test="rtncnclde != null and rtncnclde != ''">
+                      AND A.RTNCNCLDE       =       #{rtncnclde}
+            </if>
+            <if test="rtncnclrsncd != null and rtncnclrsncd != ''">
+                      AND A.RTNCNCLRSNCD    =       #{rtncnclrsncd}
+            </if>
+            <if test="rtncnclrsncdnm != null and rtncnclrsncdnm != ''">
+                      AND A.RTNCNCLRSNCDNM  =       #{rtncnclrsncdnm}
+            </if>
+            <if test="istrvlyn != null and istrvlyn != ''">
+                      AND A.ISTRVLYN        =       #{istrvlyn}
+            </if>
+            <if test="prcplcno != null and prcplcno != ''">
+                      AND A.PRCPLCNO        =       #{prcplcno}
+            </if>
+            <if test="penltyplcno != null and penltyplcno != ''">
+                      AND A.PENLTYPLCNO     =       #{penltyplcno}
+            </if>
+            <if test="basemtrentfee != null and basemtrentfee != ''">
+                      AND A.BASEMTRENTFEE   =       #{basemtrentfee}
+            </if>
+            <if test="baseprepayamt != null and baseprepayamt != ''">
+                      AND A.BASEPREPAYAMT   =       #{baseprepayamt}
+            </if>
+            <if test="basesaleamt != null and basesaleamt != ''">
+                      AND A.BASESALEAMT     =       #{basesaleamt}
+            </if>
+            <if test="baseregfee != null and baseregfee != ''">
+                      AND A.BASEREGFEE      =       #{baseregfee}
+            </if>
+            <if test="baseistct != null and baseistct != ''">
+                      AND A.BASEISTCT       =       #{baseistct}
+            </if>
+            <if test="basedfee != null and basedfee != ''">
+                      AND A.BASEDFEE        =       #{basedfee}
+            </if>
+            <if test="rtntotrcivamt != null and rtntotrcivamt != ''">
+                      AND A.RTNTOTRCIVAMT   =       #{rtntotrcivamt}
+            </if>
+            <if test="rtnmtrentfee != null and rtnmtrentfee != ''">
+                      AND A.RTNMTRENTFEE    =       #{rtnmtrentfee}
+            </if>
+            <if test="rtnprepayamt != null and rtnprepayamt != ''">
+                      AND A.RTNPREPAYAMT    =       #{rtnprepayamt}
+            </if>
+            <if test="rtnsaleamt != null and rtnsaleamt != ''">
+                      AND A.RTNSALEAMT      =       #{rtnsaleamt}
+            </if>
+            <if test="rtnregfee != null and rtnregfee != ''">
+                      AND A.RTNREGFEE       =       #{rtnregfee}
+            </if>
+            <if test="rtnistct != null and rtnistct != ''">
+                      AND A.RTNISTCT        =       #{rtnistct}
+            </if>
+            <if test="rtndfee != null and rtndfee != ''">
+                      AND A.RTNDFEE         =       #{rtndfee}
+            </if>
+            <if test="bapamt != null and bapamt != ''">
+                      AND A.BAPAMT          =       #{bapamt}
+            </if>
+            <if test="mdfbapamt != null and mdfbapamt != ''">
+                      AND A.MDFBAPAMT       =       #{mdfbapamt}
+            </if>
+            <if test="lastbapamt != null and lastbapamt != ''">
+                      AND A.LASTBAPAMT      =       #{lastbapamt}
+            </if>
+            <if test="penltyrt != null and penltyrt != ''">
+                      AND A.PENLTYRT        =       #{penltyrt}
+            </if>
+            <if test="pkgbapamt != null and pkgbapamt != ''">
+                      AND A.PKGBAPAMT       =       #{pkgbapamt}
+            </if>
+            <if test="lstyn != null and lstyn != ''">
+                      AND A.LSTYN           =       #{lstyn}
+            </if>
+            <if test="lstamt != null and lstamt != ''">
+                      AND A.LSTAMT          =       #{lstamt}
+            </if>
+            <if test="mdflstamt != null and mdflstamt != ''">
+                      AND A.MDFLSTAMT       =       #{mdflstamt}
+            </if>
+            <if test="lastlstamt != null and lastlstamt != ''">
+                      AND A.LASTLSTAMT      =       #{lastlstamt}
+            </if>
+            <if test="postno != null and postno != ''">
+                      AND A.POSTNO          =       #{postno}
+            </if>
+            <if test="bassaddr != null and bassaddr != ''">
+                      AND A.BASSADDR        =       #{bassaddr}
+            </if>
+            <if test="dtladdr != null and dtladdr != ''">
+                      AND A.DTLADDR         =       #{dtladdr}
+            </if>
+            <if test="serialno != null and serialno != ''">
+                      AND A.SERIALNO        =       #{serialno}
+            </if>
+            <if test="hqsecd != null and hqsecd != ''">
+                      AND A.HQSECD          =       #{hqsecd}
+            </if>
+            <if test="saleorgz != null and saleorgz != ''">
+                      AND A.SALEORGZ        =       #{saleorgz}
+            </if>
+            <if test="seller != null and seller != ''">
+                      AND A.SELLER          =       #{seller}
+            </if>
+            <if test="rtndueorgz != null and rtndueorgz != ''">
+                      AND A.RTNDUEORGZ      =       #{rtndueorgz}
+            </if>
+            <if test="rtndueengr != null and rtndueengr != ''">
+                      AND A.RTNDUEENGR      =       #{rtndueengr}
+            </if>
+            <if test="rtnorgz != null and rtnorgz != ''">
+                      AND A.RTNORGZ         =       #{rtnorgz}
+            </if>
+            <if test="rtnwrhcd != null and rtnwrhcd != ''">
+                      AND A.RTNWRHCD        =       #{rtnwrhcd}
+            </if>
+            <if test="rtnengr != null and rtnengr != ''">
+                      AND A.RTNENGR         =       #{rtnengr}
+            </if>
+            <if test="rtnduede != null and rtnduede != ''">
+                      AND A.RTNDUEDE        =       #{rtnduede}
+            </if>
+            <if test="rtnde != null and rtnde != ''">
+                      AND A.RTNDE           =       #{rtnde}
+            </if>
+            <if test="prepayrentfeeselngno != null and prepayrentfeeselngno != ''">
+                      AND A.PREPAYRENTFEESELNGNO=       #{prepayrentfeeselngno}
+            </if>
+            <if test="penltyselngno != null and penltyselngno != ''">
+                      AND A.PENLTYSELNGNO   =       #{penltyselngno}
+            </if>
+            <if test="lstctselngno != null and lstctselngno != ''">
+                      AND A.LSTCTSELNGNO    =       #{lstctselngno}
+            </if>
+            <if test="dfeeselngno != null and dfeeselngno != ''">
+                      AND A.DFEESELNGNO     =       #{dfeeselngno}
+            </if>
+            <if test="rentfeeselngno != null and rentfeeselngno != ''">
+                      AND A.RENTFEESELNGNO  =       #{rentfeeselngno}
+            </if>
+            <if test="pkgendyn != null and pkgendyn != ''">
+                      AND A.PKGENDYN        =       #{pkgendyn}
+            </if>
+            <if test="cntrqy != null and cntrqy != ''">
+                      AND A.CNTRQY          =       #{cntrqy}
+            </if>
+            <if test="rtnqy != null and rtnqy != ''">
+                      AND A.RTNQY           =       #{rtnqy}
+            </if>
+            <if test="regusrid != null and regusrid != ''">
+                      AND A.REGUSRID        =       #{regusrid}
+            </if>
+            <if test="regdt != null and regdt != ''">
+                      AND A.REGDT           =       #{regdt}
+            </if>
+            <if test="updusrid != null and updusrid != ''">
+                      AND A.UPDUSRID        =       #{updusrid}
+            </if>
+            <if test="upddt != null and upddt != ''">
+                      AND A.UPDDT           =       #{upddt}
+            </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('cntrno')">
+                ORDER BY      CNTRNO
+            </when>
+            <when test="colSortName.equals('rtnsn')">
+                ORDER BY      RTNSN
+            </when>
+            <when test="colSortName.equals('custno')">
+                ORDER BY      CUSTNO
+            </when>
+            <when test="colSortName.equals('ordno')">
+                ORDER BY      ORDNO
+            </when>
+            <when test="colSortName.equals('rtntycd')">
+                ORDER BY      RTNTYCD
+            </when>
+            <when test="colSortName.equals('rtntycdnm')">
+                ORDER BY      RTNTYCDNM
+            </when>
+            <when test="colSortName.equals('rtnstscd')">
+                ORDER BY      RTNSTSCD
+            </when>
+            <when test="colSortName.equals('rtnstscdnm')">
+                ORDER BY      RTNSTSCDNM
+            </when>
+            <when test="colSortName.equals('rtnstsdtlcd')">
+                ORDER BY      RTNSTSDTLCD
+            </when>
+            <when test="colSortName.equals('rtnstsdtlcdnm')">
+                ORDER BY      RTNSTSDTLCDNM
+            </when>
+            <when test="colSortName.equals('rtnrsncd')">
+                ORDER BY      RTNRSNCD
+            </when>
+            <when test="colSortName.equals('rtnrsncdnm')">
+                ORDER BY      RTNRSNCDNM
+            </when>
+            <when test="colSortName.equals('rm')">
+                ORDER BY      RM
+            </when>
+            <when test="colSortName.equals('rtnsetlstscd')">
+                ORDER BY      RTNSETLSTSCD
+            </when>
+            <when test="colSortName.equals('rtnsetlstscdnm')">
+                ORDER BY      RTNSETLSTSCDNM
+            </when>
+            <when test="colSortName.equals('rtncntcsn')">
+                ORDER BY      RTNCNTCSN
+            </when>
+            <when test="colSortName.equals('rtncntctycd')">
+                ORDER BY      RTNCNTCTYCD
+            </when>
+            <when test="colSortName.equals('rtncntctycdnm')">
+                ORDER BY      RTNCNTCTYCDNM
+            </when>
+            <when test="colSortName.equals('rtncntcstscd')">
+                ORDER BY      RTNCNTCSTSCD
+            </when>
+            <when test="colSortName.equals('rtncntcstscdnm')">
+                ORDER BY      RTNCNTCSTSCDNM
+            </when>
+            <when test="colSortName.equals('itemcd')">
+                ORDER BY      ITEMCD
+            </when>
+            <when test="colSortName.equals('baseitemcd')">
+                ORDER BY      BASEITEMCD
+            </when>
+            <when test="colSortName.equals('itemgrpcd')">
+                ORDER BY      ITEMGRPCD
+            </when>
+            <when test="colSortName.equals('itemgrpcdnm')">
+                ORDER BY      ITEMGRPCDNM
+            </when>
+            <when test="colSortName.equals('saletycd')">
+                ORDER BY      SALETYCD
+            </when>
+            <when test="colSortName.equals('saletycdnm')">
+                ORDER BY      SALETYCDNM
+            </when>
+            <when test="colSortName.equals('salesecd')">
+                ORDER BY      SALESECD
+            </when>
+            <when test="colSortName.equals('salesecdnm')">
+                ORDER BY      SALESECDNM
+            </when>
+            <when test="colSortName.equals('agrpdcd')">
+                ORDER BY      AGRPDCD
+            </when>
+            <when test="colSortName.equals('agrpdcdnm')">
+                ORDER BY      AGRPDCDNM
+            </when>
+            <when test="colSortName.equals('cntrpdval')">
+                ORDER BY      CNTRPDVAL
+            </when>
+            <when test="colSortName.equals('usedayco')">
+                ORDER BY      USEDAYCO
+            </when>
+            <when test="colSortName.equals('usemnco')">
+                ORDER BY      USEMNCO
+            </when>
+            <when test="colSortName.equals('remndayco')">
+                ORDER BY      REMNDAYCO
+            </when>
+            <when test="colSortName.equals('remnmnco')">
+                ORDER BY      REMNMNCO
+            </when>
+            <when test="colSortName.equals('rtnreqde')">
+                ORDER BY      RTNREQDE
+            </when>
+            <when test="colSortName.equals('rtnacptde')">
+                ORDER BY      RTNACPTDE
+            </when>
+            <when test="colSortName.equals('rtnacptdcsde')">
+                ORDER BY      RTNACPTDCSDE
+            </when>
+            <when test="colSortName.equals('rtnendde')">
+                ORDER BY      RTNENDDE
+            </when>
+            <when test="colSortName.equals('rtncnclde')">
+                ORDER BY      RTNCNCLDE
+            </when>
+            <when test="colSortName.equals('rtncnclrsncd')">
+                ORDER BY      RTNCNCLRSNCD
+            </when>
+            <when test="colSortName.equals('rtncnclrsncdnm')">
+                ORDER BY      RTNCNCLRSNCDNM
+            </when>
+            <when test="colSortName.equals('istrvlyn')">
+                ORDER BY      ISTRVLYN
+            </when>
+            <when test="colSortName.equals('prcplcno')">
+                ORDER BY      PRCPLCNO
+            </when>
+            <when test="colSortName.equals('penltyplcno')">
+                ORDER BY      PENLTYPLCNO
+            </when>
+            <when test="colSortName.equals('basemtrentfee')">
+                ORDER BY      BASEMTRENTFEE
+            </when>
+            <when test="colSortName.equals('baseprepayamt')">
+                ORDER BY      BASEPREPAYAMT
+            </when>
+            <when test="colSortName.equals('basesaleamt')">
+                ORDER BY      BASESALEAMT
+            </when>
+            <when test="colSortName.equals('baseregfee')">
+                ORDER BY      BASEREGFEE
+            </when>
+            <when test="colSortName.equals('baseistct')">
+                ORDER BY      BASEISTCT
+            </when>
+            <when test="colSortName.equals('basedfee')">
+                ORDER BY      BASEDFEE
+            </when>
+            <when test="colSortName.equals('rtntotrcivamt')">
+                ORDER BY      RTNTOTRCIVAMT
+            </when>
+            <when test="colSortName.equals('rtnmtrentfee')">
+                ORDER BY      RTNMTRENTFEE
+            </when>
+            <when test="colSortName.equals('rtnprepayamt')">
+                ORDER BY      RTNPREPAYAMT
+            </when>
+            <when test="colSortName.equals('rtnsaleamt')">
+                ORDER BY      RTNSALEAMT
+            </when>
+            <when test="colSortName.equals('rtnregfee')">
+                ORDER BY      RTNREGFEE
+            </when>
+            <when test="colSortName.equals('rtnistct')">
+                ORDER BY      RTNISTCT
+            </when>
+            <when test="colSortName.equals('rtndfee')">
+                ORDER BY      RTNDFEE
+            </when>
+            <when test="colSortName.equals('bapamt')">
+                ORDER BY      BAPAMT
+            </when>
+            <when test="colSortName.equals('mdfbapamt')">
+                ORDER BY      MDFBAPAMT
+            </when>
+            <when test="colSortName.equals('lastbapamt')">
+                ORDER BY      LASTBAPAMT
+            </when>
+            <when test="colSortName.equals('penltyrt')">
+                ORDER BY      PENLTYRT
+            </when>
+            <when test="colSortName.equals('pkgbapamt')">
+                ORDER BY      PKGBAPAMT
+            </when>
+            <when test="colSortName.equals('lstyn')">
+                ORDER BY      LSTYN
+            </when>
+            <when test="colSortName.equals('lstamt')">
+                ORDER BY      LSTAMT
+            </when>
+            <when test="colSortName.equals('mdflstamt')">
+                ORDER BY      MDFLSTAMT
+            </when>
+            <when test="colSortName.equals('lastlstamt')">
+                ORDER BY      LASTLSTAMT
+            </when>
+            <when test="colSortName.equals('postno')">
+                ORDER BY      POSTNO
+            </when>
+            <when test="colSortName.equals('bassaddr')">
+                ORDER BY      BASSADDR
+            </when>
+            <when test="colSortName.equals('dtladdr')">
+                ORDER BY      DTLADDR
+            </when>
+            <when test="colSortName.equals('serialno')">
+                ORDER BY      SERIALNO
+            </when>
+            <when test="colSortName.equals('hqsecd')">
+                ORDER BY      HQSECD
+            </when>
+            <when test="colSortName.equals('saleorgz')">
+                ORDER BY      SALEORGZ
+            </when>
+            <when test="colSortName.equals('seller')">
+                ORDER BY      SELLER
+            </when>
+            <when test="colSortName.equals('rtndueorgz')">
+                ORDER BY      RTNDUEORGZ
+            </when>
+            <when test="colSortName.equals('rtndueengr')">
+                ORDER BY      RTNDUEENGR
+            </when>
+            <when test="colSortName.equals('rtnorgz')">
+                ORDER BY      RTNORGZ
+            </when>
+            <when test="colSortName.equals('rtnwrhcd')">
+                ORDER BY      RTNWRHCD
+            </when>
+            <when test="colSortName.equals('rtnengr')">
+                ORDER BY      RTNENGR
+            </when>
+            <when test="colSortName.equals('rtnduede')">
+                ORDER BY      RTNDUEDE
+            </when>
+            <when test="colSortName.equals('rtnde')">
+                ORDER BY      RTNDE
+            </when>
+            <when test="colSortName.equals('prepayrentfeeselngno')">
+                ORDER BY      PREPAYRENTFEESELNGNO
+            </when>
+            <when test="colSortName.equals('penltyselngno')">
+                ORDER BY      PENLTYSELNGNO
+            </when>
+            <when test="colSortName.equals('lstctselngno')">
+                ORDER BY      LSTCTSELNGNO
+            </when>
+            <when test="colSortName.equals('dfeeselngno')">
+                ORDER BY      DFEESELNGNO
+            </when>
+            <when test="colSortName.equals('rentfeeselngno')">
+                ORDER BY      RENTFEESELNGNO
+            </when>
+            <when test="colSortName.equals('pkgendyn')">
+                ORDER BY      PKGENDYN
+            </when>
+            <when test="colSortName.equals('cntrqy')">
+                ORDER BY      CNTRQY
+            </when>
+            <when test="colSortName.equals('rtnqy')">
+                ORDER BY      RTNQY
+            </when>
+            <when test="colSortName.equals('regusrid')">
+                ORDER BY      REGUSRID
+            </when>
+            <when test="colSortName.equals('regdt')">
+                ORDER BY      REGDT
+            </when>
+            <when test="colSortName.equals('updusrid')">
+                ORDER BY      UPDUSRID
+            </when>
+            <when test="colSortName.equals('upddt')">
+                ORDER BY      UPDDT
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.CrmBosRtnTxnDao.selectListCount */ COUNT(1)
+                 FROM CRM_BOS_RTN_TXN A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.bos.model.BosCrmRtnTxnVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosRtnTxnDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_RTN_TXN A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.bos.model.BosCrmRtnTxnVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosRtnTxnDao.select */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_RTN_TXN A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT /* com.ceragem.batch.crm.dao.CrmBosRtnTxnDao.insert */ INTO CRM_BOS_RTN_TXN (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{cntrno}
+                     , #{rtnsn}
+                     , #{custno}
+                     , #{ordno}
+                     , #{rtntycd}
+                     , #{rtntycdnm}
+                     , #{rtnstscd}
+                     , #{rtnstscdnm}
+                     , #{rtnstsdtlcd}
+                     , #{rtnstsdtlcdnm}
+                     , #{rtnrsncd}
+                     , #{rtnrsncdnm}
+                     , #{rm}
+                     , #{rtnsetlstscd}
+                     , #{rtnsetlstscdnm}
+                     , #{rtncntcsn}
+                     , #{rtncntctycd}
+                     , #{rtncntctycdnm}
+                     , #{rtncntcstscd}
+                     , #{rtncntcstscdnm}
+                     , #{itemcd}
+                     , #{baseitemcd}
+                     , #{itemgrpcd}
+                     , #{itemgrpcdnm}
+                     , #{saletycd}
+                     , #{saletycdnm}
+                     , #{salesecd}
+                     , #{salesecdnm}
+                     , #{agrpdcd}
+                     , #{agrpdcdnm}
+                     , #{cntrpdval}
+                     , #{usedayco}
+                     , #{usemnco}
+                     , #{remndayco}
+                     , #{remnmnco}
+                     , #{rtnreqde}
+                     , #{rtnacptde}
+                     , #{rtnacptdcsde}
+                     , #{rtnendde}
+                     , #{rtncnclde}
+                     , #{rtncnclrsncd}
+                     , #{rtncnclrsncdnm}
+                     , #{istrvlyn}
+                     , #{prcplcno}
+                     , #{penltyplcno}
+                     , #{basemtrentfee}
+                     , #{baseprepayamt}
+                     , #{basesaleamt}
+                     , #{baseregfee}
+                     , #{baseistct}
+                     , #{basedfee}
+                     , #{rtntotrcivamt}
+                     , #{rtnmtrentfee}
+                     , #{rtnprepayamt}
+                     , #{rtnsaleamt}
+                     , #{rtnregfee}
+                     , #{rtnistct}
+                     , #{rtndfee}
+                     , #{bapamt}
+                     , #{mdfbapamt}
+                     , #{lastbapamt}
+                     , #{penltyrt}
+                     , #{pkgbapamt}
+                     , #{lstyn}
+                     , #{lstamt}
+                     , #{mdflstamt}
+                     , #{lastlstamt}
+                     , #{postno}
+                     , #{bassaddr}
+                     , #{dtladdr}
+                     , #{serialno}
+                     , #{hqsecd}
+                     , #{saleorgz}
+                     , #{seller}
+                     , #{rtndueorgz}
+                     , #{rtndueengr}
+                     , #{rtnorgz}
+                     , #{rtnwrhcd}
+                     , #{rtnengr}
+                     , #{rtnduede}
+                     , #{rtnde}
+                     , #{prepayrentfeeselngno}
+                     , #{penltyselngno}
+                     , #{lstctselngno}
+                     , #{dfeeselngno}
+                     , #{rentfeeselngno}
+                     , #{pkgendyn}
+                     , #{cntrqy}
+                     , #{rtnqy}
+                     , #{regusrid}
+                     , TO_DATE(SUBSTR(#{regdt},1,19),'YYYY-MM-DD HH24:MI:SS')
+                     , #{updusrid}
+                     , TO_DATE(SUBSTR(#{upddt},1,19),'YYYY-MM-DD HH24:MI:SS')
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.CrmBosRtnTxnDao.update */ CRM_BOS_RTN_TXN
+                  SET CNTRNO                                  =         #{cntrno}
+                    , RTNSN                                   =         #{rtnsn}
+                    , CUSTNO                                  =         #{custno}
+                    , ORDNO                                   =         #{ordno}
+                    , RTNTYCD                                 =         #{rtntycd}
+                    , RTNTYCDNM                               =         #{rtntycdnm}
+                    , RTNSTSCD                                =         #{rtnstscd}
+                    , RTNSTSCDNM                              =         #{rtnstscdnm}
+                    , RTNSTSDTLCD                             =         #{rtnstsdtlcd}
+                    , RTNSTSDTLCDNM                           =         #{rtnstsdtlcdnm}
+                    , RTNRSNCD                                =         #{rtnrsncd}
+                    , RTNRSNCDNM                              =         #{rtnrsncdnm}
+                    , RM                                      =         #{rm}
+                    , RTNSETLSTSCD                            =         #{rtnsetlstscd}
+                    , RTNSETLSTSCDNM                          =         #{rtnsetlstscdnm}
+                    , RTNCNTCSN                               =         #{rtncntcsn}
+                    , RTNCNTCTYCD                             =         #{rtncntctycd}
+                    , RTNCNTCTYCDNM                           =         #{rtncntctycdnm}
+                    , RTNCNTCSTSCD                            =         #{rtncntcstscd}
+                    , RTNCNTCSTSCDNM                          =         #{rtncntcstscdnm}
+                    , ITEMCD                                  =         #{itemcd}
+                    , BASEITEMCD                              =         #{baseitemcd}
+                    , ITEMGRPCD                               =         #{itemgrpcd}
+                    , ITEMGRPCDNM                             =         #{itemgrpcdnm}
+                    , SALETYCD                                =         #{saletycd}
+                    , SALETYCDNM                              =         #{saletycdnm}
+                    , SALESECD                                =         #{salesecd}
+                    , SALESECDNM                              =         #{salesecdnm}
+                    , AGRPDCD                                 =         #{agrpdcd}
+                    , AGRPDCDNM                               =         #{agrpdcdnm}
+                    , CNTRPDVAL                               =         #{cntrpdval}
+                    , USEDAYCO                                =         #{usedayco}
+                    , USEMNCO                                 =         #{usemnco}
+                    , REMNDAYCO                               =         #{remndayco}
+                    , REMNMNCO                                =         #{remnmnco}
+                    , RTNREQDE                                =         #{rtnreqde}
+                    , RTNACPTDE                               =         #{rtnacptde}
+                    , RTNACPTDCSDE                            =         #{rtnacptdcsde}
+                    , RTNENDDE                                =         #{rtnendde}
+                    , RTNCNCLDE                               =         #{rtncnclde}
+                    , RTNCNCLRSNCD                            =         #{rtncnclrsncd}
+                    , RTNCNCLRSNCDNM                          =         #{rtncnclrsncdnm}
+                    , ISTRVLYN                                =         #{istrvlyn}
+                    , PRCPLCNO                                =         #{prcplcno}
+                    , PENLTYPLCNO                             =         #{penltyplcno}
+                    , BASEMTRENTFEE                           =         #{basemtrentfee}
+                    , BASEPREPAYAMT                           =         #{baseprepayamt}
+                    , BASESALEAMT                             =         #{basesaleamt}
+                    , BASEREGFEE                              =         #{baseregfee}
+                    , BASEISTCT                               =         #{baseistct}
+                    , BASEDFEE                                =         #{basedfee}
+                    , RTNTOTRCIVAMT                           =         #{rtntotrcivamt}
+                    , RTNMTRENTFEE                            =         #{rtnmtrentfee}
+                    , RTNPREPAYAMT                            =         #{rtnprepayamt}
+                    , RTNSALEAMT                              =         #{rtnsaleamt}
+                    , RTNREGFEE                               =         #{rtnregfee}
+                    , RTNISTCT                                =         #{rtnistct}
+                    , RTNDFEE                                 =         #{rtndfee}
+                    , BAPAMT                                  =         #{bapamt}
+                    , MDFBAPAMT                               =         #{mdfbapamt}
+                    , LASTBAPAMT                              =         #{lastbapamt}
+                    , PENLTYRT                                =         #{penltyrt}
+                    , PKGBAPAMT                               =         #{pkgbapamt}
+                    , LSTYN                                   =         #{lstyn}
+                    , LSTAMT                                  =         #{lstamt}
+                    , MDFLSTAMT                               =         #{mdflstamt}
+                    , LASTLSTAMT                              =         #{lastlstamt}
+                    , POSTNO                                  =         #{postno}
+                    , BASSADDR                                =         #{bassaddr}
+                    , DTLADDR                                 =         #{dtladdr}
+                    , SERIALNO                                =         #{serialno}
+                    , HQSECD                                  =         #{hqsecd}
+                    , SALEORGZ                                =         #{saleorgz}
+                    , SELLER                                  =         #{seller}
+                    , RTNDUEORGZ                              =         #{rtndueorgz}
+                    , RTNDUEENGR                              =         #{rtndueengr}
+                    , RTNORGZ                                 =         #{rtnorgz}
+                    , RTNWRHCD                                =         #{rtnwrhcd}
+                    , RTNENGR                                 =         #{rtnengr}
+                    , RTNDUEDE                                =         #{rtnduede}
+                    , RTNDE                                   =         #{rtnde}
+                    , PREPAYRENTFEESELNGNO                    =         #{prepayrentfeeselngno}
+                    , PENLTYSELNGNO                           =         #{penltyselngno}
+                    , LSTCTSELNGNO                            =         #{lstctselngno}
+                    , DFEESELNGNO                             =         #{dfeeselngno}
+                    , RENTFEESELNGNO                          =         #{rentfeeselngno}
+                    , PKGENDYN                                =         #{pkgendyn}
+                    , CNTRQY                                  =         #{cntrqy}
+                    , RTNQY                                   =         #{rtnqy}
+                    , REGUSRID                                =         #{regusrid}
+                    , REGDT                                   =         TO_DATE(SUBSTR(#{regdt},1,19),'YYYY-MM-DD HH24:MI:SS')
+                    , UPDUSRID                                =         #{updusrid}
+                    , UPDDT                                   =         TO_DATE(SUBSTR(#{upddt},1,19),'YYYY-MM-DD HH24:MI:SS')
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.CrmBosRtnTxnDao.delete */
+                 FROM CRM_BOS_RTN_TXN
+        <include refid="sqlPkConditions"/>
+    </delete>
+</mapper>

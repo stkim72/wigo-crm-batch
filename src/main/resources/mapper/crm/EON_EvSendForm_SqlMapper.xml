@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.EvSendFormDao">
+    <sql id="sqlPkConditions">
+                WHERE SEQ               =       #{seq}
+                  AND MAIL_KIND         =       #{mailKind}
+    </sql>
+    <sql id="sqlCols">
+                      SEQ                    /*SEQ        */
+                    , MAIL_KIND                    /*MAIL_KIND        */
+                    , REGDATE                    /*REGDATE        */
+<!--                     , CONTENT                    /*CONTENT        */ -->
+                    , SUBJECT                    /*SUBJECT        */
+                    , SEND_EMAIL                    /*SEND_EMAIL        */
+                    , SEND_NAME                    /*SEND_NAME        */
+                    , RETURN_EMAIL                    /*RETURN_EMAIL        */
+                    , SEND_FLAG                    /*SEND_FLAG        */
+                    , LIST_ENDFLAG                    /*LIST_ENDFLAG        */
+<!--                     , JDT                    /*JDT        */ -->
+                    , ATTACH_FILE1                    /*ATTACH_FILE1        */
+                    , ATTACH_FILE1_NM                    /*ATTACH_FILE1_NM        */
+                    , ATTACH_FILE2                    /*ATTACH_FILE2        */
+                    , ATTACH_FILE2_NM                    /*ATTACH_FILE2_NM        */
+                    , ATTACH_FILE3                    /*ATTACH_FILE3        */
+                    , ATTACH_FILE3_NM                    /*ATTACH_FILE3_NM        */
+                    , ATTACH_FILE4                    /*ATTACH_FILE4        */
+                    , ATTACH_FILE4_NM                    /*ATTACH_FILE4_NM        */
+                    , ATTACH_FILE5                    /*ATTACH_FILE5        */
+                    , ATTACH_FILE5_NM                    /*ATTACH_FILE5_NM        */
+                    , SERFLD1                    /*SERFLD1        */
+                    , SERFLD2                    /*SERFLD2        */
+                    , SERFLD3                    /*SERFLD3        */
+                    , SERFLD4                    /*SERFLD4        */
+                    , SERFLD5                    /*SERFLD5        */
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.SEQ                    /*SEQ        */
+                    , A.MAIL_KIND                    /*MAIL_KIND        */
+                    , A.REGDATE                    /*REGDATE        */
+                    , A.CONTENT                    /*CONTENT        */
+                    , A.SUBJECT                    /*SUBJECT        */
+                    , A.SEND_EMAIL                    /*SEND_EMAIL        */
+                    , A.SEND_NAME                    /*SEND_NAME        */
+                    , A.RETURN_EMAIL                    /*RETURN_EMAIL        */
+                    , A.SEND_FLAG                    /*SEND_FLAG        */
+                    , A.LIST_ENDFLAG                    /*LIST_ENDFLAG        */
+                    , A.JDT                    /*JDT        */
+                    , A.ATTACH_FILE1                    /*ATTACH_FILE1        */
+                    , A.ATTACH_FILE1_NM                    /*ATTACH_FILE1_NM        */
+                    , A.ATTACH_FILE2                    /*ATTACH_FILE2        */
+                    , A.ATTACH_FILE2_NM                    /*ATTACH_FILE2_NM        */
+                    , A.ATTACH_FILE3                    /*ATTACH_FILE3        */
+                    , A.ATTACH_FILE3_NM                    /*ATTACH_FILE3_NM        */
+                    , A.ATTACH_FILE4                    /*ATTACH_FILE4        */
+                    , A.ATTACH_FILE4_NM                    /*ATTACH_FILE4_NM        */
+                    , A.ATTACH_FILE5                    /*ATTACH_FILE5        */
+                    , A.ATTACH_FILE5_NM                    /*ATTACH_FILE5_NM        */
+                    , A.SERFLD1                    /*SERFLD1        */
+                    , A.SERFLD2                    /*SERFLD2        */
+                    , A.SERFLD3                    /*SERFLD3        */
+                    , A.SERFLD4                    /*SERFLD4        */
+                    , A.SERFLD5                    /*SERFLD5        */
+    </sql>
+    <sql id="sqlConditions">
+    <where>
+        <if test="seq != null and seq != ''">
+                  AND A.SEQ             =       #{seq}
+        </if>
+        <if test="mailKind != null and mailKind != ''">
+                  AND A.MAIL_KIND       =       #{mailKind}
+        </if>
+        <if test="regdate != null and regdate != ''">
+                  AND A.REGDATE         =       #{regdate}
+        </if>
+        <if test="content != null and content != ''">
+                  AND A.CONTENT         =       #{content}
+        </if>
+        <if test="subject != null and subject != ''">
+                  AND A.SUBJECT         =       #{subject}
+        </if>
+        <if test="sendEmail != null and sendEmail != ''">
+                  AND A.SEND_EMAIL      =       #{sendEmail}
+        </if>
+        <if test="sendName != null and sendName != ''">
+                  AND A.SEND_NAME       =       #{sendName}
+        </if>
+        <if test="returnEmail != null and returnEmail != ''">
+                  AND A.RETURN_EMAIL    =       #{returnEmail}
+        </if>
+        <if test="sendFlag != null and sendFlag != ''">
+                  AND A.SEND_FLAG       =       #{sendFlag}
+        </if>
+        <if test="listEndflag != null and listEndflag != ''">
+                  AND A.LIST_ENDFLAG    =       #{listEndflag}
+        </if>
+        <if test="jdt != null and jdt != ''">
+                  AND A.JDT             =       #{jdt}
+        </if>
+        <if test="attachFile1 != null and attachFile1 != ''">
+                  AND A.ATTACH_FILE1    =       #{attachFile1}
+        </if>
+        <if test="attachFile1Nm != null and attachFile1Nm != ''">
+                  AND A.ATTACH_FILE1_NM =       #{attachFile1Nm}
+        </if>
+        <if test="attachFile2 != null and attachFile2 != ''">
+                  AND A.ATTACH_FILE2    =       #{attachFile2}
+        </if>
+        <if test="attachFile2Nm != null and attachFile2Nm != ''">
+                  AND A.ATTACH_FILE2_NM =       #{attachFile2Nm}
+        </if>
+        <if test="attachFile3 != null and attachFile3 != ''">
+                  AND A.ATTACH_FILE3    =       #{attachFile3}
+        </if>
+        <if test="attachFile3Nm != null and attachFile3Nm != ''">
+                  AND A.ATTACH_FILE3_NM =       #{attachFile3Nm}
+        </if>
+        <if test="attachFile4 != null and attachFile4 != ''">
+                  AND A.ATTACH_FILE4    =       #{attachFile4}
+        </if>
+        <if test="attachFile4Nm != null and attachFile4Nm != ''">
+                  AND A.ATTACH_FILE4_NM =       #{attachFile4Nm}
+        </if>
+        <if test="attachFile5 != null and attachFile5 != ''">
+                  AND A.ATTACH_FILE5    =       #{attachFile5}
+        </if>
+        <if test="attachFile5Nm != null and attachFile5Nm != ''">
+                  AND A.ATTACH_FILE5_NM =       #{attachFile5Nm}
+        </if>
+        <if test="serfld1 != null and serfld1 != ''">
+                  AND A.SERFLD1         =       #{serfld1}
+        </if>
+        <if test="serfld2 != null and serfld2 != ''">
+                  AND A.SERFLD2         =       #{serfld2}
+        </if>
+        <if test="serfld3 != null and serfld3 != ''">
+                  AND A.SERFLD3         =       #{serfld3}
+        </if>
+        <if test="serfld4 != null and serfld4 != ''">
+                  AND A.SERFLD4         =       #{serfld4}
+        </if>
+        <if test="serfld5 != null and serfld5 != ''">
+                  AND A.SERFLD5         =       #{serfld5}
+        </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('seq')">
+                ORDER BY      SEQ
+            </when>
+            <when test="colSortName.equals('mailKind')">
+                ORDER BY      MAIL_KIND
+            </when>
+            <when test="colSortName.equals('regdate')">
+                ORDER BY      REGDATE
+            </when>
+            <when test="colSortName.equals('content')">
+                ORDER BY      CONTENT
+            </when>
+            <when test="colSortName.equals('subject')">
+                ORDER BY      SUBJECT
+            </when>
+            <when test="colSortName.equals('sendEmail')">
+                ORDER BY      SEND_EMAIL
+            </when>
+            <when test="colSortName.equals('sendName')">
+                ORDER BY      SEND_NAME
+            </when>
+            <when test="colSortName.equals('returnEmail')">
+                ORDER BY      RETURN_EMAIL
+            </when>
+            <when test="colSortName.equals('sendFlag')">
+                ORDER BY      SEND_FLAG
+            </when>
+            <when test="colSortName.equals('listEndflag')">
+                ORDER BY      LIST_ENDFLAG
+            </when>
+            <when test="colSortName.equals('jdt')">
+                ORDER BY      JDT
+            </when>
+            <when test="colSortName.equals('attachFile1')">
+                ORDER BY      ATTACH_FILE1
+            </when>
+            <when test="colSortName.equals('attachFile1Nm')">
+                ORDER BY      ATTACH_FILE1_NM
+            </when>
+            <when test="colSortName.equals('attachFile2')">
+                ORDER BY      ATTACH_FILE2
+            </when>
+            <when test="colSortName.equals('attachFile2Nm')">
+                ORDER BY      ATTACH_FILE2_NM
+            </when>
+            <when test="colSortName.equals('attachFile3')">
+                ORDER BY      ATTACH_FILE3
+            </when>
+            <when test="colSortName.equals('attachFile3Nm')">
+                ORDER BY      ATTACH_FILE3_NM
+            </when>
+            <when test="colSortName.equals('attachFile4')">
+                ORDER BY      ATTACH_FILE4
+            </when>
+            <when test="colSortName.equals('attachFile4Nm')">
+                ORDER BY      ATTACH_FILE4_NM
+            </when>
+            <when test="colSortName.equals('attachFile5')">
+                ORDER BY      ATTACH_FILE5
+            </when>
+            <when test="colSortName.equals('attachFile5Nm')">
+                ORDER BY      ATTACH_FILE5_NM
+            </when>
+            <when test="colSortName.equals('serfld1')">
+                ORDER BY      SERFLD1
+            </when>
+            <when test="colSortName.equals('serfld2')">
+                ORDER BY      SERFLD2
+            </when>
+            <when test="colSortName.equals('serfld3')">
+                ORDER BY      SERFLD3
+            </when>
+            <when test="colSortName.equals('serfld4')">
+                ORDER BY      SERFLD4
+            </when>
+            <when test="colSortName.equals('serfld5')">
+                ORDER BY      SERFLD5
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.EvSendFormDao.selectListCount */ COUNT(1)
+                 FROM EON.EV_SEND_FORM A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.model.EvSendFormVo">
+               SELECT /* com.ceragem.batch.crm.dao.EvSendFormDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM EON.EV_SEND_FORM A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.model.EvSendFormVo">
+               SELECT /* com.ceragem.batch.crm.dao.EvSendFormDao.select */ <include refid="sqlSelectCols"/>
+                 FROM EON.EV_SEND_FORM A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+        <selectKey order="BEFORE" keyProperty="seq" resultType="int">
+            SELECT EON.EV_MAIL_SEND_SEQ.NEXTVAL
+              FROM DUAL
+        </selectKey>
+                INSERT /* com.ceragem.batch.crm.dao.EvSendFormDao.insert */ INTO EON.EV_SEND_FORM (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{seq}
+                     , #{mailKind}
+                     , TO_DATE(#{regdate},'YYYYMMDDHH24MISS')
+<!--                      , #{content} -->
+                     , #{subject}
+                     , #{sendEmail}
+                     , #{sendName}
+                     , #{returnEmail}
+                     , 'N'
+                     , 'Y'
+                     , #{attachFile1}
+                     , #{attachFile1Nm}
+                     , #{attachFile2}
+                     , #{attachFile2Nm}
+                     , #{attachFile3}
+                     , #{attachFile3Nm}
+                     , #{attachFile4}
+                     , #{attachFile4Nm}
+                     , #{attachFile5}
+                     , #{attachFile5Nm}
+                     , #{serfld1}
+                     , #{serfld2}
+                     , #{serfld3}
+                     , #{serfld4}
+                     , #{serfld5}
+                 )
+    </insert>
+    <insert id="insertDetail">
+              INSERT /* com.ceragem.batch.crm.dao.EvSendFormDao.insert */ INTO EON.EV_SEND_LIST (
+                      SEQ                    /*SEQ        */
+                    , MAIL_KIND                    /*MAIL_KIND        */
+                    , LIST_SEQ                    /*LIST_SEQ        */
+                    , EMAIL                    /*EMAIL        */
+                    , NAME                    /*NAME        */
+                    , MAPPING1                    /*MAPPING1        */
+                    , MAPPING2                    /*MAPPING2        */
+                    , MAPPING3                    /*MAPPING3        */
+                    , MAPPING4                    /*MAPPING4        */
+                    , MAPPING5                    /*MAPPING5        */
+                    , MAPPING6                    /*MAPPING6        */
+                    , MAPPING7                    /*MAPPING7        */
+                    , MAPPING8                    /*MAPPING8        */
+                    , MAPPING9                    /*MAPPING9        */
+                    , MAPPING10                    /*MAPPING10        */
+                    , MAPPING                    /*MAPPING        */
+<!--                     , SEND_RSLT_CD                    /*SEND_RSLT_CD        */ -->
+<!--                     , SEND_DATE                    /*SEND_DATE        */ -->
+<!--                     , CP_ID                    /*CP_ID        */ -->
+<!--                     , EX_COUNT                    /*EX_COUNT        */ -->
+<!--                     , OPENED                    /*OPENED        */ -->
+<!--                     , TRACK_END                    /*TRACK_END        */ -->
+<!--                     , OPEN_S                    /*OPEN_S        */ -->
+<!--                     , OPEN_DATE                    /*OPEN_DATE        */ -->
+<!--                     , OPEN_SDATE                    /*OPEN_SDATE        */ -->
+<!--                     , REV_ID                    /*REV_ID        */ -->
+             ) VALUES (
+                       #{seq}
+                     , #{mailKind}
+                     , #{listSeq}
+                     , #{email}
+                     , #{name}
+                     , #{mapping1}
+                     , #{mapping2}
+                     , #{mapping3}
+                     , #{mapping4}
+                     , #{mapping5}
+                     , #{mapping6}
+                     , #{mapping7}
+                     , #{mapping8}
+                     , #{mapping9}
+                     , #{mapping10}
+                     , #{mapping}
+<!--                      , #{sendRsltCd} -->
+<!--                      , #{sendDate} -->
+<!--                      , #{cpId} -->
+<!--                      , #{exCount} -->
+<!--                      , #{opened} -->
+<!--                      , #{trackEnd} -->
+<!--                      , #{openS} -->
+<!--                      , #{openDate} -->
+<!--                      , #{openSdate} -->
+<!--                      , #{revId} -->
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.EvSendFormDao.update */ EON.EV_SEND_FORM
+                  SET REGDATE                                 =         #{regdate}
+                    , CONTENT                                 =         #{content}
+                    , SUBJECT                                 =         #{subject}
+                    , SEND_EMAIL                              =         #{sendEmail}
+                    , SEND_NAME                               =         #{sendName}
+                    , RETURN_EMAIL                            =         #{returnEmail}
+                    , SEND_FLAG                               =         #{sendFlag}
+                    , LIST_ENDFLAG                            =         #{listEndflag}
+                    , JDT                                     =         #{jdt}
+                    , ATTACH_FILE1                            =         #{attachFile1}
+                    , ATTACH_FILE1_NM                         =         #{attachFile1Nm}
+                    , ATTACH_FILE2                            =         #{attachFile2}
+                    , ATTACH_FILE2_NM                         =         #{attachFile2Nm}
+                    , ATTACH_FILE3                            =         #{attachFile3}
+                    , ATTACH_FILE3_NM                         =         #{attachFile3Nm}
+                    , ATTACH_FILE4                            =         #{attachFile4}
+                    , ATTACH_FILE4_NM                         =         #{attachFile4Nm}
+                    , ATTACH_FILE5                            =         #{attachFile5}
+                    , ATTACH_FILE5_NM                         =         #{attachFile5Nm}
+                    , SERFLD1                                 =         #{serfld1}
+                    , SERFLD2                                 =         #{serfld2}
+                    , SERFLD3                                 =         #{serfld3}
+                    , SERFLD4                                 =         #{serfld4}
+                    , SERFLD5                                 =         #{serfld5}
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.EvSendFormDao.delete */
+                 FROM EON.EV_SEND_FORM
+        <include refid="sqlPkConditions"/>
+    </delete>
+</mapper>

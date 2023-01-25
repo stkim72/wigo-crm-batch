@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.AdvnCmtDao">
+  
+    <select id="getAdmtList" resultType="com.ceragem.batch.crm.model.AdvnCmtVo">
+              SELECT  /*  com.ceragem.batch.crm.dao.AdvnCmtDao.getAdmtList  */
+					  ITG_CUST_NO 
+					  , RNUM
+				     , MSHIP_ADVNCMT_SCORE
+				     , OCCUR_ADVNCMT_SCORE_SUM2
+				     , NOW_MSHIP_TYPE_CD
+				     , NOW_MSHIP_GRADE_CD
+				     , MSHIP_PLCY_BAS_NO 
+				     , MSHIP_GRADE_CD
+				     , MSHIP_EXPT_GRADE_CD
+				     , NOW_ADVNCMT_STA_SCORE
+				     , NOW_ADVNCMT_END_SCORE
+				     , ADVNCMT_STA_SCORE
+				     , ADVNCMT_END_SCORE
+				     , EXTRC_STD_MONTH
+				     , EXTRC_STD_2_MONTH
+				     , REG_DT
+				     , EXTRC_KEEP_MONTH
+				     , NOW_GRADE_KEEP_SCORE
+				     , NOW_GRADE_KEEP_2_SCORE
+				     , GRADE_KEEP_SCORE
+				     , GRADE_KEEP_2_SCORE
+				     , APPLY_STD_STA_YMD
+				     , APPLY_STD_END_YMD
+				     , CHK_KEEP
+                     , UP_MONTH_YN
+				  FROM (
+				  
+				    SELECT 
+					     A.ITG_CUST_NO 
+					     , ROWNUM RNUM
+					     , A.OCCUR_ADVNCMT_SCORE_SUM MSHIP_ADVNCMT_SCORE
+					     , A.OCCUR_ADVNCMT_SCORE_SUM2
+					     , A.MSHIP_TYPE_CD NOW_MSHIP_TYPE_CD
+					     , A.MSHIP_GRADE_CD NOW_MSHIP_GRADE_CD
+					     , C.MSHIP_PLCY_BAS_NO 
+					     , C.MSHIP_GRADE_CD
+					     /* , C.MSHP_GRADE_CD MSHIP_EXPT_GRADE_CD */
+					     
+					     , (CASE WHEN TO_NUMBER(A.OCCUR_ADVNCMT_SCORE_SUM2) >=  TO_NUMBER(A.GRADE_KEEP_SCORE) AND C.MSHP_GRADE_CD  <![CDATA[<]]>  A.MSHIP_GRADE_CD
+     						THEN A.MSHIP_GRADE_CD ELSE C.MSHP_GRADE_CD END) MSHIP_EXPT_GRADE_CD
+     
+					     , A.ADVNCMT_STA_SCORE NOW_ADVNCMT_STA_SCORE
+					     , A.ADVNCMT_END_SCORE NOW_ADVNCMT_END_SCORE
+					     , C.ADVNCMT_STA_SCORE
+					     , C.ADVNCMT_END_SCORE
+					     , C.EXTRC_STD_MONTH
+					     , A.EXTRC_STD_2_MONTH
+					     , C.REG_DT
+					     , C.EXTRC_KEEP_MONTH
+					     , A.GRADE_KEEP_SCORE NOW_GRADE_KEEP_SCORE
+					     , A.GRADE_KEEP_2_SCORE NOW_GRADE_KEEP_2_SCORE
+					     , C.GRADE_KEEP_SCORE
+					     , C.GRADE_KEEP_2_SCORE
+					     
+					     /*
+					     , C.APPLY_STD_STA_YMD
+					     , C.APPLY_STD_END_YMD
+					     */
+					     
+					     , TO_CHAR(SYSDATE , 'YYYYMMDD')  APPLY_STD_STA_YMD
+     					 , TO_CHAR(ADD_MONTHS( SYSDATE ,  C.EXTRC_STD_2_MONTH ), 'YYYYMMDD') APPLY_STD_END_YMD
+					     
+					     , (SELECT COUNT(*) FROM CRM_CUST_GRADE_CHNG_HST Z WHERE Z.ITG_CUST_NO = A.ITG_CUST_NO  AND Z.MSHP_GRADE_CD = A.MSHIP_GRADE_CD
+					     AND TO_CHAR(Z.REG_DT , 'YYYYMMDD') <![CDATA[>=]]>   TO_CHAR(ADD_MONTHS( SYSDATE ,  C.EXTRC_KEEP_MONTH * -1), 'YYYYMMDD') ) CHK_KEEP 
+					     , (CASE WHEN TO_CHAR(SYSDATE, 'YYYYMM') || '01' = TO_CHAR(SYSDATE, 'YYYYMMDD')  THEN 'UP' ELSE 'NO' END) UP_MONTH_YN
+					         
+				     FROM (
+				        SELECT 
+				            DISTINCT A.ITG_CUST_NO
+				            , A.MSHIP_TYPE_CD
+				            , A.MSHIP_GRADE_CD 
+				            , B.ADVNCMT_STA_SCORE
+				            , B.ADVNCMT_END_SCORE 
+				            , B.GRADE_KEEP_SCORE
+				            , B.GRADE_KEEP_2_SCORE 
+				            , EXTRC_STD_2_MONTH
+				            , NVL( (
+				                SELECT SUM( OCCUR_ADVNCMT_SCORE ) FROM CRM_ADVNCMT_HST M
+				                WHERE TO_CHAR( ADD_MONTHS(SYSDATE  , 
+				                 (
+				                        SELECT DISTINCT  EXTRC_STD_MONTH * -1 FROM CRM_MSHIP_PLCY_BAS D 
+				                         WHERE D.STATUS_CD = 'Y'
+				                         AND 
+				                        (
+				                            D.MSHP_GRADE_CD = A.MSHIP_GRADE_CD /* OR D.CPRT_CMP_NO = A.CPRT_CMP_NO */
+				                        )
+				                        
+				                    )
+				                ), 'YYYYMMDD')  <![CDATA[<=]]>  TO_CHAR( M.REG_DT, 'YYYYMMDD')
+				                AND M.ITG_CUST_NO = A.ITG_CUST_NO
+				                ), 0) OCCUR_ADVNCMT_SCORE_SUM
+				                
+				                , NVL( (
+				                SELECT SUM( OCCUR_ADVNCMT_SCORE ) FROM CRM_ADVNCMT_HST M
+				                WHERE TO_CHAR( ADD_MONTHS(SYSDATE  , 
+				                 (
+				                         SELECT DISTINCT  EXTRC_STD_2_MONTH*-1 FROM CRM_MSHIP_PLCY_BAS D 
+				                         WHERE D.STATUS_CD='Y' 
+				                         AND 
+				                        (
+				                            D.MSHP_GRADE_CD = A.MSHIP_GRADE_CD /* OR D.CPRT_CMP_NO = A.CPRT_CMP_NO */
+				                        )
+				                        
+				                    )
+				                ), 'YYYYMMDD')  <![CDATA[<=]]>  TO_CHAR( M.REG_DT, 'YYYYMMDD')
+				                AND M.ITG_CUST_NO = A.ITG_CUST_NO
+				                ), 0) OCCUR_ADVNCMT_SCORE_SUM2
+				                
+				        FROM  CRM_CUST_BAS A 
+				        LEFT JOIN CRM_MSHIP_PLCY_BAS B ON  A.MSHIP_GRADE_CD =  B.MSHP_GRADE_CD
+				        	WHERE 1=1   
+				        	AND A.MSHIP_SBSC_YN = 'Y' 
+				        	AND  /* 승급점수는 골드등 회원등급만 해당 됨 */ B.MSHIP_GRADE_CD='003'
+				        	AND B.STATUS_CD='Y'
+				        	
+				        	 
+				       /*  테스트 시에만
+				        	
+				        	 AND A.MSHIP_EXPT_GRADE_CD IS NULL
+				        	 AND A.MSHIP_GRADE_CD IN ( '002'  )
+				        	
+				        	 AND A.ITG_CUST_NO = 'CST22071411013484378'
+				       */
+				       		  
+				        
+				        ) A    
+				        LEFT JOIN CRM_MSHIP_PLCY_BAS C ON  ( C.ADVNCMT_STA_SCORE  <![CDATA[<=]]>  A.OCCUR_ADVNCMT_SCORE_SUM AND C.ADVNCMT_END_SCORE <![CDATA[>=]]>  A.OCCUR_ADVNCMT_SCORE_SUM )
+				      WHERE 
+				       A.MSHIP_GRADE_CD IS NOT NULL
+				       
+				       AND A.MSHIP_GRADE_CD != C.MSHP_GRADE_CD 
+				       AND C.MSHIP_GRADE_CD='003' 
+				       AND C.STATUS_CD = 'Y' 
+				) Z
+				
+				 WHERE Z.CHK_KEEP = 0
+					 OR ( 
+					 
+						 ( NOW_MSHIP_GRADE_CD != MSHIP_EXPT_GRADE_CD )
+						 OR Z.OCCUR_ADVNCMT_SCORE_SUM2 <![CDATA[<=]]>  Z.NOW_GRADE_KEEP_SCORE
+				 	) 
+				
+				
+				 
+    </select>
+    
+    
+    
+    <update id="update"  parameterType="java.util.List">
+    
+        <foreach collection="list" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
+    		UPDATE /* AdvnCmt.update 매일 점수 및 예정 등급은 업데이트 한다. */ CRM_CUST_BAS SET 
+	    		MSHIP_EXPT_GRADE_CD = #{item.mshipExptGradeCd} 
+	    		, MSHIP_ADVNCMT_SCORE = #{item.mshipAdvnCmtScore}
+	    		
+	    		<if test="item.upMonthYn != null and item.upMonthYn != '' and item.upMonthYn == 'UP' ">     
+	                    , MSHIP_GRADE_CD =  #{item.mshipExptGradeCd}
+				</if>
+    		WHERE ITG_CUST_NO = #{item.itgCustNo}  
+        </foreach>
+        
+    </update> 
+    
+    
+    <update id="updateOne"  parameterType="com.ceragem.batch.crm.model.AdvnCmtVo">
+    
+    		UPDATE /* AdvnCmt.updateOne 매일 점수 및 예정 등급은 업데이트 한다. */ CRM_CUST_BAS SET 
+	    		MSHIP_EXPT_GRADE_CD = #{mshipExptGradeCd} 
+	    		, MSHIP_ADVNCMT_SCORE = #{mshipAdvnCmtScore}
+	    		
+	    		<if test="upMonthYn != null and upMonthYn != '' and upMonthYn == 'UP' ">     
+	                    , MSHIP_GRADE_CD =  #{mshipExptGradeCd}
+				</if>
+    		WHERE ITG_CUST_NO = #{itgCustNo}  
+       
+        
+    </update> 
+      
+    <insert id="insert"  parameterType="java.util.List">
+        
+    		<foreach collection="list" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
+    		
+    			 INSERT /* AdvnCmt.insert */ INTO CRM_CUST_GRADE_CHNG_HST (
+       				  GRADE_CHNG_HST_SEQ                    /*등급변경이력일련번호        */
+                    , ITG_CUST_NO                    /*통합고객번호        */
+                    , APPLY_STD_STA_YMD                    /*적용기준시작년월일        */
+                    , APPLY_STD_END_YMD                    /*적용기준종료년월일        */
+                    , MSHP_GRADE_CD                    /*회원등급코드        */
+                    , CHNG_PRE_MSHP_GRADE_CD                    /*변경전회원등급코드        */
+                    , MSHP_GRADE_TYPE_CD                    /*회원등급유형코드        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+                    , REG_CHL_CD                    /*등록채널코드        공통코드 : S000        [CRM : CRM , CTC : 상담 , AS : AS , SAP : SAP , POS : POS]*/
+                 ) VALUES (
+                       NVL(#{item.gradeChngHstSeq}, FN_CRM_AUTO_SEQ('GCH') ) 
+                     , #{item.itgCustNo}
+                     , #{item.applyStdStaYmd}
+                     , #{item.applyStdEndYmd}
+                     , #{item.mshipExptGradeCd}
+                     , #{item.nowMshipGradeCd}
+                     , #{item.mshipGradeCd}
+                     , #{item.amdrId}
+                     , SYSDATE
+                     , #{item.regrId}
+                     , SYSDATE
+                     , #{item.regChlCd}
+                 )
+                 
+                </foreach> 
+                
+                 
+    </insert>
+    
+    
+    <insert id="insertOne"  parameterType="com.ceragem.batch.crm.model.AdvnCmtVo">
+        
+    		
+    			 INSERT /* AdvnCmt.insert */ INTO CRM_CUST_GRADE_CHNG_HST (
+       				  GRADE_CHNG_HST_SEQ                    /*등급변경이력일련번호        */
+                    , ITG_CUST_NO                    /*통합고객번호        */
+                    , APPLY_STD_STA_YMD                    /*적용기준시작년월일        */
+                    , APPLY_STD_END_YMD                    /*적용기준종료년월일        */
+                    , MSHP_GRADE_CD                    /*회원등급코드        */
+                    , CHNG_PRE_MSHP_GRADE_CD                    /*변경전회원등급코드        */
+                    , MSHP_GRADE_TYPE_CD                    /*회원등급유형코드        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+                    , REG_CHL_CD                    /*등록채널코드        공통코드 : S000        [CRM : CRM , CTC : 상담 , AS : AS , SAP : SAP , POS : POS]*/
+                 ) VALUES (
+                       NVL(#{gradeChngHstSeq}, FN_CRM_AUTO_SEQ('GCH') ) 
+                     , #{itgCustNo}
+                     , #{applyStdStaYmd}
+                     , #{applyStdEndYmd}
+                     , #{mshipExptGradeCd}
+                     , #{nowMshipGradeCd}
+                     , #{mshipGradeCd}
+                     , #{amdrId}
+                     , SYSDATE
+                     , #{regrId}
+                     , SYSDATE
+                     , #{regChlCd}
+                 )
+                 
+               
+                
+                 
+    </insert>
+    
+    
+     <insert id="insertDay"  parameterType="java.util.List">
+        
+    		<foreach collection="list" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
+    		
+    			 INSERT /* AdvnCmt.insertDay */ INTO CRM_CUST_GRADE_DAY_CHNG_HST (
+       				  GRADE_CHNG_HST_SEQ                    /*등급변경이력일련번호        */
+                    , ITG_CUST_NO                    /*통합고객번호        */
+                    , APPLY_STD_STA_YMD                    /*적용기준시작년월일        */
+                    , APPLY_STD_END_YMD                    /*적용기준종료년월일        */
+                    , MSHP_GRADE_CD                    /*회원등급코드        */
+                    , CHNG_PRE_MSHP_GRADE_CD                    /*변경전회원등급코드        */
+                    , MSHP_GRADE_TYPE_CD                    /*회원등급유형코드        */
+                    , MSHIP_ADVNCMT_SCORE                    /* 승급점수        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+                    , REG_CHL_CD                    /*등록채널코드        공통코드 : S000        [CRM : CRM , CTC : 상담 , AS : AS , SAP : SAP , POS : POS]*/
+                 ) VALUES (
+                       NVL(#{item.gradeChngHstSeq}, FN_CRM_AUTO_SEQ('DCH') ) 
+                     , #{item.itgCustNo}
+                     , #{item.applyStdStaYmd}
+                     , #{item.applyStdEndYmd}
+                     , #{item.mshipExptGradeCd}
+                     , #{item.nowMshipGradeCd}
+                     , #{item.mshipGradeCd}
+                     , #{item.mshipAdvnCmtScore}
+                     , #{item.amdrId}
+                     , SYSDATE
+                     , #{item.regrId}
+                     , SYSDATE
+                     , #{item.regChlCd}
+                 )
+                 
+            </foreach> 
+                
+                 
+    </insert>
+    
+    
+    <insert id="insertDayOne"  parameterType="com.ceragem.batch.crm.model.AdvnCmtVo">
+        
+    		
+    			 INSERT /* AdvnCmt.insertDayOne */ INTO CRM_CUST_GRADE_DAY_CHNG_HST (
+       				  GRADE_CHNG_HST_SEQ                    /*등급변경이력일련번호        */
+                    , ITG_CUST_NO                    /*통합고객번호        */
+                    , APPLY_STD_STA_YMD                    /*적용기준시작년월일        */
+                    , APPLY_STD_END_YMD                    /*적용기준종료년월일        */
+                    , MSHP_GRADE_CD                    /*회원등급코드        */
+                    , CHNG_PRE_MSHP_GRADE_CD                    /*변경전회원등급코드        */
+                    , MSHP_GRADE_TYPE_CD                    /*회원등급유형코드        */
+                    , MSHIP_ADVNCMT_SCORE                    /* 승급점수        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+                    , REG_CHL_CD                    /*등록채널코드        공통코드 : S000        [CRM : CRM , CTC : 상담 , AS : AS , SAP : SAP , POS : POS]*/
+                 ) VALUES (
+                       NVL(#{gradeChngHstSeq}, FN_CRM_AUTO_SEQ('DCH') ) 
+                     , #{itgCustNo}
+                     , #{applyStdStaYmd}
+                     , #{applyStdEndYmd}
+                     , #{mshipExptGradeCd}
+                     , #{nowMshipGradeCd}
+                     , #{mshipGradeCd}
+                     , #{mshipAdvnCmtScore}
+                     , #{amdrId}
+                     , SYSDATE
+                     , #{regrId}
+                     , SYSDATE
+                     , #{regChlCd}
+                 )
+           
+    </insert>
+    
+    
+    
+    
+     <insert id="pubAdvnPoint"> 
+    
+                
+        	 <foreach collection="list" item="item" separator=";" open="DECLARE BEGIN" close="; END;">
+        	
+        			  INSERT  /* CampCpnPntIssue.pubPoint */ INTO  CRM_POINT_HST (
+        			  		  POINT_HST_SEQ, ITG_CUST_NO, CHIT_NO, PBLS_DIV_CD, OCCUR_POINT_SCORE, REMAIN_POINT_SCORE
+        			  		  , VALID_PERD_STA_YMD, VALID_PERD_END_YMD, PBLS_DT, PBLS_CHL_CD, CAMP_NO
+							  , AMDR_ID, AMD_DT, REGR_ID, REG_DT, REG_CHL_CD, STOR_NO, USE_TYPE_CD
+        			  		)
+			           
+			           
+			           SELECT FN_CRM_AUTO_SEQ('PNT'), #{item.itgCustNo} ITG_CUST_NO,  FN_CRM_AUTO_SEQ('CPT') CHIT_NO, '970' PBLS_DIV_CD
+			            
+			             , NVL( SUM_REMAIN_POINT_SCORE, 0) OCCUR_POINT_SCORE
+   						 , NVL( MY_REMAIN_POINT_SCORE, 0) + NVL( SUM_REMAIN_POINT_SCORE, 0) REMAIN_POINT_SCORE			             	
+			             , TO_CHAR(SYSDATE,'YYYYMMDD') VALID_PERD_STA_YMD
+			             , TO_CHAR(ADD_MONTHS(SYSDATE, 24 ),'YYYYMMDD') VALID_PERD_END_YMD
+			             , SYSDATE, 'CRM' PBLS_CHL_CD, NULL CAMP_NO
+			             , NULL AMDR_ID, NULL AMD_DT,  'CRM' REGR_ID, SYSDATE REG_DT, 'CRM' REG_CHL_CD, '141359' STOR_NO, '002' USE_TYPE_CD
+			           
+			           	  FROM (
+  
+							  	SELECT 	
+							  		NVL(( SELECT REMAIN_POINT_SCORE FROM ( SELECT REMAIN_POINT_SCORE FROM CRM_POINT_HST C 
+										   WHERE C.ITG_CUST_NO = #{item.itgCustNo} ORDER BY C.POINT_HST_SEQ DESC ) WHERE   ROWNUM=1  ), 0) MY_REMAIN_POINT_SCORE
+							       , SUM_REMAIN_POINT_SCORE
+								FROM 
+									(                           
+									   SELECT 							
+									     NVL( SUM(buy_advncmt_point_score) , 0 ) SUM_REMAIN_POINT_SCORE							                            
+										FROM CRM_MSHIP_PLCY_BAS 			
+						           		WHERE STATUS_CD = 'Y'
+										AND MSHP_GRADE_CD IS NOT NULL 
+										AND ( MSHP_GRADE_CD <![CDATA[<=]]> #{item.mshipExptGradeCd} AND MSHP_GRADE_CD <![CDATA[>]]> #{item.nowMshipGradeCd} )
+									)
+						 ) Z
+							
+                
+			 </foreach> 
+			
+        
+    </insert> 
+    
+    
+    
+    
+    <insert id="insertAdvnMsg">
+      
+                INSERT /* com.ceragem.api.crm.dao.MsgIfDao.insertAdvnMsg  */ INTO  EON.MSG_IF   (
+                
+                    CLIENT                    /*CLIENT        */
+                    , CAMPAIGN_ID                    /*CAMPAIGN_ID        */
+                    , MEMBER_SEQ                    /*MEMBER_SEQ        */
+                    , SEND_TYPE                    /*SEND_TYPE        */
+                    , SUBJECT                    /*SUBJECT        */
+                    , MSG                    /*MSG        */
+                    , DESTEL                    /*DESTEL        */
+                    , SRCTEL                    /*SRCTEL        */
+                    , RESERVETIME                    /*RESERVETIME        */ 
+                    , SENDRESULT                    /*SENDRESULT        */
+                    , ETC3                    /*ETC3        */
+                    , DUMMY9                    /*DUMMY4        */
+                    , DUMMY10                    /*DUMMY5        */
+                    , SENDER_KEY                    /*SENDER_KEY        */
+                    , TEMPLATE_CODE                    /*TEMPLATE_CODE        */
+                    , K_MSG                    /*K_MSG        */
+                    , K_RESERVETIME                    /*K_RESERVETIME        */
+                    , K_ERR_ISSEND                    /*K_ERR_ISSEND        */
+                    , MSG_TYPE                    /*MSG_TYPE        */
+                    , KKO_HEADER                    /*KKO_HEADER        */
+                    , KKO_BTN_TYPE                    /*KKO_BTN_TYPE        */
+                    , KKO_BTN_INFO                    /*KKO_BTN_INFO        */
+                    , IMG_URL                    /*IMG_URL        */
+                    , IMG_LINK                    /*IMG_LINK        */
+                    , K_TITLE                    /*K_TITLE        */
+                    , AD_FLAG                    /*AD_FLAG        */
+                    , REV_ID                    /*REV_ID        */
+                
+                 ) 
+				
+				SELECT 
+				    'CRM' client
+				    , TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS' ) || ROWNUM campainId
+				    , ROWNUM memberSeq
+				    , '2' sendType    
+				    , B.SUBJECT
+				    , FN_ADVN_MSG(
+				          C.ITG_CUST_NO
+				        , C.CUST_NM 
+				        , ( SELECT COMN_CD_NM FROM CRM_COMN_CD_BAS F WHERE F.TOP_COMN_CD = 'MB020' AND  F.COMN_CD = A.MSHP_GRADE_CD )				      
+				        , TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+				        , TO_CHAR(TO_DATE(A.APPLY_STD_END_YMD, 'YYYY-MM-DD'), 'YYYY-MM-DD')
+				        , B.CONTENT 
+				    ) MSG
+				                    
+				                    
+				    , DAMO.DECRYPT_VAR_B64('AES_256', C.MPHON_NO , '') DESTEL
+				    , '15775570' SRCTEL
+				    , TO_CHAR( TO_CHAR(SYSDATE, 'YYYY-MM-DD ') || '10:00:00') RESERVETIME
+				    , 'K'
+				    , 'crm_1'
+				    , null dummy9
+				    , A.ITG_CUST_NO DUMMY10
+				    , B.SEND_PROFILE_KEY
+				    , B.TEMPLATE_CODE 
+				    , FN_ADVN_MSG(
+				          C.ITG_CUST_NO
+				        , C.CUST_NM 
+				        , ( SELECT COMN_CD_NM FROM CRM_COMN_CD_BAS F WHERE F.TOP_COMN_CD = 'MB020' AND  F.COMN_CD = A.MSHP_GRADE_CD )				      
+				        , TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+				        , TO_CHAR(TO_DATE(A.APPLY_STD_END_YMD, 'YYYY-MM-DD'), 'YYYY-MM-DD')
+				        , B.CONTENT 
+				    )  K_MSG
+				    , TO_CHAR( TO_CHAR(SYSDATE, 'YYYY-MM-DD ') || '10:00:00') K_RESERVETIME
+				    , 'Y' K_ERR_ISSEND
+				    , 'AT' MSG_TYPE
+				    , NULL KKO_HEADER
+				    , NULL KKO_BTN_TYPE    
+				    , BTN_INFO KKO_BTN_INFO
+				    , NULL IMG_URL
+				    , NULL IMG_LINK
+				    , B.SUBJECT K_TITLE
+				    , NULL AD_FLAG
+				    , A.ITG_CUST_NO REV_ID
+				    
+				FROM CRM_CUST_GRADE_CHNG_HST A
+				LEFT JOIN  EON.KKO_TMPL_BASE B ON 1=1
+				LEFT JOIN CRM_CUST_BAS C ON A.ITG_CUST_NO = C.ITG_CUST_NO
+				LEFT JOIN CRM_COMN_CD_BAS D ON B.TEMPLATE_CODE = D.RFRN_1_COMN_CD
+				WHERE B.TEMPLATE_CODE = 'CRM_0010' 
+				AND NVL( D.RFRN_7_COMN_CD , 'N') = 'Y'  /* 참조7  포인트 발송 유무 Y 사용, N 미사용 */
+				AND A.MSHP_GRADE_CD != A.CHNG_PRE_MSHP_GRADE_CD  /* 혹여나 등급이 변경 전후가 같은 멤버십 일 경우 문자 안 보내기 */
+				AND TO_CHAR(A.REG_DT , 'YYYYMMDD') = TO_CHAR( SYSDATE, 'YYYYMMDD')
+				
+    </insert>
+    
+    
+    
+</mapper>

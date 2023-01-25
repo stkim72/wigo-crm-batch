@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CustTypeDao">
+  
+  
+    <select id="getCustList" resultType="com.ceragem.batch.crm.model.CrmCustBasVo">
+    
+    	
+    		 <if test="chkCustTypeCd == '006' ">   
+    
+             	SELECT /* 충성고객(  BOS 본인 구매 이력 1건 이상 + 추천자 구매 이력 1건 이상 ) 외 체크 */ ITG_CUST_NO, CUST_NM, CUST_TYPE_CD, MY_BOS_CNT, MY_RECOM_CNT, RCMDR_CUST_NO, '${chkCustTypeCd}' UP_CUST_TYPE_CD FROM 
+				(
+				    SELECT 
+				        A.ITG_CUST_NO
+				        , A.CUST_NM
+				        , A.CUST_TYPE_CD
+				        , A.RCMDR_CUST_NO
+				        , (SELECT COUNT(*) DD /* BOS 본인 구매 이력 */ FROM CRM_CUST_BOS_CNTRT_HST B WHERE B.ITG_CUST_NO = A.ITG_CUST_NO  AND B.SELNG_DCS_YN = 'Y'  )  MY_BOS_CNT
+				        , (SELECT COUNT(*) DD /* 구매 추천 이력 : 구매 추천아닌 것도 포함하기로 함  */ FROM CRM_RCMD_HST B WHERE B.RCMDR_CUST_NO IS NOT NULL AND B.RCMDR_CUST_NO = A.ITG_CUST_NO )  MY_RECOM_CNT
+				    FROM CRM_CUST_BAS A
+				    WHERE CUST_TYPE_CD  <![CDATA[<]]> '006'
+				    AND CUST_STATUS_CD != '003'
+				) AA
+				WHERE AA.MY_BOS_CNT  <![CDATA[>]]> 0 AND AA.MY_RECOM_CNT  <![CDATA[>]]> 0
+   			
+   			</if>
+   			
+   			 <if test="chkCustTypeCd == '005' ">   
+    
+             	SELECT /* 추천고객( 구매 추천 1건 이상 ) 외 체크 */ ITG_CUST_NO, CUST_NM, CUST_TYPE_CD, MY_RECOM_CNT,  RCMDR_CUST_NO, '${chkCustTypeCd}' UP_CUST_TYPE_CD FROM 
+				(
+				    SELECT 
+				        A.ITG_CUST_NO
+				        , A.CUST_NM
+				        , A.CUST_TYPE_CD
+				        , A.RCMDR_CUST_NO
+				        , (SELECT COUNT(*) DD /* 구매 추천 이력 : 구매 추천아닌 것도 포함하기로 함  */ FROM CRM_RCMD_HST B WHERE B.RCMDR_CUST_NO IS NOT NULL AND B.RCMDR_CUST_NO = A.ITG_CUST_NO  )  MY_RECOM_CNT
+				    FROM CRM_CUST_BAS A
+				    WHERE CUST_TYPE_CD  <![CDATA[<]]> '005'
+				    AND CUST_STATUS_CD != '003'
+				) AA
+				WHERE AA.MY_RECOM_CNT  <![CDATA[>]]> 0
+   			
+   			</if>
+   			
+   			
+   			<if test="chkCustTypeCd == '004' ">   
+    
+             	SELECT /* 구매고객(  BOS 본인 구매 이력 1건 이상) 외 체크 */ ITG_CUST_NO, CUST_NM, CUST_TYPE_CD, MY_BOS_CNT, RCMDR_CUST_NO, '${chkCustTypeCd}' UP_CUST_TYPE_CD FROM 
+				(
+				    SELECT 
+				        A.ITG_CUST_NO
+				        , A.CUST_NM
+				        , A.CUST_TYPE_CD
+				        , A.RCMDR_CUST_NO
+				        , (SELECT COUNT(*) DD /* BOS 본인 구매 이력 */ FROM CRM_CUST_BOS_CNTRT_HST B WHERE B.ITG_CUST_NO = A.ITG_CUST_NO  AND B.SELNG_DCS_YN = 'Y'  )  MY_BOS_CNT
+				    FROM CRM_CUST_BAS A
+				    WHERE CUST_TYPE_CD  <![CDATA[<]]> '004'
+				    AND CUST_STATUS_CD != '003'
+				) AA
+				WHERE AA.MY_BOS_CNT  <![CDATA[>]]> 0 
+				ORDER BY ITG_CUST_NO ASC
+   			
+   			</if>
+   			
+   			
+   			<if test="chkCustTypeCd == '003' ">   
+    
+             	SELECT /* 체험고객 = 웰카페 체험 or 홈체험 1건 이상인 고객 */  ITG_CUST_NO, CUST_NM, CUST_TYPE_CD, MY_EXPRN_CNT, MY_BOS_CNT , RCMDR_CUST_NO,   '${chkCustTypeCd}' UP_CUST_TYPE_CD  FROM 
+				(
+				    SELECT 
+				        A.ITG_CUST_NO
+				        , A.CUST_NM
+				        , A.CUST_TYPE_CD
+				        , A.RCMDR_CUST_NO
+				        , (SELECT COUNT(*) /* 웰카페 체험 카운트 */ FROM CRM_CUST_EXPRN_HST B WHERE B.ITG_CUST_NO = A.ITG_CUST_NO   )  MY_EXPRN_CNT
+       					, (SELECT COUNT(*) /* 홈체험 카운트 EXPRN_CNTR_NO */ FROM CRM_CUST_BOS_CNTRT_HST B WHERE B.ITG_CUST_NO = A.ITG_CUST_NO   AND EXPRN_CNTR_NO IS NOT NULL )  MY_BOS_CNT
+				    FROM CRM_CUST_BAS A
+				    WHERE CUST_TYPE_CD <![CDATA[<]]> '003'
+				    AND CUST_STATUS_CD != '003'
+				) AA
+				WHERE AA.MY_EXPRN_CNT  <![CDATA[>]]> 0 OR AA.MY_BOS_CNT  <![CDATA[>]]> 0 
+   			
+   			</if>
+   			
+   			
+   			
+   			<if test="chkCustTypeCd == '002' ">   
+    
+             	SELECT /* 가망고객 = 마케팅 수신동의 1개 이상 동의 고객 */ ITG_CUST_NO, CUST_NM, CUST_TYPE_CD, TOTAUTH , RCMDR_CUST_NO, '${chkCustTypeCd}' UP_CUST_TYPE_CD  FROM 
+				(
+				    SELECT 
+				        A.ITG_CUST_NO
+				        , A.CUST_NM
+				        , A.CUST_TYPE_CD
+				        , A.RCMDR_CUST_NO
+				        , DECODE(SMS_RCV_AGREE_YN, 'Y', 1, 0) + 
+				         DECODE(EMAIL_RCV_AGREE_YN, 'Y', 1, 0)  +
+				         DECODE(ALRM_TK_RCV_AGREE_YN,  'Y', 1, 0)  +
+				         DECODE(PUSH_RCV_AGREE_YN,  'Y', 1, 0) AS TOTAUTH
+				    FROM CRM_CUST_BAS A
+				    WHERE CUST_TYPE_CD <![CDATA[<]]> '002'
+				    AND CUST_STATUS_CD != '003'
+				) AA
+				WHERE AA.TOTAUTH  <![CDATA[>]]> 0 
+   			
+   			</if>
+   			
+   			
+   			
+    </select>
+    
+    
+    
+    <update id="updCustTypeCd" parameterType="com.ceragem.batch.crm.model.CrmCustBasVo"> 
+    
+	         <foreach collection="list" item="item" index="index" open="DECLARE BEGIN" close="; END;"  separator=";"> 
+
+			  	 UPDATE /* 고객유형 업데이트 - 처리 속도가 1.5 배 빠름 */ CRM_CUST_BAS SET CUST_TYPE_CD = #{item.upCustTypeCd} WHERE ITG_CUST_NO = #{item.itgCustNo}
+			   
+	         </foreach>   
+	               
+    </update> 
+    
+    
+    <update id="update" > 
+	     
+			  	 UPDATE /* 고객유형 업데이트 - 처리 속도 이유로 사용 안 함 */ CRM_CUST_BAS SET CUST_TYPE_CD = #{upCustTypeCd} WHERE ITG_CUST_NO = #{itgCustNo}
+	        
+    </update> 
+    
+    
+    <insert id="insCustTypeCd"  parameterType="com.ceragem.batch.crm.model.CrmCustBasVo" > 
+    
+			 
+			    <foreach collection="list" item="item" index="index"  open="INSERT ALL" close="SELECT * FROM DUAL"  separator=" "> 
+			    
+			       	INTO  /* 고객유형 로그 insert */ CRM_CUST_TYPE_UPD_HST ( CUST_TYPE_UPD_BAS, ITG_CUST_NO, CUST_TYPE_CD, UP_CUST_TYPE_CD, REG_DT ) VALUES 
+			    	(  FN_CRM_AUTO_SEQ('CTC') , '${item.itgCustNo}' ,  '${item.custTypeCd}' , '${item.upCustTypeCd}' ,  SYSDATE   )
+			    	
+			    </foreach>
+			     
+    </insert> 
+    
+    
+        
+    <insert id="insCustTypeCd3"  parameterType="com.ceragem.batch.crm.model.CrmCustBasVo" > 
+    
+    
+			 	INSERT  INTO  /* 고객유형 로그 insert */ CRM_CUST_TYPE_UPD_HST ( CUST_TYPE_UPD_BAS, ITG_CUST_NO, CUST_TYPE_CD, UP_CUST_TYPE_CD, REG_DT ) VALUES 
+			 
+			    <foreach collection="list" item="item" index="index"  open=" " close=" " separator=","> 
+			    
+			       	
+			    	(  FN_CRM_AUTO_SEQ('CTC') , '${item.itgCustNo}' ,  '${item.custTypeCd}' , '${item.upCustTypeCd}' ,  SYSDATE   )
+			    	
+			    </foreach>
+			     
+    </insert> 
+    
+    
+    
+   <insert id="insert"  parameterType="com.ceragem.batch.crm.model.CrmCustBasVo" > 
+    
+			   	INTO  /* 고객유형 로그 insert */ CRM_CUST_TYPE_UPD_HST ( CUST_TYPE_UPD_BAS, ITG_CUST_NO, CUST_TYPE_CD, UP_CUST_TYPE_CD, REG_DT ) VALUES 
+			    	(  FN_CRM_AUTO_SEQ('CTC') , ${itgCustNo} ,  ${custTypeCd} , ${upCustTypeCd} ,  SYSDATE   )
+			    	
+			
+			     
+    </insert> 
+    
+</mapper>

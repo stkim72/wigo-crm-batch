@@ -1,0 +1,1055 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CrmDormCustBasDao">
+    <sql id="sqlPkConditions">
+                WHERE ITG_CUST_NO       =       #{itgCustNo}
+    </sql>
+    <sql id="sqlCols">
+                      ITG_CUST_NO                    /*통합고객번호        */
+                    , CORP_DIV_YN                    /*법인구분여부        */
+                    , CUST_NM                    /*고객명        */
+                    , GNDR_CD                    /*성별코드        */
+                    , BIRTHDAY                    /*생년월일        */
+                    , BIZ_NO                    /*사업자등록번호        */
+                    , CORP_REG_NO                    /*법인등록번호        */
+                    , CORP_TEL_NO                    /*법인전화번호        */
+                    , FORN_YN                    /*외국인여부        */
+                    , REP_NM                    /*대표명        */
+                    , MPHON_NO                    /*이동전화번호        */
+                    , MPHON_BK_DGT_NO                    /*이동전화뒤자리번호        */
+                    , EMAIL_ADDR                    /*이메일주소        */
+                    , PIC_NM                    /*담당자명        */
+                    , PIC_MPHON_NO                    /*담당자이동전화번호        */
+                    , PIC_MPHON_BK_DGT_NO                    /*담당자이동전화뒤자리번호        */
+                    , PIC_EMAIL_ADDR                    /*담당자이메일주소        */
+                    , INDI_INFO_VALID_PERD_STA_DT                    /*개인정보유효기간시작일시        */
+                    , INDI_INFO_VALID_PERD_END_DT                    /*개인정보유효기간종료일시        */
+                    , CUST_STATUS_CD                    /*고객상태코드        */
+                    , CUST_STATUS_CHNG_DT                    /*고객상태변경일시        */
+                    , CUST_INFO_CHNG_DT                    /*고객정보변경일시        */
+                    , CUST_TYPE_CD                    /*고객유형코드        */
+                    , CUST_DIV_CD                    /*고객구분코드        */
+                    , ZIP_CD                    /*우편번호        */
+                    , ADDR_1_CTNTS                    /*주소1내용        */
+                    , ADDR_2_CTNTS                    /*주소2내용        */
+                    , RCMD_STOR_NO                    /*추천매장번호        */
+                    , RCMDR_CUST_NO                    /*추천인고객번호        */
+                    , RCMD_EXECVDEMP_NO                    /*추천임직원번호        */
+                    , MARRY_YN                    /*결혼여부        */
+                    , REP_HSHLD_NO                    /*대표가구번호        */
+                    , FAMLY_REL_CD                    /*가족관계코드        */
+                    , DWEL_NFPY_CD                    /*주거평수코드        */
+                    , INTRST_FILD_CD                    /*관심분야코드        */
+                    , REP_GODS_NO                    /*대표제품번호        */
+                    , REP_USE_CUST_DIV_CD                    /*대표사용고객구분코드        */
+                    , SMS_RCV_AGREE_YN                    /*SMS수신동의여부        */
+                    , SMS_RCV_AGREE_DT                    /*SMS수신동의일시        */
+                    , SMS_RCV_AGREE_CHL_CD                    /*SMS수신동의채널코드        */
+                    , EMAIL_RCV_AGREE_YN                    /*이메일수신동의여부        */
+                    , EMAIL_RCV_AGREE_DT                    /*이메일수신동의일시        */
+                    , EMAIL_RCV_AGREE_CHL_CD                    /*이메일수신동의채널코드        */
+                    , ALRM_TK_RCV_AGREE_YN                    /*알람톡수신동의여부        */
+                    , ALRM_TK_RCV_AGREE_DT                    /*알람톡수신동의일시        */
+                    , ALRM_TK_RCV_AGREE_CHL_CD                    /*알람톡수신동의채널코드        */
+                    , PUSH_RCV_AGREE_YN                    /*PUSH수신동의여부        */
+                    , PUSH_RCV_AGREE_DT                    /*PUSH수신동의일시        */
+                    , PUSH_RCV_AGREE_CHL_CD                    /*PUSH수신동의채널코드        */
+                    , CI_CERTF_YN                    /*CI인증여부        */
+                    , CI                    /*CI        */
+                    , DI_CERTF_YN                    /*DI인증여부        */
+                    , DI                    /*DI        */
+                    , RCV_RFSL_YN                    /*수신거부여부        */
+                    , MSHIP_SBSC_YN                    /*멤버십가입여부        */
+                    , MSHIP_LOGIN_ID                    /*멤버십로그인ID        */
+                    , MSHIP_SBT_NO                    /*멤버십대체번호        */
+                    , MSHIP_LOGIN_PWD                    /*멤버십로그인비밀번호        */
+                    , MSHIP_LAST_LOGIN_DT                    /*멤버십최종로그인일시        */
+                    , MSHIP_LAST_LOGIN_IP_ADDR                    /*멤버십최종로그인IP주소        */
+                    , MSHIP_LAST_STOR_VISIT_DT                    /*멤버십최종매장방문일시        */
+                    , MSHIP_LAST_VISIT_STOR_NO                    /*멤버십최종방문매장번호        */
+                    , MSHIP_TYPE_CD                    /*멤버십유형코드        */
+                    , MSHIP_SBSC_DT                    /*멤버십가입일시        */
+                    , MSHIP_GRADE_CD                    /*멤버십등급코드        */
+                    , MSHIP_GRADE_CHNG_DT                    /*멤버십등급변경일시        */
+                    , MSHIP_INFO_CHNG_DT                    /*멤버십정보변경일시        */
+                    , MSHIP_INFO_CONFR_EXECVDEMP_NO                    /*멤버십정보확인자임직원번호        */
+                    , CPRT_EXECVDEMP_NO                    /*제휴임직원번호        */
+                    , MSHIP_LEAVE_DT                    /*멤버십탈퇴일시        */
+                    , EXTNC_POINT_LMT_SCORE                    /*소멸포인트한도점수        */
+                    , ACCUM_POINT_LMT_SCORE                    /*적립포인트한도점수        */
+                    , MSHIP_CHL_CD                    /*멤버십채널코드        */
+                    , BLLK_REG_STOR_NO                    /*주의고객등록매장번호        */
+                    , BLLKMSHP_YN                    /*주의고객여부        */
+                    , BLLK_REG_CHL_CD                    /*주의고객등록채널코드        */
+                    , BLLK_REG_WHY_CTNTS                    /*주의고객등록사유내용        */
+                    , BLLK_REG_DT                    /*주의고객등록일시        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+                    , REG_CHL_CD                    /*등록채널코드        공통코드 : S000        [CRM : CRM , CTC : 상담 , AS : AS , SAP : SAP]*/
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.ITG_CUST_NO                    /*통합고객번호        */
+                    , A.CORP_DIV_YN                    /*법인구분여부        */
+                    , A.CUST_NM                    /*고객명        */
+                    , A.GNDR_CD                    /*성별코드        */
+                    , A.BIRTHDAY                    /*생년월일        */
+                    , A.BIZ_NO                    /*사업자등록번호        */
+                    , A.CORP_REG_NO                    /*법인등록번호        */
+                    , A.CORP_TEL_NO                    /*법인전화번호        */
+                    , A.FORN_YN                    /*외국인여부        */
+                    , A.REP_NM                    /*대표명        */
+                    , A.MPHON_NO                     /*이동전화번호암호화값        */
+                    , A.MPHON_BK_DGT_NO                    /*이동전화뒤자리번호        */
+                    , A.EMAIL_ADDR                    /*이메일주소        */
+                    , A.PIC_NM                    /*담당자명        */
+                    , A.PIC_MPHON_NO                    /*담당자이동전화번호        */
+                    , A.PIC_MPHON_BK_DGT_NO                    /*담당자이동전화뒤자리번호        */
+                    , A.PIC_EMAIL_ADDR                    /*담당자이메일주소        */
+                    , TO_CHAR(A.INDI_INFO_VALID_PERD_STA_DT,'YYYYMMDDHH24MISS')    INDI_INFO_VALID_PERD_STA_DT                    /*개인정보유효기간시작일시        */
+                    , TO_CHAR(A.INDI_INFO_VALID_PERD_END_DT,'YYYYMMDDHH24MISS')    INDI_INFO_VALID_PERD_END_DT                    /*개인정보유효기간종료일시        */
+                    , A.CUST_STATUS_CD                    /*고객상태코드        */
+                    , TO_CHAR(A.CUST_STATUS_CHNG_DT,'YYYYMMDDHH24MISS')    CUST_STATUS_CHNG_DT                    /*고객상태변경일시        */
+                    , TO_CHAR(A.CUST_INFO_CHNG_DT,'YYYYMMDDHH24MISS')    CUST_INFO_CHNG_DT                    /*고객정보변경일시        */
+                    , A.CUST_TYPE_CD                    /*고객유형코드        */
+                    , A.CUST_DIV_CD                    /*고객구분코드        */
+                    , A.ZIP_CD                    /*우편번호        */
+                    , A.ADDR_1_CTNTS                    /*주소1내용        */
+                    , A.ADDR_2_CTNTS                    /*주소2내용        */
+                    , A.RCMD_STOR_NO                    /*추천매장번호        */
+                    , A.RCMDR_CUST_NO                    /*추천인고객번호        */
+                    , A.RCMD_EXECVDEMP_NO                    /*추천임직원번호        */
+                    , A.MARRY_YN                    /*결혼여부        */
+                    , A.REP_HSHLD_NO                    /*대표가구번호        */
+                    , A.FAMLY_REL_CD                    /*가족관계코드        */
+                    , A.DWEL_NFPY_CD                    /*주거평수코드        */
+                    , A.INTRST_FILD_CD                    /*관심분야코드        */
+                    , A.REP_GODS_NO                    /*대표제품번호        */
+                    , A.REP_USE_CUST_DIV_CD                    /*대표사용고객구분코드        */
+                    , A.SMS_RCV_AGREE_YN                    /*SMS수신동의여부        */
+                    , TO_CHAR(A.SMS_RCV_AGREE_DT,'YYYYMMDDHH24MISS')    SMS_RCV_AGREE_DT                    /*SMS수신동의일시        */
+                    , A.SMS_RCV_AGREE_CHL_CD                    /*SMS수신동의채널코드        */
+                    , A.EMAIL_RCV_AGREE_YN                    /*이메일수신동의여부        */
+                    , TO_CHAR(A.EMAIL_RCV_AGREE_DT,'YYYYMMDDHH24MISS')    EMAIL_RCV_AGREE_DT                    /*이메일수신동의일시        */
+                    , A.EMAIL_RCV_AGREE_CHL_CD                    /*이메일수신동의채널코드        */
+                    , A.ALRM_TK_RCV_AGREE_YN                    /*알람톡수신동의여부        */
+                    , TO_CHAR(A.ALRM_TK_RCV_AGREE_DT,'YYYYMMDDHH24MISS')    ALRM_TK_RCV_AGREE_DT                    /*알람톡수신동의일시        */
+                    , A.ALRM_TK_RCV_AGREE_CHL_CD                    /*알람톡수신동의채널코드        */
+                    , A.PUSH_RCV_AGREE_YN                    /*PUSH수신동의여부        */
+                    , TO_CHAR(A.PUSH_RCV_AGREE_DT,'YYYYMMDDHH24MISS')    PUSH_RCV_AGREE_DT                    /*PUSH수신동의일시        */
+                    , A.PUSH_RCV_AGREE_CHL_CD                    /*PUSH수신동의채널코드        */
+                    , A.CI_CERTF_YN                    /*CI인증여부        */
+                    , A.CI                    /*CI        */
+                    , A.DI_CERTF_YN                    /*DI인증여부        */
+                    , A.DI                    /*DI        */
+                    , A.RCV_RFSL_YN                    /*수신거부여부        */
+                    , A.MSHIP_SBSC_YN                    /*멤버십가입여부        */
+                    , A.MSHIP_LOGIN_ID                    /*멤버십로그인ID        */
+                    , A.MSHIP_SBT_NO                    /*멤버십대체번호        */
+                    , A.MSHIP_LOGIN_PWD                    /*멤버십로그인비밀번호        */
+                    , TO_CHAR(A.MSHIP_LAST_LOGIN_DT,'YYYYMMDDHH24MISS')    MSHIP_LAST_LOGIN_DT                    /*멤버십최종로그인일시        */
+                    , A.MSHIP_LAST_LOGIN_IP_ADDR                    /*멤버십최종로그인IP주소        */
+                    , TO_CHAR(A.MSHIP_LAST_STOR_VISIT_DT,'YYYYMMDDHH24MISS')    MSHIP_LAST_STOR_VISIT_DT                    /*멤버십최종매장방문일시        */
+                    , A.MSHIP_LAST_VISIT_STOR_NO                    /*멤버십최종방문매장번호        */
+                    , A.MSHIP_TYPE_CD                    /*멤버십유형코드        */
+                    , TO_CHAR(A.MSHIP_SBSC_DT,'YYYYMMDDHH24MISS')    MSHIP_SBSC_DT                    /*멤버십가입일시        */
+                    , A.MSHIP_GRADE_CD                    /*멤버십등급코드        */
+                    , TO_CHAR(A.MSHIP_GRADE_CHNG_DT,'YYYYMMDDHH24MISS')    MSHIP_GRADE_CHNG_DT                    /*멤버십등급변경일시        */
+                    , TO_CHAR(A.MSHIP_INFO_CHNG_DT,'YYYYMMDDHH24MISS')    MSHIP_INFO_CHNG_DT                    /*멤버십정보변경일시        */
+                    , A.MSHIP_INFO_CONFR_EXECVDEMP_NO                    /*멤버십정보확인자임직원번호        */
+                    , A.CPRT_EXECVDEMP_NO                    /*제휴임직원번호        */
+                    , TO_CHAR(A.MSHIP_LEAVE_DT,'YYYYMMDDHH24MISS')    MSHIP_LEAVE_DT                    /*멤버십탈퇴일시        */
+                    , A.EXTNC_POINT_LMT_SCORE                    /*소멸포인트한도점수        */
+                    , A.ACCUM_POINT_LMT_SCORE                    /*적립포인트한도점수        */
+                    , A.MSHIP_CHL_CD                    /*멤버십채널코드        */
+                    , A.BLLK_REG_STOR_NO                    /*주의고객등록매장번호        */
+                    , A.BLLKMSHP_YN                    /*주의고객여부        */
+                    , A.BLLK_REG_CHL_CD                    /*주의고객등록채널코드        */
+                    , A.BLLK_REG_WHY_CTNTS                    /*주의고객등록사유내용        */
+                    , TO_CHAR(A.BLLK_REG_DT,'YYYYMMDDHH24MISS')    BLLK_REG_DT                    /*주의고객등록일시        */
+                    , A.AMDR_ID                    /*수정자ID        */
+                    , TO_CHAR(A.AMD_DT,'YYYYMMDDHH24MISS')    AMD_DT                    /*수정일시        */
+                    , A.REGR_ID                    /*등록자ID        */
+                    , TO_CHAR(A.REG_DT,'YYYYMMDDHH24MISS')    REG_DT                    /*등록일시        */
+                    , A.REG_CHL_CD                    /*등록채널코드        공통코드 : S000        [CRM : CRM , CTC : 상담 , AS : AS , SAP : SAP]*/
+    </sql>
+    <sql id="sqlConditions">
+        <where>
+        <if test="itgCustNo != null and itgCustNo != ''">
+                  AND A.ITG_CUST_NO     =       #{itgCustNo}
+        </if>
+        <if test="corpDivYn != null and corpDivYn != ''">
+                  AND A.CORP_DIV_YN     =       #{corpDivYn}
+        </if>
+        <if test="custNm != null and custNm != ''">
+                  AND A.CUST_NM         =       #{custNm}
+        </if>
+        <if test="gndrCd != null and gndrCd != ''">
+            <choose>
+                <when test="gndrCd instanceof String">
+                    AND A.GNDR_CD         =       #{gndrCd}
+                </when>
+                <otherwise>
+                    AND A.GNDR_CD         IN
+                    <foreach item="item" index="index" collection="gndrCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="birthday != null and birthday != ''">
+                  AND A.BIRTHDAY        =       #{birthday}
+        </if>
+        <if test="bizNo != null and bizNo != ''">
+                  AND A.BIZ_NO          =       #{bizNo}
+        </if>
+        <if test="corpRegNo != null and corpRegNo != ''">
+                  AND A.CORP_REG_NO     =       #{corpRegNo}
+        </if>
+        <if test="corpTelNo != null and corpTelNo != ''">
+                  AND A.CORP_TEL_NO     =       #{corpTelNo}
+        </if>
+        <if test="fornYn != null and fornYn != ''">
+                  AND A.FORN_YN         =       #{fornYn}
+        </if>
+        <if test="repNm != null and repNm != ''">
+                  AND A.REP_NM          =       #{repNm}
+        </if>
+        <if test="mphonNo != null and mphonNo != ''">
+                  AND A.MPHON_NO        =       #{mphonNo}
+        </if>
+        <if test="mphonBkDgtNo != null and mphonBkDgtNo != ''">
+                  AND A.MPHON_BK_DGT_NO =       #{mphonBkDgtNo}
+        </if>
+        <if test="emailAddr != null and emailAddr != ''">
+                  AND A.EMAIL_ADDR      =       #{emailAddr}
+        </if>
+        <if test="picNm != null and picNm != ''">
+                  AND A.PIC_NM          =       #{picNm}
+        </if>
+        <if test="picMphonNo != null and picMphonNo != ''">
+                  AND A.PIC_MPHON_NO    =       #{picMphonNo}
+        </if>
+        <if test="picMphonBkDgtNo != null and picMphonBkDgtNo != ''">
+                  AND A.PIC_MPHON_BK_DGT_NO=       #{picMphonBkDgtNo}
+        </if>
+        <if test="picEmailAddr != null and picEmailAddr != ''">
+                  AND A.PIC_EMAIL_ADDR  =       #{picEmailAddr}
+        </if>
+        <if test="indiInfoValidPerdStaDt != null and indiInfoValidPerdStaDt != ''">
+                  AND A.INDI_INFO_VALID_PERD_STA_DT=       TO_DATE(#{indiInfoValidPerdStaDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="indiInfoValidPerdEndDt != null and indiInfoValidPerdEndDt != ''">
+                  AND A.INDI_INFO_VALID_PERD_END_DT=       TO_DATE(#{indiInfoValidPerdEndDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="custStatusCd != null and custStatusCd != ''">
+            <choose>
+                <when test="custStatusCd instanceof String">
+                    AND A.CUST_STATUS_CD  =       #{custStatusCd}
+                </when>
+                <otherwise>
+                    AND A.CUST_STATUS_CD  IN
+                    <foreach item="item" index="index" collection="custStatusCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="custStatusChngDt != null and custStatusChngDt != ''">
+                  AND A.CUST_STATUS_CHNG_DT=       TO_DATE(#{custStatusChngDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="custInfoChngDt != null and custInfoChngDt != ''">
+                  AND A.CUST_INFO_CHNG_DT=       TO_DATE(#{custInfoChngDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="custTypeCd != null and custTypeCd != ''">
+            <choose>
+                <when test="custTypeCd instanceof String">
+                    AND A.CUST_TYPE_CD    =       #{custTypeCd}
+                </when>
+                <otherwise>
+                    AND A.CUST_TYPE_CD    IN
+                    <foreach item="item" index="index" collection="custTypeCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="custDivCd != null and custDivCd != ''">
+            <choose>
+                <when test="custDivCd instanceof String">
+                    AND A.CUST_DIV_CD     =       #{custDivCd}
+                </when>
+                <otherwise>
+                    AND A.CUST_DIV_CD     IN
+                    <foreach item="item" index="index" collection="custDivCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="zipCd != null and zipCd != ''">
+            <choose>
+                <when test="zipCd instanceof String">
+                    AND A.ZIP_CD          =       #{zipCd}
+                </when>
+                <otherwise>
+                    AND A.ZIP_CD          IN
+                    <foreach item="item" index="index" collection="zipCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="addr1Ctnts != null and addr1Ctnts != ''">
+                  AND A.ADDR_1_CTNTS    =       #{addr1Ctnts}
+        </if>
+        <if test="addr2Ctnts != null and addr2Ctnts != ''">
+                  AND A.ADDR_2_CTNTS    =       #{addr2Ctnts}
+        </if>
+        <if test="rcmdStorNo != null and rcmdStorNo != ''">
+                  AND A.RCMD_STOR_NO    =       #{rcmdStorNo}
+        </if>
+        <if test="rcmdrCustNo != null and rcmdrCustNo != ''">
+                  AND A.RCMDR_CUST_NO   =       #{rcmdrCustNo}
+        </if>
+        <if test="rcmdExecvdempNo != null and rcmdExecvdempNo != ''">
+                  AND A.RCMD_EXECVDEMP_NO=       #{rcmdExecvdempNo}
+        </if>
+        <if test="marryYn != null and marryYn != ''">
+                  AND A.MARRY_YN        =       #{marryYn}
+        </if>
+        <if test="repHshldNo != null and repHshldNo != ''">
+                  AND A.REP_HSHLD_NO    =       #{repHshldNo}
+        </if>
+        <if test="famlyRelCd != null and famlyRelCd != ''">
+            <choose>
+                <when test="famlyRelCd instanceof String">
+                    AND A.FAMLY_REL_CD    =       #{famlyRelCd}
+                </when>
+                <otherwise>
+                    AND A.FAMLY_REL_CD    IN
+                    <foreach item="item" index="index" collection="famlyRelCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="dwelNfpyCd != null and dwelNfpyCd != ''">
+            <choose>
+                <when test="dwelNfpyCd instanceof String">
+                    AND A.DWEL_NFPY_CD    =       #{dwelNfpyCd}
+                </when>
+                <otherwise>
+                    AND A.DWEL_NFPY_CD    IN
+                    <foreach item="item" index="index" collection="dwelNfpyCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="intrstFildCd != null and intrstFildCd != ''">
+            <choose>
+                <when test="intrstFildCd instanceof String">
+                    AND A.INTRST_FILD_CD  =       #{intrstFildCd}
+                </when>
+                <otherwise>
+                    AND A.INTRST_FILD_CD  IN
+                    <foreach item="item" index="index" collection="intrstFildCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="repGodsNo != null and repGodsNo != ''">
+                  AND A.REP_GODS_NO     =       #{repGodsNo}
+        </if>
+        <if test="repUseCustDivCd != null and repUseCustDivCd != ''">
+            <choose>
+                <when test="repUseCustDivCd instanceof String">
+                    AND A.REP_USE_CUST_DIV_CD=       #{repUseCustDivCd}
+                </when>
+                <otherwise>
+                    AND A.REP_USE_CUST_DIV_CDIN
+                    <foreach item="item" index="index" collection="repUseCustDivCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="smsRcvAgreeYn != null and smsRcvAgreeYn != ''">
+                  AND A.SMS_RCV_AGREE_YN=       #{smsRcvAgreeYn}
+        </if>
+        <if test="smsRcvAgreeDt != null and smsRcvAgreeDt != ''">
+                  AND A.SMS_RCV_AGREE_DT=       TO_DATE(#{smsRcvAgreeDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="smsRcvAgreeChlCd != null and smsRcvAgreeChlCd != ''">
+            <choose>
+                <when test="smsRcvAgreeChlCd instanceof String">
+                    AND A.SMS_RCV_AGREE_CHL_CD=       #{smsRcvAgreeChlCd}
+                </when>
+                <otherwise>
+                    AND A.SMS_RCV_AGREE_CHL_CDIN
+                    <foreach item="item" index="index" collection="smsRcvAgreeChlCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="emailRcvAgreeYn != null and emailRcvAgreeYn != ''">
+                  AND A.EMAIL_RCV_AGREE_YN=       #{emailRcvAgreeYn}
+        </if>
+        <if test="emailRcvAgreeDt != null and emailRcvAgreeDt != ''">
+                  AND A.EMAIL_RCV_AGREE_DT=       TO_DATE(#{emailRcvAgreeDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="emailRcvAgreeChlCd != null and emailRcvAgreeChlCd != ''">
+            <choose>
+                <when test="emailRcvAgreeChlCd instanceof String">
+                    AND A.EMAIL_RCV_AGREE_CHL_CD=       #{emailRcvAgreeChlCd}
+                </when>
+                <otherwise>
+                    AND A.EMAIL_RCV_AGREE_CHL_CDIN
+                    <foreach item="item" index="index" collection="emailRcvAgreeChlCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="alrmTkRcvAgreeYn != null and alrmTkRcvAgreeYn != ''">
+                  AND A.ALRM_TK_RCV_AGREE_YN=       #{alrmTkRcvAgreeYn}
+        </if>
+        <if test="alrmTkRcvAgreeDt != null and alrmTkRcvAgreeDt != ''">
+                  AND A.ALRM_TK_RCV_AGREE_DT=       TO_DATE(#{alrmTkRcvAgreeDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="alrmTkRcvAgreeChlCd != null and alrmTkRcvAgreeChlCd != ''">
+            <choose>
+                <when test="alrmTkRcvAgreeChlCd instanceof String">
+                    AND A.ALRM_TK_RCV_AGREE_CHL_CD=       #{alrmTkRcvAgreeChlCd}
+                </when>
+                <otherwise>
+                    AND A.ALRM_TK_RCV_AGREE_CHL_CDIN
+                    <foreach item="item" index="index" collection="alrmTkRcvAgreeChlCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="pushRcvAgreeYn != null and pushRcvAgreeYn != ''">
+                  AND A.PUSH_RCV_AGREE_YN=       #{pushRcvAgreeYn}
+        </if>
+        <if test="pushRcvAgreeDt != null and pushRcvAgreeDt != ''">
+                  AND A.PUSH_RCV_AGREE_DT=       TO_DATE(#{pushRcvAgreeDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="pushRcvAgreeChlCd != null and pushRcvAgreeChlCd != ''">
+            <choose>
+                <when test="pushRcvAgreeChlCd instanceof String">
+                    AND A.PUSH_RCV_AGREE_CHL_CD=       #{pushRcvAgreeChlCd}
+                </when>
+                <otherwise>
+                    AND A.PUSH_RCV_AGREE_CHL_CDIN
+                    <foreach item="item" index="index" collection="pushRcvAgreeChlCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="ciCertfYn != null and ciCertfYn != ''">
+                  AND A.CI_CERTF_YN     =       #{ciCertfYn}
+        </if>
+        <if test="ci != null and ci != ''">
+                  AND A.CI              =       #{ci}
+        </if>
+        <if test="diCertfYn != null and diCertfYn != ''">
+                  AND A.DI_CERTF_YN     =       #{diCertfYn}
+        </if>
+        <if test="di != null and di != ''">
+                  AND A.DI              =       #{di}
+        </if>
+        <if test="rcvRfslYn != null and rcvRfslYn != ''">
+                  AND A.RCV_RFSL_YN     =       #{rcvRfslYn}
+        </if>
+        <if test="mshipSbscYn != null and mshipSbscYn != ''">
+                  AND A.MSHIP_SBSC_YN   =       #{mshipSbscYn}
+        </if>
+        <if test="mshipLoginId != null and mshipLoginId != ''">
+                  AND A.MSHIP_LOGIN_ID  =       #{mshipLoginId}
+        </if>
+        <if test="mshipSbtNo != null and mshipSbtNo != ''">
+                  AND A.MSHIP_SBT_NO    =       #{mshipSbtNo}
+        </if>
+        <if test="mshipLoginPwd != null and mshipLoginPwd != ''">
+                  AND A.MSHIP_LOGIN_PWD =       #{mshipLoginPwd}
+        </if>
+        <if test="mshipLastLoginDt != null and mshipLastLoginDt != ''">
+                  AND A.MSHIP_LAST_LOGIN_DT=       TO_DATE(#{mshipLastLoginDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="mshipLastLoginIpAddr != null and mshipLastLoginIpAddr != ''">
+                  AND A.MSHIP_LAST_LOGIN_IP_ADDR=       #{mshipLastLoginIpAddr}
+        </if>
+        <if test="mshipLastStorVisitDt != null and mshipLastStorVisitDt != ''">
+                  AND A.MSHIP_LAST_STOR_VISIT_DT=       TO_DATE(#{mshipLastStorVisitDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="mshipLastVisitStorNo != null and mshipLastVisitStorNo != ''">
+                  AND A.MSHIP_LAST_VISIT_STOR_NO=       #{mshipLastVisitStorNo}
+        </if>
+        <if test="mshipTypeCd != null and mshipTypeCd != ''">
+            <choose>
+                <when test="mshipTypeCd instanceof String">
+                    AND A.MSHIP_TYPE_CD   =       #{mshipTypeCd}
+                </when>
+                <otherwise>
+                    AND A.MSHIP_TYPE_CD   IN
+                    <foreach item="item" index="index" collection="mshipTypeCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="mshipSbscDt != null and mshipSbscDt != ''">
+                  AND A.MSHIP_SBSC_DT   =       TO_DATE(#{mshipSbscDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="mshipGradeCd != null and mshipGradeCd != ''">
+            <choose>
+                <when test="mshipGradeCd instanceof String">
+                    AND A.MSHIP_GRADE_CD  =       #{mshipGradeCd}
+                </when>
+                <otherwise>
+                    AND A.MSHIP_GRADE_CD  IN
+                    <foreach item="item" index="index" collection="mshipGradeCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="mshipGradeChngDt != null and mshipGradeChngDt != ''">
+                  AND A.MSHIP_GRADE_CHNG_DT=       TO_DATE(#{mshipGradeChngDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="mshipInfoChngDt != null and mshipInfoChngDt != ''">
+                  AND A.MSHIP_INFO_CHNG_DT=       TO_DATE(#{mshipInfoChngDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="mshipInfoConfrExecvdempNo != null and mshipInfoConfrExecvdempNo != ''">
+                  AND A.MSHIP_INFO_CONFR_EXECVDEMP_NO=       #{mshipInfoConfrExecvdempNo}
+        </if>
+        <if test="cprtExecvdempNo != null and cprtExecvdempNo != ''">
+                  AND A.CPRT_EXECVDEMP_NO=       #{cprtExecvdempNo}
+        </if>
+        <if test="mshipLeaveDt != null and mshipLeaveDt != ''">
+                  AND A.MSHIP_LEAVE_DT  =       TO_DATE(#{mshipLeaveDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="extncPointLmtScore != null and extncPointLmtScore != ''">
+                  AND A.EXTNC_POINT_LMT_SCORE=       #{extncPointLmtScore}
+        </if>
+        <if test="accumPointLmtScore != null and accumPointLmtScore != ''">
+                  AND A.ACCUM_POINT_LMT_SCORE=       #{accumPointLmtScore}
+        </if>
+        <if test="mshipChlCd != null and mshipChlCd != ''">
+            <choose>
+                <when test="mshipChlCd instanceof String">
+                    AND A.MSHIP_CHL_CD    =       #{mshipChlCd}
+                </when>
+                <otherwise>
+                    AND A.MSHIP_CHL_CD    IN
+                    <foreach item="item" index="index" collection="mshipChlCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="bllkRegStorNo != null and bllkRegStorNo != ''">
+                  AND A.BLLK_REG_STOR_NO=       #{bllkRegStorNo}
+        </if>
+        <if test="bllkmshpYn != null and bllkmshpYn != ''">
+                  AND A.BLLKMSHP_YN     =       #{bllkmshpYn}
+        </if>
+        <if test="bllkRegChlCd != null and bllkRegChlCd != ''">
+            <choose>
+                <when test="bllkRegChlCd instanceof String">
+                    AND A.BLLK_REG_CHL_CD =       #{bllkRegChlCd}
+                </when>
+                <otherwise>
+                    AND A.BLLK_REG_CHL_CD IN
+                    <foreach item="item" index="index" collection="bllkRegChlCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="bllkRegWhyCtnts != null and bllkRegWhyCtnts != ''">
+                  AND A.BLLK_REG_WHY_CTNTS=       #{bllkRegWhyCtnts}
+        </if>
+        <if test="bllkRegDt != null and bllkRegDt != ''">
+                  AND A.BLLK_REG_DT     =       TO_DATE(#{bllkRegDt},'YYYYMMDDHH24MISS')
+        </if>
+        <if test="regChlCd != null and regChlCd != ''">
+            <choose>
+                <when test="regChlCd instanceof String">
+                    AND A.REG_CHL_CD      =       #{regChlCd}
+                </when>
+                <otherwise>
+                    AND A.REG_CHL_CD      IN
+                    <foreach item="item" index="index" collection="regChlCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('itgCustNo')">
+                ORDER BY      ITG_CUST_NO
+            </when>
+            <when test="colSortName.equals('corpDivYn')">
+                ORDER BY      CORP_DIV_YN
+            </when>
+            <when test="colSortName.equals('custNm')">
+                ORDER BY      CUST_NM
+            </when>
+            <when test="colSortName.equals('gndrCd')">
+                ORDER BY      GNDR_CD
+            </when>
+            <when test="colSortName.equals('birthday')">
+                ORDER BY      BIRTHDAY
+            </when>
+            <when test="colSortName.equals('bizNo')">
+                ORDER BY      BIZ_NO
+            </when>
+            <when test="colSortName.equals('corpRegNo')">
+                ORDER BY      CORP_REG_NO
+            </when>
+            <when test="colSortName.equals('corpTelNo')">
+                ORDER BY      CORP_TEL_NO
+            </when>
+            <when test="colSortName.equals('fornYn')">
+                ORDER BY      FORN_YN
+            </when>
+            <when test="colSortName.equals('repNm')">
+                ORDER BY      REP_NM
+            </when>
+            <when test="colSortName.equals('mphonNo')">
+                ORDER BY      MPHON_NO
+            </when>
+            <when test="colSortName.equals('mphonBkDgtNo')">
+                ORDER BY      MPHON_BK_DGT_NO
+            </when>
+            <when test="colSortName.equals('emailAddr')">
+                ORDER BY      EMAIL_ADDR
+            </when>
+            <when test="colSortName.equals('picNm')">
+                ORDER BY      PIC_NM
+            </when>
+            <when test="colSortName.equals('picMphonNo')">
+                ORDER BY      PIC_MPHON_NO
+            </when>
+            <when test="colSortName.equals('picMphonBkDgtNo')">
+                ORDER BY      PIC_MPHON_BK_DGT_NO
+            </when>
+            <when test="colSortName.equals('picEmailAddr')">
+                ORDER BY      PIC_EMAIL_ADDR
+            </when>
+            <when test="colSortName.equals('indiInfoValidPerdStaDt')">
+                ORDER BY      INDI_INFO_VALID_PERD_STA_DT
+            </when>
+            <when test="colSortName.equals('indiInfoValidPerdEndDt')">
+                ORDER BY      INDI_INFO_VALID_PERD_END_DT
+            </when>
+            <when test="colSortName.equals('custStatusCd')">
+                ORDER BY      CUST_STATUS_CD
+            </when>
+            <when test="colSortName.equals('custStatusChngDt')">
+                ORDER BY      CUST_STATUS_CHNG_DT
+            </when>
+            <when test="colSortName.equals('custInfoChngDt')">
+                ORDER BY      CUST_INFO_CHNG_DT
+            </when>
+            <when test="colSortName.equals('custTypeCd')">
+                ORDER BY      CUST_TYPE_CD
+            </when>
+            <when test="colSortName.equals('custDivCd')">
+                ORDER BY      CUST_DIV_CD
+            </when>
+            <when test="colSortName.equals('zipCd')">
+                ORDER BY      ZIP_CD
+            </when>
+            <when test="colSortName.equals('addr1Ctnts')">
+                ORDER BY      ADDR_1_CTNTS
+            </when>
+            <when test="colSortName.equals('addr2Ctnts')">
+                ORDER BY      ADDR_2_CTNTS
+            </when>
+            <when test="colSortName.equals('rcmdStorNo')">
+                ORDER BY      RCMD_STOR_NO
+            </when>
+            <when test="colSortName.equals('rcmdrCustNo')">
+                ORDER BY      RCMDR_CUST_NO
+            </when>
+            <when test="colSortName.equals('rcmdExecvdempNo')">
+                ORDER BY      RCMD_EXECVDEMP_NO
+            </when>
+            <when test="colSortName.equals('marryYn')">
+                ORDER BY      MARRY_YN
+            </when>
+            <when test="colSortName.equals('repHshldNo')">
+                ORDER BY      REP_HSHLD_NO
+            </when>
+            <when test="colSortName.equals('famlyRelCd')">
+                ORDER BY      FAMLY_REL_CD
+            </when>
+            <when test="colSortName.equals('dwelNfpyCd')">
+                ORDER BY      DWEL_NFPY_CD
+            </when>
+            <when test="colSortName.equals('intrstFildCd')">
+                ORDER BY      INTRST_FILD_CD
+            </when>
+            <when test="colSortName.equals('repGodsNo')">
+                ORDER BY      REP_GODS_NO
+            </when>
+            <when test="colSortName.equals('repUseCustDivCd')">
+                ORDER BY      REP_USE_CUST_DIV_CD
+            </when>
+            <when test="colSortName.equals('smsRcvAgreeYn')">
+                ORDER BY      SMS_RCV_AGREE_YN
+            </when>
+            <when test="colSortName.equals('smsRcvAgreeDt')">
+                ORDER BY      SMS_RCV_AGREE_DT
+            </when>
+            <when test="colSortName.equals('smsRcvAgreeChlCd')">
+                ORDER BY      SMS_RCV_AGREE_CHL_CD
+            </when>
+            <when test="colSortName.equals('emailRcvAgreeYn')">
+                ORDER BY      EMAIL_RCV_AGREE_YN
+            </when>
+            <when test="colSortName.equals('emailRcvAgreeDt')">
+                ORDER BY      EMAIL_RCV_AGREE_DT
+            </when>
+            <when test="colSortName.equals('emailRcvAgreeChlCd')">
+                ORDER BY      EMAIL_RCV_AGREE_CHL_CD
+            </when>
+            <when test="colSortName.equals('alrmTkRcvAgreeYn')">
+                ORDER BY      ALRM_TK_RCV_AGREE_YN
+            </when>
+            <when test="colSortName.equals('alrmTkRcvAgreeDt')">
+                ORDER BY      ALRM_TK_RCV_AGREE_DT
+            </when>
+            <when test="colSortName.equals('alrmTkRcvAgreeChlCd')">
+                ORDER BY      ALRM_TK_RCV_AGREE_CHL_CD
+            </when>
+            <when test="colSortName.equals('pushRcvAgreeYn')">
+                ORDER BY      PUSH_RCV_AGREE_YN
+            </when>
+            <when test="colSortName.equals('pushRcvAgreeDt')">
+                ORDER BY      PUSH_RCV_AGREE_DT
+            </when>
+            <when test="colSortName.equals('pushRcvAgreeChlCd')">
+                ORDER BY      PUSH_RCV_AGREE_CHL_CD
+            </when>
+            <when test="colSortName.equals('ciCertfYn')">
+                ORDER BY      CI_CERTF_YN
+            </when>
+            <when test="colSortName.equals('ci')">
+                ORDER BY      CI
+            </when>
+            <when test="colSortName.equals('diCertfYn')">
+                ORDER BY      DI_CERTF_YN
+            </when>
+            <when test="colSortName.equals('di')">
+                ORDER BY      DI
+            </when>
+            <when test="colSortName.equals('rcvRfslYn')">
+                ORDER BY      RCV_RFSL_YN
+            </when>
+            <when test="colSortName.equals('mshipSbscYn')">
+                ORDER BY      MSHIP_SBSC_YN
+            </when>
+            <when test="colSortName.equals('mshipLoginId')">
+                ORDER BY      MSHIP_LOGIN_ID
+            </when>
+            <when test="colSortName.equals('mshipSbtNo')">
+                ORDER BY      MSHIP_SBT_NO
+            </when>
+            <when test="colSortName.equals('mshipLoginPwd')">
+                ORDER BY      MSHIP_LOGIN_PWD
+            </when>
+            <when test="colSortName.equals('mshipLastLoginDt')">
+                ORDER BY      MSHIP_LAST_LOGIN_DT
+            </when>
+            <when test="colSortName.equals('mshipLastLoginIpAddr')">
+                ORDER BY      MSHIP_LAST_LOGIN_IP_ADDR
+            </when>
+            <when test="colSortName.equals('mshipLastStorVisitDt')">
+                ORDER BY      MSHIP_LAST_STOR_VISIT_DT
+            </when>
+            <when test="colSortName.equals('mshipLastVisitStorNo')">
+                ORDER BY      MSHIP_LAST_VISIT_STOR_NO
+            </when>
+            <when test="colSortName.equals('mshipTypeCd')">
+                ORDER BY      MSHIP_TYPE_CD
+            </when>
+            <when test="colSortName.equals('mshipSbscDt')">
+                ORDER BY      MSHIP_SBSC_DT
+            </when>
+            <when test="colSortName.equals('mshipGradeCd')">
+                ORDER BY      MSHIP_GRADE_CD
+            </when>
+            <when test="colSortName.equals('mshipGradeChngDt')">
+                ORDER BY      MSHIP_GRADE_CHNG_DT
+            </when>
+            <when test="colSortName.equals('mshipInfoChngDt')">
+                ORDER BY      MSHIP_INFO_CHNG_DT
+            </when>
+            <when test="colSortName.equals('mshipInfoConfrExecvdempNo')">
+                ORDER BY      MSHIP_INFO_CONFR_EXECVDEMP_NO
+            </when>
+            <when test="colSortName.equals('cprtExecvdempNo')">
+                ORDER BY      CPRT_EXECVDEMP_NO
+            </when>
+            <when test="colSortName.equals('mshipLeaveDt')">
+                ORDER BY      MSHIP_LEAVE_DT
+            </when>
+            <when test="colSortName.equals('extncPointLmtScore')">
+                ORDER BY      EXTNC_POINT_LMT_SCORE
+            </when>
+            <when test="colSortName.equals('accumPointLmtScore')">
+                ORDER BY      ACCUM_POINT_LMT_SCORE
+            </when>
+            <when test="colSortName.equals('mshipChlCd')">
+                ORDER BY      MSHIP_CHL_CD
+            </when>
+            <when test="colSortName.equals('bllkRegStorNo')">
+                ORDER BY      BLLK_REG_STOR_NO
+            </when>
+            <when test="colSortName.equals('bllkmshpYn')">
+                ORDER BY      BLLKMSHP_YN
+            </when>
+            <when test="colSortName.equals('bllkRegChlCd')">
+                ORDER BY      BLLK_REG_CHL_CD
+            </when>
+            <when test="colSortName.equals('bllkRegWhyCtnts')">
+                ORDER BY      BLLK_REG_WHY_CTNTS
+            </when>
+            <when test="colSortName.equals('bllkRegDt')">
+                ORDER BY      BLLK_REG_DT
+            </when>
+            <when test="colSortName.equals('amdrId')">
+                ORDER BY      AMDR_ID
+            </when>
+            <when test="colSortName.equals('amdDt')">
+                ORDER BY      AMD_DT
+            </when>
+            <when test="colSortName.equals('regrId')">
+                ORDER BY      REGR_ID
+            </when>
+            <when test="colSortName.equals('regDt')">
+                ORDER BY      REG_DT
+            </when>
+            <when test="colSortName.equals('regChlCd')">
+                ORDER BY      REG_CHL_CD
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT COUNT(1)
+                 FROM CRM_DORM_CUST_BAS A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.model.CrmDormCustBasVo">
+        <include refid="com.ceragem.batch.crm.dao.CrmCommonDao.pagingHeader"/>
+               SELECT <include refid="sqlSelectCols"/>
+                 FROM CRM_DORM_CUST_BAS A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+        <include refid="com.ceragem.batch.crm.dao.CrmCommonDao.pagingFooter"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.model.CrmDormCustBasVo">
+               SELECT <include refid="sqlSelectCols"/>
+                 FROM CRM_DORM_CUST_BAS A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT INTO CRM_DORM_CUST_BAS (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{itgCustNo}
+                     , NVL(#{corpDivYn},'N')
+                     , #{custNm}
+                     , #{gndrCd}
+                     , #{birthday}
+                     , #{bizNo}
+                     , #{corpRegNo}
+                     , #{corpTelNo}
+                     , NVL(#{fornYn},'N')
+                     , #{repNm}
+                     , CASE WHEN #{mphonNo} LIKE 'QF%' THEN  #{mphonNo} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'') END
+                     , #{mphonBkDgtNo}
+                     , CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'') END
+                     , #{picNm}
+                     , #{picMphonNo}
+                     , #{picMphonBkDgtNo}
+                     , #{picEmailAddr}
+                     , TO_DATE(#{indiInfoValidPerdStaDt},'YYYYMMDDHH24MISS')
+                     , TO_DATE(#{indiInfoValidPerdEndDt},'YYYYMMDDHH24MISS')
+                     , #{custStatusCd}
+                     , TO_DATE(#{custStatusChngDt},'YYYYMMDDHH24MISS')
+                     , TO_DATE(#{custInfoChngDt},'YYYYMMDDHH24MISS')
+                     , #{custTypeCd}
+                     , #{custDivCd}
+                     , #{zipCd}
+                     , #{addr1Ctnts}
+                     , CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'') END
+                     , #{rcmdStorNo}
+                     , #{rcmdrCustNo}
+                     , #{rcmdExecvdempNo}
+                     , NVL(#{marryYn},'N')
+                     , #{repHshldNo}
+                     , #{famlyRelCd}
+                     , #{dwelNfpyCd}
+                     , #{intrstFildCd}
+                     , #{repGodsNo}
+                     , #{repUseCustDivCd}
+                     , NVL(#{smsRcvAgreeYn},'N')
+                     , TO_DATE(#{smsRcvAgreeDt},'YYYYMMDDHH24MISS')
+                     , #{smsRcvAgreeChlCd}
+                     , NVL(#{emailRcvAgreeYn},'N')
+                     , TO_DATE(#{emailRcvAgreeDt},'YYYYMMDDHH24MISS')
+                     , #{emailRcvAgreeChlCd}
+                     , NVL(#{alrmTkRcvAgreeYn},'N')
+                     , TO_DATE(#{alrmTkRcvAgreeDt},'YYYYMMDDHH24MISS')
+                     , #{alrmTkRcvAgreeChlCd}
+                     , NVL(#{pushRcvAgreeYn},'N')
+                     , TO_DATE(#{pushRcvAgreeDt},'YYYYMMDDHH24MISS')
+                     , #{pushRcvAgreeChlCd}
+                     , NVL(#{ciCertfYn},'N')
+                     , #{ci}
+                     , NVL(#{diCertfYn},'N')
+                     , #{di}
+                     , NVL(#{rcvRfslYn},'N')
+                     , NVL(#{mshipSbscYn},'N')
+                     , #{mshipLoginId}
+                     , #{mshipSbtNo}
+                     , #{mshipLoginPwd}
+                     , TO_DATE(#{mshipLastLoginDt},'YYYYMMDDHH24MISS')
+                     , #{mshipLastLoginIpAddr}
+                     , TO_DATE(#{mshipLastStorVisitDt},'YYYYMMDDHH24MISS')
+                     , #{mshipLastVisitStorNo}
+                     , #{mshipTypeCd}
+                     , TO_DATE(#{mshipSbscDt},'YYYYMMDDHH24MISS')
+                     , #{mshipGradeCd}
+                     , TO_DATE(#{mshipGradeChngDt},'YYYYMMDDHH24MISS')
+                     , TO_DATE(#{mshipInfoChngDt},'YYYYMMDDHH24MISS')
+                     , #{mshipInfoConfrExecvdempNo}
+                     , #{cprtExecvdempNo}
+                     , TO_DATE(#{mshipLeaveDt},'YYYYMMDDHH24MISS')
+                     , #{extncPointLmtScore}
+                     , #{accumPointLmtScore}
+                     , #{mshipChlCd}
+                     , #{bllkRegStorNo}
+                     , NVL(#{bllkmshpYn},'N')
+                     , #{bllkRegChlCd}
+                     , #{bllkRegWhyCtnts}
+                     , TO_DATE(#{bllkRegDt},'YYYYMMDDHH24MISS')
+                     , #{amdrId}
+                     , SYSDATE
+                     , #{regrId}
+                     , SYSDATE
+                     , #{regChlCd}
+                 )
+    </insert>
+    <update id="update">
+               UPDATE CRM_DORM_CUST_BAS
+                  SET CORP_DIV_YN                             =         NVL(#{corpDivYn},'N')
+                    , CUST_NM                                 =         #{custNm}
+                    , GNDR_CD                                 =         #{gndrCd}
+                    , BIRTHDAY                                =         #{birthday}
+                    , BIZ_NO                                  =         #{bizNo}
+                    , CORP_REG_NO                             =         #{corpRegNo}
+                    , CORP_TEL_NO                             =         #{corpTelNo}
+                    , FORN_YN                                 =         NVL(#{fornYn},'N')
+                    , REP_NM                                  =         #{repNm}
+                    , MPHON_NO                                =         DAMO.DECRYPT_VAR_B64('AES_256',#{mphonNo},'') 
+                    , MPHON_BK_DGT_NO                         =         #{mphonBkDgtNo}
+                    , EMAIL_ADDR                              =         CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'') END
+                    , PIC_NM                                  =         #{picNm}
+                    , PIC_MPHON_NO                            =         #{picMphonNo}
+                    , PIC_MPHON_BK_DGT_NO                     =         #{picMphonBkDgtNo}
+                    , PIC_EMAIL_ADDR                          =         #{picEmailAddr}
+                    , INDI_INFO_VALID_PERD_STA_DT             =         TO_DATE(#{indiInfoValidPerdStaDt},'YYYYMMDDHH24MISS')
+                    , INDI_INFO_VALID_PERD_END_DT             =         TO_DATE(#{indiInfoValidPerdEndDt},'YYYYMMDDHH24MISS')
+                    , CUST_STATUS_CD                          =         #{custStatusCd}
+                    , CUST_STATUS_CHNG_DT                     =         TO_DATE(#{custStatusChngDt},'YYYYMMDDHH24MISS')
+                    , CUST_INFO_CHNG_DT                       =         TO_DATE(#{custInfoChngDt},'YYYYMMDDHH24MISS')
+                    , CUST_TYPE_CD                            =         #{custTypeCd}
+                    , CUST_DIV_CD                             =         #{custDivCd}
+                    , ZIP_CD                                  =         #{zipCd}
+                    , ADDR_1_CTNTS                            =         #{addr1Ctnts}
+                    , ADDR_2_CTNTS                            =         CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'') END
+                    , RCMD_STOR_NO                            =         #{rcmdStorNo}
+                    , RCMDR_CUST_NO                           =         #{rcmdrCustNo}
+                    , RCMD_EXECVDEMP_NO                       =         #{rcmdExecvdempNo}
+                    , MARRY_YN                                =         NVL(#{marryYn},'N')
+                    , REP_HSHLD_NO                            =         #{repHshldNo}
+                    , FAMLY_REL_CD                            =         #{famlyRelCd}
+                    , DWEL_NFPY_CD                            =         #{dwelNfpyCd}
+                    , INTRST_FILD_CD                          =         #{intrstFildCd}
+                    , REP_GODS_NO                             =         #{repGodsNo}
+                    , REP_USE_CUST_DIV_CD                     =         #{repUseCustDivCd}
+                    , SMS_RCV_AGREE_YN                        =         NVL(#{smsRcvAgreeYn},'N')
+                    , SMS_RCV_AGREE_DT                        =         TO_DATE(#{smsRcvAgreeDt},'YYYYMMDDHH24MISS')
+                    , SMS_RCV_AGREE_CHL_CD                    =         #{smsRcvAgreeChlCd}
+                    , EMAIL_RCV_AGREE_YN                      =         NVL(#{emailRcvAgreeYn},'N')
+                    , EMAIL_RCV_AGREE_DT                      =         TO_DATE(#{emailRcvAgreeDt},'YYYYMMDDHH24MISS')
+                    , EMAIL_RCV_AGREE_CHL_CD                  =         #{emailRcvAgreeChlCd}
+                    , ALRM_TK_RCV_AGREE_YN                    =         NVL(#{alrmTkRcvAgreeYn},'N')
+                    , ALRM_TK_RCV_AGREE_DT                    =         TO_DATE(#{alrmTkRcvAgreeDt},'YYYYMMDDHH24MISS')
+                    , ALRM_TK_RCV_AGREE_CHL_CD                =         #{alrmTkRcvAgreeChlCd}
+                    , PUSH_RCV_AGREE_YN                       =         NVL(#{pushRcvAgreeYn},'N')
+                    , PUSH_RCV_AGREE_DT                       =         TO_DATE(#{pushRcvAgreeDt},'YYYYMMDDHH24MISS')
+                    , PUSH_RCV_AGREE_CHL_CD                   =         #{pushRcvAgreeChlCd}
+                    , CI_CERTF_YN                             =         NVL(#{ciCertfYn},'N')
+                    , CI                                      =         #{ci}
+                    , DI_CERTF_YN                             =         NVL(#{diCertfYn},'N')
+                    , DI                                      =         #{di}
+                    , RCV_RFSL_YN                             =         NVL(#{rcvRfslYn},'N')
+                    , MSHIP_SBSC_YN                           =         NVL(#{mshipSbscYn},'N')
+                    , MSHIP_LOGIN_ID                          =         #{mshipLoginId}
+                    , MSHIP_SBT_NO                            =         #{mshipSbtNo}
+                    , MSHIP_LOGIN_PWD                         =         #{mshipLoginPwd}
+                    , MSHIP_LAST_LOGIN_DT                     =         TO_DATE(#{mshipLastLoginDt},'YYYYMMDDHH24MISS')
+                    , MSHIP_LAST_LOGIN_IP_ADDR                =         #{mshipLastLoginIpAddr}
+                    , MSHIP_LAST_STOR_VISIT_DT                =         TO_DATE(#{mshipLastStorVisitDt},'YYYYMMDDHH24MISS')
+                    , MSHIP_LAST_VISIT_STOR_NO                =         #{mshipLastVisitStorNo}
+                    , MSHIP_TYPE_CD                           =         #{mshipTypeCd}
+                    , MSHIP_SBSC_DT                           =         TO_DATE(#{mshipSbscDt},'YYYYMMDDHH24MISS')
+                    , MSHIP_GRADE_CD                          =         #{mshipGradeCd}
+                    , MSHIP_GRADE_CHNG_DT                     =         TO_DATE(#{mshipGradeChngDt},'YYYYMMDDHH24MISS')
+                    , MSHIP_INFO_CHNG_DT                      =         TO_DATE(#{mshipInfoChngDt},'YYYYMMDDHH24MISS')
+                    , MSHIP_INFO_CONFR_EXECVDEMP_NO           =         #{mshipInfoConfrExecvdempNo}
+                    , CPRT_EXECVDEMP_NO                       =         #{cprtExecvdempNo}
+                    , MSHIP_LEAVE_DT                          =         TO_DATE(#{mshipLeaveDt},'YYYYMMDDHH24MISS')
+                    , EXTNC_POINT_LMT_SCORE                   =         #{extncPointLmtScore}
+                    , ACCUM_POINT_LMT_SCORE                   =         #{accumPointLmtScore}
+                    , MSHIP_CHL_CD                            =         #{mshipChlCd}
+                    , BLLK_REG_STOR_NO                        =         #{bllkRegStorNo}
+                    , BLLKMSHP_YN                             =         NVL(#{bllkmshpYn},'N')
+                    , BLLK_REG_CHL_CD                         =         #{bllkRegChlCd}
+                    , BLLK_REG_WHY_CTNTS                      =         #{bllkRegWhyCtnts}
+                    , BLLK_REG_DT                             =         TO_DATE(#{bllkRegDt},'YYYYMMDDHH24MISS')
+                    , AMDR_ID                                 =         #{amdrId}
+                    , AMD_DT                                  =         SYSDATE
+                    , REG_CHL_CD                              =         #{regChlCd}
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE FROM CRM_DORM_CUST_BAS
+        <include refid="sqlPkConditions"/>
+    </delete>
+</mapper>

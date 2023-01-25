@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- File Appender -->
+<!--     <appender name="dailyRollingFileAppender" -->
+<!--               class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!--         <prudent>false</prudent> -->
+<!--         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> -->
+<!--             <fileNamePattern>/logs/app/ceragem_crm_batch.%d{yyyy-MM-dd}.log.zip</fileNamePattern> -->
+<!--             <maxHistory>90</maxHistory> -->
+<!--         </rollingPolicy> -->
+<!--         <filter class="ch.qos.logback.classic.filter.ThresholdFilter"> -->
+<!--             <level>DEBUG</level> -->
+<!--         </filter> -->
+
+<!--         <encoder> -->
+<!--             <pattern>%d{yyyy:MM:dd HH:mm:ss.SSS} %-5level [%thread] %logger{35} : %marker %msg %n</pattern> -->
+<!--         </encoder> -->
+<!--     </appender> -->
+
+    <!-- Console appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy:MM:dd HH:mm:ss.SSS} %-5level [%thread] %logger{35} : %marker %msg %n</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="org.springframework" level="INFO" additivity="true"/>
+    <logger name="com.ceragem.batch.crm.dao" level="OFF" additivity="true"/>
+    <logger name="com.ceragem.batch" level="DEBUG" additivity="true"/>
+    <logger name="log4jdbc.log4j2" level="OFF" additivity="true" />
+<!--     <logger name="org.springframework.jdbc.core" level="INFO"/> -->
+<!--     <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG"/> -->
+
+    <logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="ERROR"/>
+    <logger name="jdbc" level="OFF"/>
+	<logger name="jdbc.sqlonly" level="DEBUG"/>
+	<logger name="jdbc.sqltiming" level="OFF"/>
+	<logger name="jdbc.audit" level="OFF"/>
+	<logger name="jdbc.resultset" level="OFF"/>
+	<logger name="jdbc.resultsettable" level="OFF"/>
+	<logger name="jdbc.connection" level="OFF"/>
+
+    <root level="ERROR" />
+</configuration>

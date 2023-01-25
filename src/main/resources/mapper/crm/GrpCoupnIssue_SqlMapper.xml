@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.GrpCoupnIssueDao">
+  
+    <select id="getGrdCouponList" resultType="com.ceragem.batch.crm.model.GradeCouponVo">
+              SELECT  /* com.ceragem.batch.crm.dao.GrpCoupnIssueDao.getGrdCouponList */
+					A.MSHIP_COUPN_BAS_NO
+					, A.CYCLE_CD
+					, B.MSHIP_PLCY_BAS_NO
+					, B.MSHIP_GRADE_CD
+					, B.MSHP_GRADE_CD
+					, B.CPRT_CMP_NO
+					, A.COUPN_TYPE_CD
+					, B.MSHIP_PLCY_NM
+					, A.PRV_QNTY
+					, B.APPLY_STD_STA_YMD
+					, B.APPLY_STD_END_YMD
+					, C.COUPN_BAS_NM
+					, C.use_std_day_cond_cd
+					, C.FROM_PBLS_STD_DAY
+					, C.TO_PBLS_STD_DAY
+					, C.COUPN_ISSUE_METH_CD
+                    , C.MAX_ISSUE_CNT
+					FROM  CRM_MSHIP_APPLY_COUPN_REL A
+					LEFT JOIN CRM_MSHIP_PLCY_BAS  B ON  A.MSHIP_PLCY_BAS_NO =  B.MSHIP_PLCY_BAS_NO 
+					LEFT JOIN CRM_MSHIP_COUPN_BAS C ON  A.MSHIP_COUPN_BAS_NO =  C.MSHIP_COUPN_BAS_NO 
+				WHERE 
+					/* A.CYCLE_CD='002' AND   */
+				 B.STATUS_CD='Y' 
+				 AND ( B.APPLY_STD_STA_YMD  <![CDATA[<=]]> TO_CHAR( SYSDATE, 'YYYYMMDD') AND B.APPLY_STD_END_YMD  <![CDATA[>=]]>  TO_CHAR( SYSDATE, 'YYYYMMDD') )
+				 AND ( C.FROM_PBLS_STD_DAY  <![CDATA[<=]]> TO_CHAR( SYSDATE, 'YYYYMMDD') AND C.TO_PBLS_STD_DAY  <![CDATA[>=]]>  TO_CHAR( SYSDATE, 'YYYYMMDD') )
+				 AND B.MSHIP_GRADE_CD = #{mshipGradeCd}
+   				
+    </select>
+    
+    
+    
+      <insert id="pubCoupon"> 
+    
+                
+        	  <if test=" mshipGradeCd != '' and mshipCoupnBasNo != '' ">   
+        	
+        			  INSERT ALL /* GrpCoupnIssue.pubCoupon */ INTO  CRM_COUPN_PBLS_HST (
+								 COUPN_PBLS_HST_SEQ
+								, COUPN_PBLS_BAS_NO
+								, ITG_CUST_NO
+								, MSHIP_COUPN_BAS_NO
+								, COUPN_KND_CD
+								, COUPN_TGT_CD
+								, COUPN_APPLY_DIV_CD1
+								, COUPN_APPLY_DIV_CD2
+								, FROM_PBLS_STD_DAY
+								, TO_PBLS_STD_DAY
+								, USE_STD_DAY_COND_CD
+								, FROM_USE_STD_DAY
+								, TO_USE_STD_DAY
+								, GIFT_POSS_YN
+								, COUPN_ISSUE_METH_CD
+								, ISSUE_RSTRTN_CNT
+								, MAX_ISSUE_CNT
+								, MAX_USE_CNT
+								, APPLY_AMT
+								, APPLY_RATE
+								, MIN_BUY_AMT
+								, MAX_DC_AMT
+								, APPLY_CNT
+								, PRSNTTN_GODS_CD
+								, USE_DOW
+								, FROM_USE_HOUR
+								, TO_USE_HOUR
+								, USE_CHL_CD
+								, DUP_USE_YN
+								, USE_DIV_CD
+								, USE_YN
+								, COUPN_BAS_NM
+								, COUPN_BAS_CTNTS
+								, ADMT_METH_CD
+								, ADMT_AMT
+								, COUPN_TYPE_CD
+								, COUPN_USE_POSS_DAY
+								, COUPN_USE_POSS_YN
+								, COUPN_USE_POSS_DAY_CNT
+								, COUPN_CLASS_CD
+								, DOW_1_USE_YN
+								, DOW_2_USE_YN
+								, DOW_3_USE_YN
+								, DOW_4_USE_YN
+								, DOW_5_USE_YN
+								, DOW_6_USE_YN
+								, DOW_7_USE_YN
+								, MSHP_GRADE_CD
+								, AMDR_ID
+								, AMD_DT
+								, REGR_ID
+								, REG_DT
+								, REG_CHL_CD 
+								, STOR_NO
+								
+								 )
+			           
+			           
+			           SELECT  /* GrpCoupnIssue.custNoList */  
+			           	   FN_CRM_AUTO_SEQ('CPN'), 
+			           	   FN_LUHN_COUPN( DECODE(A.MSHIP_GRADE_CD, '001', '01', '002', '51', '003', '05', NULL, '05') ) COUPN_PBLS_BAS_NO
+			           	   , B.ITG_CUST_NO
+			           	   , A.MSHIP_COUPN_BAS_NO
+			           	   , COUPN_KND_CD
+			           	   , COUPN_TGT_CD
+			           	   , COUPN_APPLY_DIV_CD1
+			           	   ,  COUPN_APPLY_DIV_CD2
+			           	   , FROM_PBLS_STD_DAY
+			           	   , TO_PBLS_STD_DAY
+			           	   ,  USE_STD_DAY_COND_CD
+			           	   , DECODE(USE_STD_DAY_COND_CD, 'Y', TO_CHAR(SYSDATE, 'YYYYMMDD'), NULL, FROM_USE_STD_DAY )  
+			           	   , DECODE(USE_STD_DAY_COND_CD, 'Y', TO_CHAR( SYSDATE + NVL( COUPN_USE_POSS_DAY, 0)  , 'YYYYMMDD'), NULL, TO_USE_STD_DAY ) 
+			           	   , GIFT_POSS_YN
+			           	   , COUPN_ISSUE_METH_CD
+			           	   , ISSUE_RSTRTN_CNT
+			           	   ,  MAX_ISSUE_CNT
+			           	   , MAX_USE_CNT
+			           	   , APPLY_AMT
+			           	   , APPLY_RATE
+			           	   , MIN_BUY_AMT
+			           	   , MAX_DC_AMT
+			           	   , APPLY_CNT
+			           	   , PRSNTTN_GODS_CD
+			           	   , USE_DOW
+			           	   , FROM_USE_HOUR
+			           	   , TO_USE_HOUR
+			           	   , USE_CHL_CD
+			           	   , DUP_USE_YN
+			           	   ,  '002'
+			           	   , 'N'
+			           	   , COUPN_BAS_NM
+			           	   , COUPN_BAS_CTNTS
+			           	   , ADMT_METH_CD
+			           	   , ADMT_AMT
+			           	   , COUPN_TYPE_CD
+			           	   , COUPN_USE_POSS_DAY
+			           	   , COUPN_USE_POSS_YN
+			           	   , COUPN_USE_POSS_DAY_CNT
+			           	   ,  COUPN_CLASS_CD
+			           	   ,  DOW_1_USE_YN
+			           	   , DOW_2_USE_YN
+			           	   , DOW_3_USE_YN
+			           	   , DOW_4_USE_YN
+			           	   , DOW_5_USE_YN
+			           	   , DOW_6_USE_YN
+			           	   , DOW_7_USE_YN
+			           	   ,  A.MSHP_GRADE_CD
+			           	   , NULL AMDR_ID
+			           	   , NULL AMD_DT
+			           	   , #{regrId}
+			           	   , SYSDATE 
+			           	   , NVL( A.REG_CHL_CD, 'CRM') REG_CHL_CD
+			           	   , '141359'
+  					  FROM CRM_MSHIP_COUPN_BAS A
+  					  
+  					  
+                      INNER JOIN CRM_CUST_BAS B ON B.CUST_STATUS_CD='001' AND B.MSHIP_SBSC_YN='Y' 
+                     
+                     <choose>
+                        <when test="mshipGradeCd == '001' ">AND B.MSHIP_TYPE_CD='001'</when>
+                        <when test="mshipGradeCd == '002' and cprtCmpNo != null ">AND B.MSHIP_TYPE_CD='002' AND B.CPRT_CMP_NO=#{cprtCmpNo}</when>
+                        <when test="mshipGradeCd == '003' ">/* AND B.MSHIP_TYPE_CD='003' */ AND B.MSHIP_GRADE_CD=#{mshpGradeCd}   </when>
+                        <otherwise>AND 1 = 2</otherwise>
+                     </choose>
+                     
+                     LEFT JOIN (
+                              SELECT COUNT(1) PRV_QNTY
+                                     , ITG_CUST_NO 
+                                     , MSHIP_COUPN_BAS_NO
+                                  FROM CRM_COUPN_PBLS_HST
+                                 WHERE MSHIP_COUPN_BAS_NO = #{mshipCoupnBasNo}
+                                 
+                                <choose>
+                                
+                           		 <when test="cycleCd != null and cycleCd != '' and cycleCd == '001' ">
+                           		  	/* 1회 제공일 경우 체크  */ 
+                           		 </when>
+                           		 
+                           		 <when test="cycleCd != null and cycleCd != '' and cycleCd == '002' ">
+                           		 	/* 매일 제공일 경우 체크  */ AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD')
+                           		 </when>
+                           		 
+                           		 <when test="cycleCd != null and cycleCd != '' and cycleCd == '003' ">
+                           		  	/* 매주 제공일 경우 체크  */ AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD')
+                           		 </when>
+                           		 
+                           		 <when test="cycleCd != null and cycleCd != '' and cycleCd == '004' ">
+                           		   	/* 매월 제공일 경우 체크  */ AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD')
+                           		 </when>
+                           		 
+                           		 <when test="cycleCd != null and cycleCd != '' and cycleCd == '005' ">
+                           		   	/* 분기별 제공일경우 체크 */ AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD')
+                           		 </when>
+                           		 
+                           		 <when test="cycleCd != null and cycleCd != '' and cycleCd == '006' ">
+                           		   	/* 매년 제공일 경우 체크  */ AND TO_CHAR(REG_DT, 'YYYY') = TO_CHAR(SYSDATE, 'YYYY')
+                           		 </when>
+                           		
+		                        </choose>
+                        
+                        
+                                   GROUP BY ITG_CUST_NO, MSHIP_COUPN_BAS_NO
+                                   
+                              )  C ON B.ITG_CUST_NO =  C.ITG_CUST_NO 
+                              INNER JOIN (
+                                SELECT LEVEL LVL 
+                                FROM DUAL 
+                             CONNECT BY LEVEL <![CDATA[<=]]> #{prvQnty}
+                          ) D  ON  ( #{prvQnty}-NVL(PRV_QNTY,0) ) <![CDATA[>=]]> D.LVL
+                      
+					  
+                       WHERE 
+                       	  A.MSHIP_COUPN_BAS_NO = #{mshipCoupnBasNo}
+                       	  AND B.MSHIP_SBSC_YN='Y' 
+                       	  AND A.USE_YN='Y'
+                       	  AND B.ITG_CUST_NO IS NOT NULL
+                        	  
+			</if>
+			
+        
+    </insert> 
+    
+    <select id="getCoupnCancelFor7Day" resultType="HashMap">
+    	
+		SELECT 
+			TEM.*
+			, CUST.CUST_NM
+			, DAMO.DECRYPT_VAR_B64('AES_256',CUST.MPHON_NO ,'') AS MPHON_NO 
+		FROM (
+		    SELECT 
+		        B.MSHIP_COUPN_BAS_NO 
+		        , B.COUPN_BAS_NM
+		        , A.COUPN_PBLS_BAS_NO
+		        , A.USE_YN 
+		        , A.ITG_CUST_NO
+		        , A.FROM_USE_STD_DAY
+		        , A.TO_USE_STD_DAY
+		        , A.USE_STD_DAY_COND_CD
+		        , A.COUPN_USE_POSS_DAY
+		        , TO_CHAR(A.REG_DT,'YYYY-MM-DD') AS REG_DT
+		        , CASE
+		            WHEN A.USE_STD_DAY_COND_CD = 'Y' THEN TO_CHAR(A.REG_DT + A.COUPN_USE_POSS_DAY , 'YYYY-MM-DD')
+		            ELSE TO_CHAR(TO_DATE(A.TO_USE_STD_DAY,'YYYY-MM-DD'),'YYYY-MM-DD')
+		        END COND_TO_DT
+		    FROM CRM_COUPN_PBLS_HST A JOIN CRM_MSHIP_COUPN_BAS B ON A.MSHIP_COUPN_BAS_NO = B.MSHIP_COUPN_BAS_NO
+		    AND A.USE_YN = 'N'
+		    AND B.USE_YN = 'Y'
+		    AND A.ITG_CUST_NO IS NOT NULL
+		) TEM JOIN CRM_CUST_BAS CUST ON TEM.ITG_CUST_NO = CUST.ITG_CUST_NO
+			WHERE TEM.COND_TO_DT IS NOT NULL 
+		    	AND TEM.COND_TO_DT = TO_CHAR(SYSDATE + 8 , 'YYYY-MM-DD')	<!-- 배치시간 00:05 : 7 > 8 수정 -->
+		    	<!-- AND ROWNUM <![CDATA[<=]]>3 -->
+    	
+    </select>
+</mapper>

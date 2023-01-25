@@ -1,0 +1,49 @@
+# Spring Configure
+spring:
+  batch:
+    jdbc:
+      initialize-schema: NEVER
+  
+  datasource:
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 1
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:oracle:thin:@172.23.1.91:8122:DCRMDB
+    username: crmown
+    password: ENC(qRxmm5UziuyVJHN5JGZ5rg==)
+    aiccuser: aicc
+    aiccpwd: ENC(PLG4vrXc+U+ZtloJTRGUiQ==)
+    
+  jade:
+    token-url: https://cerahr.ceragem.com:9950/restful/getToken
+    rest-url: https://cerahr.ceragem.com:9950/restful
+    ceragem: 2011040
+    ceragem-cns: 2011041
+    ceragem-hr: 2011040,2011041
+    p1-param: REFwWALk0KnxM8S55r5wAA==
+    org-param: ZjH2yGNkSXC63TMeuSX5Hw==
+    hr-param: 438MVz40Ca2tE2C+CR1RDQ== 
+  api:
+    lab-url: https://dev-parent-api.ceragem.com/membership/
+    bos-url: https://mapone.ceragem.com/crm
+#    base-url: http://localhost:8082
+    base-url: https://dev-api.ceragem.com
+    url:
+      token-url: /api/v1.0/token/CRM
+      point: /crm/v1.0/point
+  eon:
+    sms-sender-no:  15775570
+    sms-sender-name: 세라젬
+    talk-sender-key : senderkey_001
+    user: crm_1
+    mail-addr: noreply@creagem.com
+    mail-name: 세라젬
+    
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+   
+# Log
+logging:
+  config: classpath:logback-local.xml

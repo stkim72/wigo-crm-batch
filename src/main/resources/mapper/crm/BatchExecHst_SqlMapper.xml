@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.BatchExecHstDao">
+    <sql id="sqlPkConditions">
+                WHERE BATCH_HST_CD      =       #{batchHstCd}
+    </sql>
+    <sql id="sqlCols">
+                      BATCH_HST_CD                    /*배치이력코드        */
+                    , BATCH_CD                    /*배치코드        */
+                    , SYS_CD                    /*시스템코드        */
+                    , WRK_ID                    /*작업ID        */
+                    , BATCH_RSLT_CD                    /*배치결과코드        */
+                    , BATCH_CALL_DT                    /*배치호출일시        */
+                    , BATCH_EXEC_MSEC                    /*배치실행밀리초        */
+                    , ERR_MSG_TXN                    /*오류메시지내역        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+    </sql>
+    
+    <insert id="insert">
+        <selectKey order="BEFORE" keyProperty="batchCd" resultType="String">
+           SELECT ( SELECT BATCH_CD
+                      FROM BATCH_INFO_BAS
+                     WHERE SYS_CD = 'CRM'
+                       AND WRK_ID = #{wrkId}
+                       AND ROWNUM = 1)
+             FROM DUAL
+        </selectKey>
+        
+                INSERT /* com.ceragem.batch.crm.dao.BatchExecHstDao.insert */ INTO BATCH_EXEC_HST (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       FN_CRM_AUTO_SEQ('BEH')
+                     , #{batchCd}
+                     , #{regrId}
+                     , #{wrkId}
+                     , #{batchRsltCd}
+                     , TO_DATE(#{batchCallDt},'YYYYMMDDHH24MISS')
+                     , #{batchExecMsec}
+                     , #{errMsgTxn}
+                     , #{regrId}
+                     , NVL(TO_DATE(#{regDt},'YYYYMMDDHH24MISS'),SYSDATE)
+                     , #{amdrId}
+                     , NVL(TO_DATE(#{regDt},'YYYYMMDDHH24MISS'),SYSDATE)
+                 )
+    </insert>
+    <update id="updateBatch">
+            UPDATE /* com.ceragem.batch.crm.dao.BatchExecHstDao.updateBatch */ BATCH_INFO_BAS 
+               SET LAST_EXEC_DT = DECODE( #{batchRsltCd},'Y',TO_DATE(#{batchCallDt},'YYYYMMDDHH24MISS'), LAST_EXEC_DT)
+                 , AMD_DT = TO_DATE(#{batchCallDt},'YYYYMMDDHH24MISS')
+                 , LAST_SUCC_YN = #{batchRsltCd}
+             WHERE BATCH_CD =  #{batchCd}
+    </update>
+    <select id="selectBatchInfo" resultType="com.ceragem.batch.crm.model.BatchInfoBasVo">
+               SELECT /* com.ceragem.batch.crm.dao.BatchExecHstDao.selectBatch */A.BATCH_CD                    /*배치코드        */
+                    , A.SYS_CD                    /*시스템코드        */
+                    , A.BATCH_NM                    /*배치명        */
+                    , A.WRK_ID                    /*작업ID        */
+                    , TO_CHAR(A.LAST_EXEC_DT,'YYYYMMDDHH24MISS')    LAST_EXEC_DT                    /*최종실행일시        */
+                    , A.LAST_SUCC_YN                    /*최종성공여부        */
+                    , A.USE_YN                    /*사용여부        */
+                    , A.REGR_ID                    /*등록자ID        */
+                    , TO_CHAR(A.REG_DT,'YYYYMMDDHH24MISS')    REG_DT                    /*등록일시        */
+                    , A.AMDR_ID                    /*수정자ID        */
+                    , TO_CHAR(A.AMD_DT,'YYYYMMDDHH24MISS')    AMD_DT                    /*수정일시        */
+                 FROM BATCH_INFO_BAS A
+                WHERE A.SYS_CD = 'CRM'
+                  AND A.WRK_ID = #{wrkId}
+<!--                   AND A.USE_YN = 'Y' -->
+                  AND ROWNUM = 1
+    </select>
+    
+</mapper>

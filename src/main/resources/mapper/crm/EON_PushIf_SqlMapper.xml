@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.PushIfDao">
+    <sql id="sqlPkConditions">
+                WHERE CLIENT            =       #{client}
+                  AND CAMPAIGN_ID       =       #{campaignId}
+                  AND MEMBER_SEQ        =       #{memberSeq}
+    </sql>
+    <sql id="sqlCols">
+                      CLIENT                    /*CLIENT        */
+                    , CAMPAIGN_ID                    /*CAMPAIGN_ID        */
+                    , MEMBER_SEQ                    /*MEMBER_SEQ        */
+                    , SEND_GUBUN                    /*SEND_GUBUN        */
+                    , SUBJECT                    /*SUBJECT        */
+                    , PUSH_APP_ID                    /*PUSH_APP_ID        */
+                    , PUSH_APP_OS                    /*PUSH_APP_OS        */
+                    , PUSH_MSG                    /*PUSH_MSG        */
+                    , PUSH_TKN_INFO                    /*PUSH_TKN_INFO        */
+                    , PUSH_RESERVETIME                    /*PUSH_RESERVETIME        */
+                    , PUSH_SEND_INTERVAL                    /*PUSH_SEND_INTERVAL        */
+                    , DESTEL                    /*DESTEL        */
+                    , SRCTEL                    /*SRCTEL        */
+                    , SENDRESULT                    /*SENDRESULT        */
+                    , PUSH_SENDTIME                    /*PUSH_SENDTIME        */
+                    , PUSH_TRANSRESULT                    /*PUSH_TRANSRESULT        */
+                    , PUSH_RESULTTIME                    /*PUSH_RESULTTIME        */
+                    , SND_RETRY_CNT                    /*SND_RETRY_CNT        */
+                    , PUSH_CP_ID                    /*PUSH_CP_ID        */
+                    , SNDR_ID                    /*SNDR_ID        */
+                    , SNDR_DEPT                    /*SNDR_DEPT        */
+                    , MSG_JDT                    /*MSG_JDT        */
+                    , SRVC_KEY_VAL                    /*SRVC_KEY_VAL        */
+                    , ERR_MESSAGE                    /*ERR_MESSAGE        */
+                    , MRKN_YN                    /*MRKN_YN        */
+                    , REV_ID                    /*REV_ID        */
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.CLIENT                    /*CLIENT        */
+                    , A.CAMPAIGN_ID                    /*CAMPAIGN_ID        */
+                    , A.MEMBER_SEQ                    /*MEMBER_SEQ        */
+                    , A.SEND_GUBUN                    /*SEND_GUBUN        */
+                    , A.SUBJECT                    /*SUBJECT        */
+                    , A.PUSH_APP_ID                    /*PUSH_APP_ID        */
+                    , A.PUSH_APP_OS                    /*PUSH_APP_OS        */
+                    , A.PUSH_MSG                    /*PUSH_MSG        */
+                    , A.PUSH_TKN_INFO                    /*PUSH_TKN_INFO        */
+                    , A.PUSH_RESERVETIME                    /*PUSH_RESERVETIME        */
+                    , A.PUSH_SEND_INTERVAL                    /*PUSH_SEND_INTERVAL        */
+                    , A.DESTEL                    /*DESTEL        */
+                    , A.SRCTEL                    /*SRCTEL        */
+                    , A.SENDRESULT                    /*SENDRESULT        */
+                    , A.PUSH_SENDTIME                    /*PUSH_SENDTIME        */
+                    , A.PUSH_TRANSRESULT                    /*PUSH_TRANSRESULT        */
+                    , A.PUSH_RESULTTIME                    /*PUSH_RESULTTIME        */
+                    , A.SND_RETRY_CNT                    /*SND_RETRY_CNT        */
+                    , A.PUSH_CP_ID                    /*PUSH_CP_ID        */
+                    , A.SNDR_ID                    /*SNDR_ID        */
+                    , A.SNDR_DEPT                    /*SNDR_DEPT        */
+                    , A.MSG_JDT                    /*MSG_JDT        */
+                    , A.SRVC_KEY_VAL                    /*SRVC_KEY_VAL        */
+                    , A.ERR_MESSAGE                    /*ERR_MESSAGE        */
+                    , A.MRKN_YN                    /*MRKN_YN        */
+                    , A.REV_ID                    /*REV_ID        */
+    </sql>
+    <sql id="sqlConditions">
+        <where>
+        <if test="client != null and client != ''">
+                  AND A.CLIENT          =       #{client}
+        </if>
+        <if test="campaignId != null and campaignId != ''">
+                  AND A.CAMPAIGN_ID     =       #{campaignId}
+        </if>
+        <if test="memberSeq != null and memberSeq != ''">
+                  AND A.MEMBER_SEQ      =       #{memberSeq}
+        </if>
+        <if test="sendGubun != null and sendGubun != ''">
+                  AND A.SEND_GUBUN      =       #{sendGubun}
+        </if>
+        <if test="subject != null and subject != ''">
+                  AND A.SUBJECT         =       #{subject}
+        </if>
+        <if test="pushAppId != null and pushAppId != ''">
+                  AND A.PUSH_APP_ID     =       #{pushAppId}
+        </if>
+        <if test="pushAppOs != null and pushAppOs != ''">
+                  AND A.PUSH_APP_OS     =       #{pushAppOs}
+        </if>
+        <if test="pushMsg != null and pushMsg != ''">
+                  AND A.PUSH_MSG        =       #{pushMsg}
+        </if>
+        <if test="pushTknInfo != null and pushTknInfo != ''">
+                  AND A.PUSH_TKN_INFO   =       #{pushTknInfo}
+        </if>
+        <if test="pushReservetime != null and pushReservetime != ''">
+                  AND A.PUSH_RESERVETIME=       #{pushReservetime}
+        </if>
+        <if test="pushSendInterval != null and pushSendInterval != ''">
+                  AND A.PUSH_SEND_INTERVAL=       #{pushSendInterval}
+        </if>
+        <if test="destel != null and destel != ''">
+                  AND A.DESTEL          =       #{destel}
+        </if>
+        <if test="srctel != null and srctel != ''">
+                  AND A.SRCTEL          =       #{srctel}
+        </if>
+        <if test="sendresult != null and sendresult != ''">
+                  AND A.SENDRESULT      =       #{sendresult}
+        </if>
+        <if test="pushSendtime != null and pushSendtime != ''">
+                  AND A.PUSH_SENDTIME   =       #{pushSendtime}
+        </if>
+        <if test="pushTransresult != null and pushTransresult != ''">
+                  AND A.PUSH_TRANSRESULT=       #{pushTransresult}
+        </if>
+        <if test="pushResulttime != null and pushResulttime != ''">
+                  AND A.PUSH_RESULTTIME =       #{pushResulttime}
+        </if>
+        <if test="sndRetryCnt != null and sndRetryCnt != ''">
+                  AND A.SND_RETRY_CNT   =       #{sndRetryCnt}
+        </if>
+        <if test="pushCpId != null and pushCpId != ''">
+                  AND A.PUSH_CP_ID      =       #{pushCpId}
+        </if>
+        <if test="sndrId != null and sndrId != ''">
+                  AND A.SNDR_ID         =       #{sndrId}
+        </if>
+        <if test="sndrDept != null and sndrDept != ''">
+                  AND A.SNDR_DEPT       =       #{sndrDept}
+        </if>
+        <if test="msgJdt != null and msgJdt != ''">
+                  AND A.MSG_JDT         =       #{msgJdt}
+        </if>
+        <if test="srvcKeyVal != null and srvcKeyVal != ''">
+                  AND A.SRVC_KEY_VAL    =       #{srvcKeyVal}
+        </if>
+        <if test="errMessage != null and errMessage != ''">
+                  AND A.ERR_MESSAGE     =       #{errMessage}
+        </if>
+        <if test="mrknYn != null and mrknYn != ''">
+                  AND A.MRKN_YN         =       #{mrknYn}
+        </if>
+        <if test="revId != null and revId != ''">
+                  AND A.REV_ID          =       #{revId}
+        </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('client')">
+                ORDER BY      CLIENT
+            </when>
+            <when test="colSortName.equals('campaignId')">
+                ORDER BY      CAMPAIGN_ID
+            </when>
+            <when test="colSortName.equals('memberSeq')">
+                ORDER BY      MEMBER_SEQ
+            </when>
+            <when test="colSortName.equals('sendGubun')">
+                ORDER BY      SEND_GUBUN
+            </when>
+            <when test="colSortName.equals('subject')">
+                ORDER BY      SUBJECT
+            </when>
+            <when test="colSortName.equals('pushAppId')">
+                ORDER BY      PUSH_APP_ID
+            </when>
+            <when test="colSortName.equals('pushAppOs')">
+                ORDER BY      PUSH_APP_OS
+            </when>
+            <when test="colSortName.equals('pushMsg')">
+                ORDER BY      PUSH_MSG
+            </when>
+            <when test="colSortName.equals('pushTknInfo')">
+                ORDER BY      PUSH_TKN_INFO
+            </when>
+            <when test="colSortName.equals('pushReservetime')">
+                ORDER BY      PUSH_RESERVETIME
+            </when>
+            <when test="colSortName.equals('pushSendInterval')">
+                ORDER BY      PUSH_SEND_INTERVAL
+            </when>
+            <when test="colSortName.equals('destel')">
+                ORDER BY      DESTEL
+            </when>
+            <when test="colSortName.equals('srctel')">
+                ORDER BY      SRCTEL
+            </when>
+            <when test="colSortName.equals('sendresult')">
+                ORDER BY      SENDRESULT
+            </when>
+            <when test="colSortName.equals('pushSendtime')">
+                ORDER BY      PUSH_SENDTIME
+            </when>
+            <when test="colSortName.equals('pushTransresult')">
+                ORDER BY      PUSH_TRANSRESULT
+            </when>
+            <when test="colSortName.equals('pushResulttime')">
+                ORDER BY      PUSH_RESULTTIME
+            </when>
+            <when test="colSortName.equals('sndRetryCnt')">
+                ORDER BY      SND_RETRY_CNT
+            </when>
+            <when test="colSortName.equals('pushCpId')">
+                ORDER BY      PUSH_CP_ID
+            </when>
+            <when test="colSortName.equals('sndrId')">
+                ORDER BY      SNDR_ID
+            </when>
+            <when test="colSortName.equals('sndrDept')">
+                ORDER BY      SNDR_DEPT
+            </when>
+            <when test="colSortName.equals('msgJdt')">
+                ORDER BY      MSG_JDT
+            </when>
+            <when test="colSortName.equals('srvcKeyVal')">
+                ORDER BY      SRVC_KEY_VAL
+            </when>
+            <when test="colSortName.equals('errMessage')">
+                ORDER BY      ERR_MESSAGE
+            </when>
+            <when test="colSortName.equals('mrknYn')">
+                ORDER BY      MRKN_YN
+            </when>
+            <when test="colSortName.equals('revId')">
+                ORDER BY      REV_ID
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.PushIfDao.selectListCount */ COUNT(1)
+                 FROM EON.PUSH_IF A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.model.PushIfVo">
+               SELECT /* com.ceragem.batch.crm.dao.PushIfDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM EON.PUSH_IF A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.model.PushIfVo">
+               SELECT /* com.ceragem.batch.crm.dao.PushIfDao.select */ <include refid="sqlSelectCols"/>
+                 FROM EON.PUSH_IF A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT /* com.ceragem.batch.crm.dao.PushIfDao.insert */ INTO EON.PUSH_IF (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{client}
+                     , #{campaignId}
+                     , #{memberSeq}
+                     , #{sendGubun}
+                     , #{subject}
+                     , #{pushAppId}
+                     , #{pushAppOs}
+                     , #{pushMsg}
+                     , #{pushTknInfo}
+                     , #{pushReservetime}
+                     , #{pushSendInterval}
+                     , #{destel}
+                     , #{srctel}
+                     , #{sendresult}
+                     , #{pushSendtime}
+                     , #{pushTransresult}
+                     , #{pushResulttime}
+                     , #{sndRetryCnt}
+                     , #{pushCpId}
+                     , #{sndrId}
+                     , #{sndrDept}
+                     , #{msgJdt}
+                     , #{srvcKeyVal}
+                     , #{errMessage}
+                     , NVL(#{mrknYn},'N')
+                     , #{revId}
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.PushIfDao.update */ EON.PUSH_IF
+                  SET SEND_GUBUN                              =         #{sendGubun}
+                    , SUBJECT                                 =         #{subject}
+                    , PUSH_APP_ID                             =         #{pushAppId}
+                    , PUSH_APP_OS                             =         #{pushAppOs}
+                    , PUSH_MSG                                =         #{pushMsg}
+                    , PUSH_TKN_INFO                           =         #{pushTknInfo}
+                    , PUSH_RESERVETIME                        =         #{pushReservetime}
+                    , PUSH_SEND_INTERVAL                      =         #{pushSendInterval}
+                    , DESTEL                                  =         #{destel}
+                    , SRCTEL                                  =         #{srctel}
+                    , SENDRESULT                              =         #{sendresult}
+                    , PUSH_SENDTIME                           =         #{pushSendtime}
+                    , PUSH_TRANSRESULT                        =         #{pushTransresult}
+                    , PUSH_RESULTTIME                         =         #{pushResulttime}
+                    , SND_RETRY_CNT                           =         #{sndRetryCnt}
+                    , PUSH_CP_ID                              =         #{pushCpId}
+                    , SNDR_ID                                 =         #{sndrId}
+                    , SNDR_DEPT                               =         #{sndrDept}
+                    , MSG_JDT                                 =         #{msgJdt}
+                    , SRVC_KEY_VAL                            =         #{srvcKeyVal}
+                    , ERR_MESSAGE                             =         #{errMessage}
+                    , MRKN_YN                                 =         NVL(#{mrknYn},'N')
+                    , REV_ID                                  =         #{revId}
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.PushIfDao.delete */
+                 FROM EON.PUSH_IF
+        <include refid="sqlPkConditions"/>
+    </delete>
+</mapper>

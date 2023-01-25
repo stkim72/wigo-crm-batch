@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CrmCustBosHcHstDao">
+    <sql id="sqlPkConditions">
+                WHERE CNTRT_NO          =       #{cntrtNo}
+                  AND VISIT_TMS_CNT     =       #{visitTmsCnt}
+                  AND RGITV_INSP_SUBMIT_NO =    #{rgitvInspSubmitNo}
+    </sql>
+    <sql id="sqlCols">
+                      CNTRT_NO                    /*계약번호        */
+                    , VISIT_TMS_CNT                    /*방문회차수        */
+                    , ITG_CUST_NO                    /*통합고객번호        */
+                    , TRT_METH_CD                    /*처리방법코드        */
+                    , TRT_METH_NM                    /*처리방법명        */
+                    , SVC_MONS_CNT                    /*서비스개월수        */
+                    , SVC_DATE                    /*서비스일자        */
+                    , EXPT_YYYYMM                    /*예정년월        */
+                    , EXPT_DATE                    /*예정일자        */
+                    , RGITV_INSP_TYPE_CD                    /*정기점검유형코드        */
+                    , RGITV_INSP_TYPE_NM                    /*정기점검유형명        */
+                    , PERD_TYPE_CD                    /*기간유형코드        */
+                    , PERD_TYPE_NM                    /*기간유형명        */
+                    , INSP_TRT_YN                    /*점검처리여부        */
+                    , RGITV_INSP_SUBMIT_NO                    /*정기점검접수번호        */
+                    , BOS_CUST_NO                    /*BOS고객번호        */
+                    , TRT_ORG_CD                    /*처리조직코드        */
+                    , TRT_DATE                    /*처리일자        */
+                    , TRT_HOUR                    /*처리시간        */
+                    , TRT_ENGNR_EMP_NO                    /*처리기사사원번호        */
+                    , NXTM_EXPT_DATE                    /*차회예정일자        */
+                    , AMDR_ID                    /*수정자ID        */
+                    , AMD_DT                    /*수정일시        */
+                    , REGR_ID                    /*등록자ID        */
+                    , REG_DT                    /*등록일시        */
+                    , TRT_ORG_NM                    /*TRT_ORG_NM        */
+                    , TRT_ENGNR_EMP_NM                    /*TRT_ENGNR_EMP_NM        */
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.CNTRT_NO                    /*계약번호        */
+                    , A.VISIT_TMS_CNT                    /*방문회차수        */
+                    , A.ITG_CUST_NO                    /*통합고객번호        */
+                    , A.TRT_METH_CD                    /*처리방법코드        */
+                    , A.TRT_METH_NM                    /*처리방법명        */
+                    , A.SVC_MONS_CNT                    /*서비스개월수        */
+                    , A.SVC_DATE                    /*서비스일자        */
+                    , A.EXPT_YYYYMM                    /*예정년월        */
+                    , A.EXPT_DATE                    /*예정일자        */
+                    , A.RGITV_INSP_TYPE_CD                    /*정기점검유형코드        */
+                    , A.RGITV_INSP_TYPE_NM                    /*정기점검유형명        */
+                    , A.PERD_TYPE_CD                    /*기간유형코드        */
+                    , A.PERD_TYPE_NM                    /*기간유형명        */
+                    , A.INSP_TRT_YN                    /*점검처리여부        */
+                    , A.RGITV_INSP_SUBMIT_NO                    /*정기점검접수번호        */
+                    , A.BOS_CUST_NO                    /*BOS고객번호        */
+                    , A.TRT_ORG_CD                    /*처리조직코드        */
+                    , A.TRT_DATE                    /*처리일자        */
+                    , A.TRT_HOUR                    /*처리시간        */
+                    , A.TRT_ENGNR_EMP_NO                    /*처리기사사원번호        */
+                    , A.NXTM_EXPT_DATE                    /*차회예정일자        */
+                    , A.AMDR_ID                    /*수정자ID        */
+                    , TO_CHAR(A.AMD_DT,'YYYYMMDDHH24MISS')    AMD_DT                    /*수정일시        */
+                    , A.REGR_ID                    /*등록자ID        */
+                    , TO_CHAR(A.REG_DT,'YYYYMMDDHH24MISS')    REG_DT                    /*등록일시        */
+                    , A.TRT_ORG_NM                    /*TRT_ORG_NM        */
+                    , A.TRT_ENGNR_EMP_NM                    /*TRT_ENGNR_EMP_NM        */
+    </sql>
+    <sql id="sqlConditions">
+    <where>
+        <if test="cntrtNo != null and cntrtNo != ''">
+                  AND A.CNTRT_NO        =       #{cntrtNo}
+        </if>
+        <if test="visitTmsCnt != null and visitTmsCnt != ''">
+                  AND A.VISIT_TMS_CNT   =       #{visitTmsCnt}
+        </if>
+        <if test="itgCustNo != null and itgCustNo != ''">
+                  AND A.ITG_CUST_NO     =       #{itgCustNo}
+        </if>
+        <if test="trtMethCd != null and trtMethCd != ''">
+            <choose>
+                <when test="trtMethCd instanceof String">
+                    AND A.TRT_METH_CD     =       #{trtMethCd}
+                </when>
+                <otherwise>
+                    AND A.TRT_METH_CD     IN
+                    <foreach item="item" index="index" collection="trtMethCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="trtMethNm != null and trtMethNm != ''">
+                  AND A.TRT_METH_NM     =       #{trtMethNm}
+        </if>
+        <if test="svcMonsCnt != null and svcMonsCnt != ''">
+                  AND A.SVC_MONS_CNT    =       #{svcMonsCnt}
+        </if>
+        <if test="svcDate != null and svcDate != ''">
+                  AND A.SVC_DATE        =       #{svcDate}
+        </if>
+        <if test="exptYyyymm != null and exptYyyymm != ''">
+                  AND A.EXPT_YYYYMM     =       #{exptYyyymm}
+        </if>
+        <if test="exptDate != null and exptDate != ''">
+                  AND A.EXPT_DATE       =       #{exptDate}
+        </if>
+        <if test="rgitvInspTypeCd != null and rgitvInspTypeCd != ''">
+            <choose>
+                <when test="rgitvInspTypeCd instanceof String">
+                    AND A.RGITV_INSP_TYPE_CD=       #{rgitvInspTypeCd}
+                </when>
+                <otherwise>
+                    AND A.RGITV_INSP_TYPE_CDIN
+                    <foreach item="item" index="index" collection="rgitvInspTypeCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="rgitvInspTypeNm != null and rgitvInspTypeNm != ''">
+                  AND A.RGITV_INSP_TYPE_NM=       #{rgitvInspTypeNm}
+        </if>
+        <if test="perdTypeCd != null and perdTypeCd != ''">
+            <choose>
+                <when test="perdTypeCd instanceof String">
+                    AND A.PERD_TYPE_CD    =       #{perdTypeCd}
+                </when>
+                <otherwise>
+                    AND A.PERD_TYPE_CD    IN
+                    <foreach item="item" index="index" collection="perdTypeCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="perdTypeNm != null and perdTypeNm != ''">
+                  AND A.PERD_TYPE_NM    =       #{perdTypeNm}
+        </if>
+        <if test="inspTrtYn != null and inspTrtYn != ''">
+                  AND A.INSP_TRT_YN     =       #{inspTrtYn}
+        </if>
+        <if test="rgitvInspSubmitNo != null and rgitvInspSubmitNo != ''">
+                  AND A.RGITV_INSP_SUBMIT_NO=       #{rgitvInspSubmitNo}
+        </if>
+        <if test="bosCustNo != null and bosCustNo != ''">
+                  AND A.BOS_CUST_NO     =       #{bosCustNo}
+        </if>
+        <if test="trtOrgCd != null and trtOrgCd != ''">
+            <choose>
+                <when test="trtOrgCd instanceof String">
+                    AND A.TRT_ORG_CD      =       #{trtOrgCd}
+                </when>
+                <otherwise>
+                    AND A.TRT_ORG_CD      IN
+                    <foreach item="item" index="index" collection="trtOrgCd" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="trtDate != null and trtDate != ''">
+                  AND A.TRT_DATE        =       #{trtDate}
+        </if>
+        <if test="trtHour != null and trtHour != ''">
+                  AND A.TRT_HOUR        =       #{trtHour}
+        </if>
+        <if test="trtEngnrEmpNo != null and trtEngnrEmpNo != ''">
+                  AND A.TRT_ENGNR_EMP_NO=       #{trtEngnrEmpNo}
+        </if>
+        <if test="nxtmExptDate != null and nxtmExptDate != ''">
+                  AND A.NXTM_EXPT_DATE  =       #{nxtmExptDate}
+        </if>
+        <if test="trtOrgNm != null and trtOrgNm != ''">
+                  AND A.TRT_ORG_NM      =       #{trtOrgNm}
+        </if>
+        <if test="trtEngnrEmpNm != null and trtEngnrEmpNm != ''">
+                  AND A.TRT_ENGNR_EMP_NM=       #{trtEngnrEmpNm}
+        </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('cntrtNo')">
+                ORDER BY      CNTRT_NO
+            </when>
+            <when test="colSortName.equals('visitTmsCnt')">
+                ORDER BY      VISIT_TMS_CNT
+            </when>
+            <when test="colSortName.equals('itgCustNo')">
+                ORDER BY      ITG_CUST_NO
+            </when>
+            <when test="colSortName.equals('trtMethCd')">
+                ORDER BY      TRT_METH_CD
+            </when>
+            <when test="colSortName.equals('trtMethNm')">
+                ORDER BY      TRT_METH_NM
+            </when>
+            <when test="colSortName.equals('svcMonsCnt')">
+                ORDER BY      SVC_MONS_CNT
+            </when>
+            <when test="colSortName.equals('svcDate')">
+                ORDER BY      SVC_DATE
+            </when>
+            <when test="colSortName.equals('exptYyyymm')">
+                ORDER BY      EXPT_YYYYMM
+            </when>
+            <when test="colSortName.equals('exptDate')">
+                ORDER BY      EXPT_DATE
+            </when>
+            <when test="colSortName.equals('rgitvInspTypeCd')">
+                ORDER BY      RGITV_INSP_TYPE_CD
+            </when>
+            <when test="colSortName.equals('rgitvInspTypeNm')">
+                ORDER BY      RGITV_INSP_TYPE_NM
+            </when>
+            <when test="colSortName.equals('perdTypeCd')">
+                ORDER BY      PERD_TYPE_CD
+            </when>
+            <when test="colSortName.equals('perdTypeNm')">
+                ORDER BY      PERD_TYPE_NM
+            </when>
+            <when test="colSortName.equals('inspTrtYn')">
+                ORDER BY      INSP_TRT_YN
+            </when>
+            <when test="colSortName.equals('rgitvInspSubmitNo')">
+                ORDER BY      RGITV_INSP_SUBMIT_NO
+            </when>
+            <when test="colSortName.equals('bosCustNo')">
+                ORDER BY      BOS_CUST_NO
+            </when>
+            <when test="colSortName.equals('trtOrgCd')">
+                ORDER BY      TRT_ORG_CD
+            </when>
+            <when test="colSortName.equals('trtDate')">
+                ORDER BY      TRT_DATE
+            </when>
+            <when test="colSortName.equals('trtHour')">
+                ORDER BY      TRT_HOUR
+            </when>
+            <when test="colSortName.equals('trtEngnrEmpNo')">
+                ORDER BY      TRT_ENGNR_EMP_NO
+            </when>
+            <when test="colSortName.equals('nxtmExptDate')">
+                ORDER BY      NXTM_EXPT_DATE
+            </when>
+            <when test="colSortName.equals('amdrId')">
+                ORDER BY      AMDR_ID
+            </when>
+            <when test="colSortName.equals('amdDt')">
+                ORDER BY      AMD_DT
+            </when>
+            <when test="colSortName.equals('regrId')">
+                ORDER BY      REGR_ID
+            </when>
+            <when test="colSortName.equals('regDt')">
+                ORDER BY      REG_DT
+            </when>
+            <when test="colSortName.equals('trtOrgNm')">
+                ORDER BY      TRT_ORG_NM
+            </when>
+            <when test="colSortName.equals('trtEngnrEmpNm')">
+                ORDER BY      TRT_ENGNR_EMP_NM
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.CrmCustBosHcHstDao.selectListCount */ COUNT(1)
+                 FROM CRM_CUST_BOS_HC_HST A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.bos.model.BosCrmServiceVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmCustBosHcHstDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM CRM_CUST_BOS_HC_HST A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.bos.model.BosCrmServiceVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmCustBosHcHstDao.select */ <include refid="sqlSelectCols"/>
+                 FROM CRM_CUST_BOS_HC_HST A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT /* com.ceragem.batch.crm.dao.CrmCustBosHcHstDao.insert */ INTO CRM_CUST_BOS_HC_HST (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{cntrtNo}
+                     , #{visitTmsCnt}
+                     , #{itgCustNo}
+                     , #{trtMethCd}
+                     , #{trtMethNm}
+                     , #{svcMonsCnt}
+                     , #{svcDate}
+                     , #{exptYyyymm}
+                     , #{exptDate}
+                     , #{rgitvInspTypeCd}
+                     , #{rgitvInspTypeNm}
+                     , #{perdTypeCd}
+                     , #{perdTypeNm}
+                     , #{inspTrtYn}
+                     , #{rgitvInspSubmitNo}
+                     , #{bosCustNo}
+                     , #{trtOrgCd}
+                     , #{trtDate}
+                     , #{trtHour}
+                     , #{trtEngnrEmpNo}
+                     , #{nxtmExptDate}
+                     , #{amdrId}
+                     , SYSDATE
+                     , #{regrId}
+                     , SYSDATE
+                     , #{trtOrgNm}
+                     , #{trtEngnrEmpNm}
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.CrmCustBosHcHstDao.update */ CRM_CUST_BOS_HC_HST
+                  SET ITG_CUST_NO                             =         #{itgCustNo}
+                    , TRT_METH_CD                             =         #{trtMethCd}
+                    , TRT_METH_NM                             =         #{trtMethNm}
+                    , SVC_MONS_CNT                            =         #{svcMonsCnt}
+                    , SVC_DATE                                =         #{svcDate}
+                    , EXPT_YYYYMM                             =         #{exptYyyymm}
+                    , EXPT_DATE                               =         #{exptDate}
+                    , RGITV_INSP_TYPE_CD                      =         #{rgitvInspTypeCd}
+                    , RGITV_INSP_TYPE_NM                      =         #{rgitvInspTypeNm}
+                    , PERD_TYPE_CD                            =         #{perdTypeCd}
+                    , PERD_TYPE_NM                            =         #{perdTypeNm}
+                    , INSP_TRT_YN                             =         #{inspTrtYn}
+                    , RGITV_INSP_SUBMIT_NO                    =         #{rgitvInspSubmitNo}
+                    , BOS_CUST_NO                             =         #{bosCustNo}
+                    , TRT_ORG_CD                              =         #{trtOrgCd}
+                    , TRT_DATE                                =         #{trtDate}
+                    , TRT_HOUR                                =         #{trtHour}
+                    , TRT_ENGNR_EMP_NO                        =         #{trtEngnrEmpNo}
+                    , NXTM_EXPT_DATE                          =         #{nxtmExptDate}
+                    , AMDR_ID                                 =         #{amdrId}
+                    , AMD_DT                                  =         SYSDATE
+                    , TRT_ORG_NM                              =         #{trtOrgNm}
+                    , TRT_ENGNR_EMP_NM                        =         #{trtEngnrEmpNm}
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.CrmCustBosHcHstDao.delete */
+                 FROM CRM_CUST_BOS_HC_HST
+        <include refid="sqlPkConditions"/>
+    </delete>
+</mapper>

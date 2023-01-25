@@ -1,0 +1,940 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CampCpnPntIssueDao">
+
+
+ <sql id="sqlPosBos">
+ 
+ 
+ 	SELECT /* com.ceragem.batch.crm.dao.CampCpnPntIssueDao.sqlPosBos */  ITG_CUST_NO  FROM (
+ 	  
+		 	SELECT 
+		          ITG_CUST_NO
+		        , ORDR_AMT
+		        , NVL(C.FROM_APPLY_SALE_AMT, 0) FROM_APPLY_SALE_AMT
+		        , NVL(C.TO_APPLY_SALE_AMT, 0) TO_APPLY_SALE_AMT
+		        , SALE_OCCUR_STA_YMD
+		        , SALE_OCCUR_END_YMD
+		    FROM (   
+		    
+		        SELECT 
+		             A.ITG_CUST_NO
+		            , NVL(SUM(A.ORDR_AMT), 0) ORDR_AMT
+		        FROM CRM_COUPN_PBLS_HST A
+		        LEFT JOIN CRM_CAMP_BAS B ON A.CAMP_NO = B.CAMP_BAS_NO
+		        LEFT JOIN CRM_CAMP_BAS C ON C.CAMP_BAS_NO = #{campBasNo}   /* 반응,미반응 캠페인 번호 */
+		        WHERE A.USE_YN =  'Y'  
+		        AND A.CAMP_NO IS NOT NULL
+		        AND A.CAMP_NO =  #{prntsCampBasNo}
+		        AND A.REG_DT BETWEEN TO_DATE( C.SALE_OCCUR_STA_YMD , 'YYYY-MM-DD') AND TO_DATE( C.SALE_OCCUR_END_YMD, 'YYYY-MM-DD') +1
+		        GROUP BY A.ITG_CUST_NO
+		        
+		      ) A
+		      LEFT JOIN CRM_CAMP_BAS C ON C.CAMP_BAS_NO = #{campBasNo}   /* 반응,미반응 캠페인 번호 */
+			 WHERE ORDR_AMT  <![CDATA[>=]]>  FROM_APPLY_SALE_AMT AND  ORDR_AMT <![CDATA[<=]]> TO_APPLY_SALE_AMT
+ 	
+ 		)
+ 		
+ </sql>
+
+
+
+
+  
+    <select id="getCampIssueList" resultType="com.ceragem.batch.crm.model.CrmCampBasVo">
+              
+			SELECT 
+			
+				 DECODE( TMPLT_TYPE_CD, '02', 'SMS', '04', 'LMS/MMS', '06', 'BARCODE', '07', 'PUSH' ) SEND_TYPE
+				 , Z.*
+				 
+				 FROM (
+       			 SELECT /* com.ceragem.crm.camp.dao.CrmCampBasDao.selectList */  
+                      A.CAMP_BAS_NO                    /*캠페인기본번호        */
+                    , A.CAMP_BAS_NM                    /*캠페인기본명        */
+                    
+                    , APPLY_POINT
+                    , APPLY_CUST_CNT
+                    , APPLY_COUPN_BAS_NO
+                    , APPLY_GRP_NO
+                    
+                    , A.RPEAT_CD                    /*반복주기   001	1회 002	매일 003	매주 004	매월 005	분기 006	매년     */
+                    , A.RPEAT_MONTH                 /* 반복월        */
+                    , A.RPEAT_DAY                    /*반복일        */                    
+                    , A.DSP_HOUR                    /*발송시간        */
+                    
+                    , DECODE( A.DOW_1_USE_YN, 'Y', 2, NULL) DOW_1_USE_YN                   /*월요일사용여부        */
+                    , DECODE( A.DOW_2_USE_YN, 'Y', 3, NULL) DOW_2_USE_YN                    /*화요일사용여부        */
+                    , DECODE( A.DOW_3_USE_YN, 'Y', 4, NULL) DOW_3_USE_YN                    /*수요일사용여부        */
+                    , DECODE( A.DOW_4_USE_YN, 'Y', 5, NULL) DOW_4_USE_YN                    /*목요일사용여부        */
+                    , DECODE( A.DOW_5_USE_YN, 'Y', 6, NULL) DOW_5_USE_YN                    /*금요일사용여부        */
+                    , DECODE( A.DOW_6_USE_YN, 'Y', 7, NULL) DOW_6_USE_YN                    /*토요일사용여부        */
+                    , DECODE( A.DOW_7_USE_YN, 'Y', 1, NULL) DOW_7_USE_YN                    /*일요일사용여부        */
+                    
+                    
+                    
+                    , A.CAMP_STATUS_CD                    /*캠페인상태코드        */
+                    
+                    , A.CAMP_TYPE_CD                    /*캠페인유형코드        */
+                    , A.QSTNR_BAS_NO                    /*설문기본번호        */                    
+                    , A.CAMP_EXEC_CNT                    /*캠페인실행수        */                    
+                    , A.PRNTS_CAMP_BAS_NO                    /*부모캠페인기본번호        */                   
+                    , A.APPLY_MSHIP_GRADE_CD                    /*적용멤버십등급코드        */
+                    , TO_CHAR( TO_DATE(A.CAMP_STA_YMD,'YYYYMMDDHH24MISS'),'YYYYMMDD') CAMP_STA_YMD                    /*캠페인시작년월일        */
+                    , TO_CHAR( TO_DATE(A.CAMP_END_YMD,'YYYYMMDDHH24MISS'),'YYYYMMDD') CAMP_END_YMD                    /*캠페인종료년월일        */
+                   
+                    , A.APPLY_POINT_STA_YMD                    /*포인트유효기간시작년월일        */
+                    , A.APPLY_POINT_END_YMD                    /*포인트유효기간종료년월일        */
+
+                    , A.END_AFTR_DAY_CNT                    /*종료후일수        */
+
+                    , A.LOW_RSPN_CAMP_NO                    /*하위캠페인기본번호        */
+                    , A.LOW_RSPN_DNA_CAMP_NO                    /*하위반응미적용캠페인번호        */
+                    , A.RSPN_APPLY_YN
+                
+                    , NVL(A.COUPN_ISSUE_CNT, 0) COUPN_ISSUE_CNT			   /* 쿠폰발행수 */
+                    , NVL(A.APPLY_POINT_VALID_PERD, 0)	APPLY_POINT_VALID_PERD		  /*  적용포인트유효기간 */
+                    
+                    , A.AMDR_ID                    /*수정자ID        */
+                    , TO_CHAR(A.AMD_DT,'YYYYMMDDHH24MISS')    AMD_DT                    /*수정일시        */
+                    , A.REGR_ID                    /*등록자ID        */
+                    , TO_CHAR(A.REG_DT,'YYYYMMDDHH24MISS')    REG_DT                    /*등록일시        */
+                    , (SELECT COUNT(*) FROM CRM_MSHIP_COUPN_BAS WHERE USE_YN='Y' AND  MSHIP_COUPN_BAS_NO = A.APPLY_COUPN_BAS_NO) CHK_CPN  /* 쿠폰사용유무체크        */
+                    , (SELECT COUNT(*) FROM CRM_CAMP_TGTR_BAS WHERE CAMP_BAS_NO = A.CAMP_BAS_NO) CHK_TGTR  /* 그룹인원체크        */
+                    , A.DSP_CHL_CD /* 발송채널 - 사용안함 */
+                    , (SELECT Z023_DUMMY1 FROM EON.WSOMZ023   WHERE  TO_CHAR( Z023_SEQ ) = A.DSP_CTNT_TYPE_NO  AND Z023_USRID IN ( 'crm_1', 'EONSMSEMTC' ) ) TMPLT_TYPE_CD  /* 템플릿에 등록된 발송 채널        */
+                    , (SELECT Z023_GROUP FROM EON.WSOMZ023   WHERE  TO_CHAR( Z023_SEQ ) = A.DSP_CTNT_TYPE_NO  AND Z023_USRID IN ( 'crm_1', 'EONSMSEMTC' ) ) TMPLT_GROUP  /* 템플릿 그룹번호        */
+                
+                	, SALE_OCCUR_STA_YMD
+                	, SALE_OCCUR_END_YMD
+                 FROM CRM_CAMP_BAS A
+                 
+          		 WHERE   A.CAMP_STATUS_CD='003'  /* 캠페인실행 */  
+          		 		
+          		 		AND APPLY_GRP_NO IS NOT NULL AND ( NVL(APPLY_POINT , 0) > 0  OR APPLY_COUPN_BAS_NO IS NOT NULL ) AND 
+          		 
+          		 	  ( A.CAMP_STA_YMD  <![CDATA[<=]]>   TO_CHAR( SYSDATE, 'YYYYMMDD')  AND A.CAMP_END_YMD  <![CDATA[>=]]>  TO_CHAR( SYSDATE, 'YYYYMMDD') ) 
+          		 	  
+          		 	  
+          		 	   /* AND PRNTS_CAMP_BAS_NO IS NOT NULL */          		 	  
+          			  /*   AND  CAMP_BAS_NO IN (  'CBN22093018350891373'  )  테스트시에만 사용 */
+          		 	   
+          		 	   
+               		 ORDER BY      REG_DT ASC
+				) Z WHERE (  NVL( CHK_CPN, 0 ) > 0 OR  NVL( APPLY_POINT, 0 ) > 0 ) AND CHK_TGTR > 0 
+				AND Z.TMPLT_TYPE_CD IN ( '02' , '04' , '06', '07' )
+
+
+			
+    </select>
+    
+    
+    
+    
+    
+    
+      <insert id="pubCoupon"> 
+    
+                
+       
+        	 INSERT ALL /* CampCpnPntIssue.pubCoupon */ INTO  CRM_COUPN_PBLS_HST ( COUPN_PBLS_HST_SEQ
+								, COUPN_PBLS_BAS_NO
+								, CAMP_NO
+								, ITG_CUST_NO
+								, MSHIP_COUPN_BAS_NO
+								, COUPN_KND_CD
+								, COUPN_TGT_CD
+								, COUPN_APPLY_DIV_CD1
+								, COUPN_APPLY_DIV_CD2
+								, FROM_PBLS_STD_DAY
+								, TO_PBLS_STD_DAY
+								, USE_STD_DAY_COND_CD
+								, FROM_USE_STD_DAY
+								, TO_USE_STD_DAY
+								, GIFT_POSS_YN
+								, COUPN_ISSUE_METH_CD
+								, ISSUE_RSTRTN_CNT
+								, MAX_ISSUE_CNT
+								, MAX_USE_CNT
+								, APPLY_AMT
+								, APPLY_RATE
+								, MIN_BUY_AMT
+								, MAX_DC_AMT
+								, APPLY_CNT
+								, PRSNTTN_GODS_CD
+								, USE_DOW
+								, FROM_USE_HOUR
+								, TO_USE_HOUR
+								, USE_CHL_CD
+								, DUP_USE_YN
+								, USE_DIV_CD
+								, USE_YN
+								, COUPN_BAS_NM
+								, COUPN_BAS_CTNTS
+								, ADMT_METH_CD
+								, ADMT_AMT
+								, COUPN_TYPE_CD
+								, COUPN_USE_POSS_DAY
+								, COUPN_USE_POSS_YN
+								, COUPN_USE_POSS_DAY_CNT
+								, COUPN_CLASS_CD
+								,  DOW_1_USE_YN
+								, DOW_2_USE_YN
+								, DOW_3_USE_YN
+								, DOW_4_USE_YN
+								, DOW_5_USE_YN
+								, DOW_6_USE_YN
+								, DOW_7_USE_YN
+								, MSHP_GRADE_CD
+								, AMDR_ID
+								, AMD_DT
+								, REGR_ID
+								, REG_DT
+								, REG_CHL_CD
+								, STOR_NO
+								) 
+
+						SELECT   /* CampCpnPntIssue.pubCoupon */  
+								COUPN_PBLS_HST_SEQ
+			           		,  COUPN_PBLS_BAS_NO
+			           		, CAMP_NO
+			           		, ITG_CUST_NO
+			           		, MSHIP_COUPN_BAS_NO
+			           		, COUPN_KND_CD
+			           		, COUPN_TGT_CD
+			           		, COUPN_APPLY_DIV_CD1
+			           		,  COUPN_APPLY_DIV_CD2
+			           		, FROM_PBLS_STD_DAY
+			           		, TO_PBLS_STD_DAY
+			           		, USE_STD_DAY_COND_CD
+			           		, FROM_USE_STD_DAY
+			           		, TO_USE_STD_DAY
+			           		, GIFT_POSS_YN
+			           		, COUPN_ISSUE_METH_CD
+			           		, ISSUE_RSTRTN_CNT
+			           		,  MAX_ISSUE_CNT
+			           		, MAX_USE_CNT
+			           		, APPLY_AMT
+			           		, APPLY_RATE
+			           		, MIN_BUY_AMT
+			           		, MAX_DC_AMT
+			           		, APPLY_CNT
+			           		, PRSNTTN_GODS_CD
+			           		, USE_DOW
+			           		, FROM_USE_HOUR
+			           		, TO_USE_HOUR
+			           		, USE_CHL_CD
+			           		, DUP_USE_YN
+			           		,  USE_DIV_CD
+			           		,  USE_YN
+			           		, COUPN_BAS_NM
+			           		, COUPN_BAS_CTNTS
+			           		, ADMT_METH_CD
+			           		, ADMT_AMT
+			           		, COUPN_TYPE_CD
+			           		, COUPN_USE_POSS_DAY
+			           		, COUPN_USE_POSS_YN
+			           		, COUPN_USE_POSS_DAY_CNT
+			           		,  COUPN_CLASS_CD
+			           		,  DOW_1_USE_YN
+			           		, DOW_2_USE_YN
+			           		, DOW_3_USE_YN
+			           		, DOW_4_USE_YN
+			           		, DOW_5_USE_YN
+			           		, DOW_6_USE_YN
+			           		, DOW_7_USE_YN
+			           		, MSHP_GRADE_CD
+			           		, AMDR_ID
+							, AMD_DT
+							, REGR_ID
+							, REG_DT
+							, REG_CHL_CD
+							, STOR_NO
+                            
+                            FROM (				           
+			           
+			           SELECT  /* CampCpnPntIssue.pubCoupon */  
+			           		FN_CRM_AUTO_SEQ('CPN') COUPN_PBLS_HST_SEQ
+			           		, FN_LUHN_COUPN( DECODE(MSHIP_GRADE_CD, '001', '01', '002', '51', '003', '05', NULL, '05') ) COUPN_PBLS_BAS_NO
+			           		, #{campBasNo} CAMP_NO
+			           		, ITG_CUST_NO
+			           		, MSHIP_COUPN_BAS_NO
+			           		, COUPN_KND_CD
+			           		, COUPN_TGT_CD
+			           		, COUPN_APPLY_DIV_CD1
+			           		,  COUPN_APPLY_DIV_CD2
+			           		, FROM_PBLS_STD_DAY
+			           		, TO_PBLS_STD_DAY
+			           		, USE_STD_DAY_COND_CD
+			           		, DECODE(USE_STD_DAY_COND_CD, 'Y', TO_CHAR(SYSDATE, 'YYYYMMDD'), NULL, FROM_USE_STD_DAY )   FROM_USE_STD_DAY
+			           		, DECODE(USE_STD_DAY_COND_CD, 'Y', TO_CHAR( SYSDATE + NVL( COUPN_USE_POSS_DAY, 0)  , 'YYYYMMDD'), NULL, TO_USE_STD_DAY ) TO_USE_STD_DAY
+			           		, GIFT_POSS_YN
+			           		, COUPN_ISSUE_METH_CD
+			           		, ISSUE_RSTRTN_CNT
+			           		,  MAX_ISSUE_CNT
+			           		, MAX_USE_CNT
+			           		, APPLY_AMT
+			           		, APPLY_RATE
+			           		, MIN_BUY_AMT
+			           		, MAX_DC_AMT
+			           		, APPLY_CNT
+			           		, PRSNTTN_GODS_CD
+			           		, USE_DOW
+			           		, FROM_USE_HOUR
+			           		, TO_USE_HOUR
+			           		, USE_CHL_CD
+			           		, DUP_USE_YN
+			           		,  '002' USE_DIV_CD
+			           		, 'N' USE_YN
+			           		, COUPN_BAS_NM
+			           		, COUPN_BAS_CTNTS
+			           		, ADMT_METH_CD
+			           		, ADMT_AMT
+			           		, COUPN_TYPE_CD
+			           		, COUPN_USE_POSS_DAY
+			           		, COUPN_USE_POSS_YN
+			           		, COUPN_USE_POSS_DAY_CNT
+			           		,  COUPN_CLASS_CD
+			           		,  DOW_1_USE_YN
+			           		, DOW_2_USE_YN
+			           		, DOW_3_USE_YN
+			           		, DOW_4_USE_YN
+			           		, DOW_5_USE_YN
+			           		, DOW_6_USE_YN
+			           		, DOW_7_USE_YN
+			           		,  MSHP_GRADE_CD
+			           		, NULL AMDR_ID
+			           		, NULL AMD_DT
+			           		, #{regrId} REGR_ID
+			           		, SYSDATE  REG_DT
+			           		, 'CRM'  REG_CHL_CD
+			           		, '141359' STOR_NO
+			           		
+			   		<if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '001' ">     
+	                       ,  /* 1회 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_COUPN_PBLS_HST M WHERE  M.CAMP_NO = B.CAMP_BAS_NO AND M.ITG_CUST_NO = B.ITG_CUST_NO AND M.MSHIP_COUPN_BAS_NO = A.MSHIP_COUPN_BAS_NO ) PBLS_CNT 
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '002' ">     
+	                       ,  /* 매일 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_COUPN_PBLS_HST M WHERE M.CAMP_NO = B.CAMP_BAS_NO AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND M.MSHIP_COUPN_BAS_NO = A.MSHIP_COUPN_BAS_NO AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) PBLS_CNT
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '003' ">     
+	                       ,  /* 매주 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_COUPN_PBLS_HST M WHERE M.CAMP_NO = B.CAMP_BAS_NO AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND M.MSHIP_COUPN_BAS_NO = A.MSHIP_COUPN_BAS_NO AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) PBLS_CNT
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '004' ">     
+	                       ,  /* 매월 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_COUPN_PBLS_HST M WHERE M.CAMP_NO = B.CAMP_BAS_NO AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND M.MSHIP_COUPN_BAS_NO = A.MSHIP_COUPN_BAS_NO AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) PBLS_CNT
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '005' ">     
+	                       ,  /* 분기별 제공일경우 체크 */ (SELECT COUNT(*) FROM CRM_COUPN_PBLS_HST M WHERE M.CAMP_NO = B.CAMP_BAS_NO AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND M.MSHIP_COUPN_BAS_NO = A.MSHIP_COUPN_BAS_NO AND TO_CHAR(REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) PBLS_CNT
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '006' ">     
+	                       ,  /* 매년 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_COUPN_PBLS_HST M WHERE M.CAMP_NO = B.CAMP_BAS_NO AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND M.MSHIP_COUPN_BAS_NO = A.MSHIP_COUPN_BAS_NO AND TO_CHAR(REG_DT, 'YYYY') = TO_CHAR(SYSDATE, 'YYYY') ) PBLS_CNT
+					 </if>        		
+			           		
+			           		
+  					  FROM CRM_MSHIP_COUPN_BAS A
+                      LEFT JOIN (
+                      
+                      	SELECT T.ITG_CUST_NO, T.CAMP_BAS_NO FROM CRM_CAMP_TGTR_BAS T
+         					LEFT JOIN CRM_CUST_BAS Y ON T.ITG_CUST_NO = Y.ITG_CUST_NO
+         			 		WHERE /* MSHIP_SBSC_YN = 'Y'   AND */  CAMP_TGT_GRP_BAS_NO = 							
+									(
+										SELECT CAMP_TGT_GRP_BAS_NO FROM CRM_CAMP_TGT_GRP_BAS A
+								        WHERE CAMP_BAS_NO=#{campBasNo} AND CUST_GRP_NO=#{applyGrpNo}
+								    )
+     				 ) B  ON 1=1
+                        WHERE 
+                        	  MSHIP_COUPN_BAS_NO = #{applyCoupnBasNo}
+                        	  AND USE_YN='Y'
+                        	  AND B.ITG_CUST_NO IS NOT NULL
+                        	  
+                      <choose>
+                        <when test=" campBasNo != '' and applyGrpNo != ''  and applyCoupnBasNo != '' ">  
+                         </when>
+                         <otherwise>
+                    		AND 1 = 2    
+                         </otherwise>
+                     </choose>  
+                     
+                     
+                     <if test="prntsCampBasNo != null and prntsCampBasNo != '' ">
+                      
+                       /* 2차 캠페인 일 경우 처리 */
+                       AND B.ITG_CUST_NO  IN (
+                     		<include refid="sqlPosBos"/>
+                     	)
+                     	
+                     </if>
+                     
+                     ) Z
+                     
+                     WHERE  PBLS_CNT <![CDATA[<]]>  #{coupnIssueCnt}
+                     	  
+			
+        
+    </insert> 
+    
+    
+    
+     <insert id="pubPoint"> 
+    
+       
+         	
+        			  INSERT ALL /* CampCpnPntIssue.pubPoint */ INTO  CRM_POINT_HST (
+        			  		  POINT_HST_SEQ
+        			  		  , ITG_CUST_NO
+        			  		  , CHIT_NO
+        			  		  , PBLS_DIV_CD
+        			  		  , OCCUR_POINT_SCORE
+        			  		  , REMAIN_POINT_SCORE
+        			  		  , VALID_PERD_STA_YMD
+        			  		  , VALID_PERD_END_YMD
+        			  		  , PBLS_DT
+        			  		  , PBLS_CHL_CD
+        			  		  , CAMP_NO
+							  , AMDR_ID
+							  , AMD_DT
+							  , REGR_ID
+							  , REG_DT
+							  , REG_CHL_CD
+							  , STOR_NO
+							  , USE_TYPE_CD
+        			  		)
+			 
+		
+			           
+			           SELECT 
+			           		FN_CRM_AUTO_SEQ('PNT')
+			           		, B.ITG_CUST_NO
+			           		,  FN_CRM_AUTO_SEQ('CPT') CHIT_NO
+			           		, '960' PBLS_DIV_CD
+			           		, NVL( #{applyPoint}, 0 ) OCCUR_POINT_SCORE
+			            
+			             , NVL(
+			              	(SELECT REMAIN_POINT_SCORE FROM ( SELECT REMAIN_POINT_SCORE FROM CRM_POINT_HST C 
+			             	WHERE C.ITG_CUST_NO = B.ITG_CUST_NO ORDER BY C.POINT_HST_SEQ DESC ) WHERE   ROWNUM=1  ), 0) + NVL( #{applyPoint} , 0 ) REMAIN_POINT_SCORE
+			             ,  TO_CHAR(SYSDATE,'YYYYMMDD') VALID_PERD_STA_YMD
+			             ,  TO_CHAR(ADD_MONTHS(SYSDATE, NVL( A.APPLY_POINT_VALID_PERD, 0) ),'YYYYMMDD') VALID_PERD_END_YMD
+			             , SYSDATE,  'CRM' PBLS_CHL_CD, #{campBasNo} CAMP_NO
+			             , NULL AMDR_ID, NULL AMD_DT, #{regrId} REGR_ID, SYSDATE REG_DT, 'CRM' REG_CHL_CD, '141359' , '002' 
+			           
+			           	FROM CRM_CAMP_BAS A
+						LEFT JOIN  CRM_CAMP_TGTR_BAS  B ON A.CAMP_BAS_NO = B.CAMP_BAS_NO
+						LEFT JOIN CRM_CUST_BAS C ON B.ITG_CUST_NO = C.ITG_CUST_NO
+			           	WHERE CAMP_TGT_GRP_BAS_NO = 							
+							(
+								SELECT CAMP_TGT_GRP_BAS_NO FROM CRM_CAMP_TGT_GRP_BAS A
+						        WHERE CAMP_BAS_NO=#{campBasNo} AND CUST_GRP_NO=#{applyGrpNo}
+						    )
+     					 AND B.ITG_CUST_NO IS NOT NULL
+     					 
+     					 /* 쿠폰은 맴버십 유무를 체크 안하고 포인트만 맴버십 유무를 체크 함 2022-09-14 */
+     					 
+     					 AND C.MSHIP_SBSC_YN = 'Y'
+     					 
+     					 
+     					 
+		        	 <choose>
+                        <when test=" campBasNo != '' and applyGrpNo != '' ">  
+                         </when>
+                         <otherwise>
+                    		AND 1 = 2    
+                         </otherwise>
+                     </choose>
+                     
+                      <if test="prntsCampBasNo != null and prntsCampBasNo != '' ">
+                      
+                       /* 2차 캠페인 일 경우 처리 */
+                       AND B.ITG_CUST_NO  IN (
+                     		<include refid="sqlPosBos"/>
+                     	)
+                     	
+                     </if>
+                     
+                     
+                     
+                        	  
+	                 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '001' ">     
+	                       AND /* 1회 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_POINT_HST M WHERE  M.CAMP_NO = #{campBasNo} AND M.ITG_CUST_NO = B.ITG_CUST_NO  ) <![CDATA[<]]> 1
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '002' ">     
+	                       AND /* 매일 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_POINT_HST M WHERE M.CAMP_NO = #{campBasNo} AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND TO_CHAR(M.REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) <![CDATA[<]]> 1
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '003' ">     
+	                       AND /* 매주 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_POINT_HST M WHERE M.CAMP_NO = #{campBasNo} AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND TO_CHAR(M.REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) <![CDATA[<]]> 1
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '004' ">     
+	                       AND /* 매월 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_POINT_HST M WHERE M.CAMP_NO = #{campBasNo} AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND TO_CHAR(M.REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) <![CDATA[<]]> 1
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '005' ">     
+	                       AND /* 분기별 제공일경우 체크 */ (SELECT COUNT(*) FROM CRM_POINT_HST M WHERE M.CAMP_NO = #{campBasNo} AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND TO_CHAR(M.REG_DT, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') ) <![CDATA[<]]> 1
+					 </if>
+					 
+					 <if test="rpeatCd != null and rpeatCd != '' and rpeatCd == '006' ">     
+	                       AND /* 매년 제공일 경우 체크  */ (SELECT COUNT(*) FROM CRM_POINT_HST M WHERE M.CAMP_NO = #{campBasNo} AND  M.ITG_CUST_NO = B.ITG_CUST_NO AND TO_CHAR(M.REG_DT, 'YYYY') = TO_CHAR(SYSDATE, 'YYYY') ) <![CDATA[<]]> 1
+					 </if>
+			
+			
+        
+    </insert> 
+    
+    
+    
+    
+    <insert id="saveCamHis"> 
+    
+                
+        	
+        
+        			  INSERT ALL /* CampCpnPntIssue.saveCamHis */ INTO  CRM_CAMP_DSP_HST (
+        			  		  CAMP_DSP_HST_SEQ 
+							, ITG_CUST_NO 
+							, CAMP_TGT_GRP_BAS_NO 
+							, CAMP_BAS_NO 
+							, CUST_NM 
+							, MPHON_NO 
+							, EMAIL_ADDR 
+							, DSP_CHL_CD 
+							, DSP_YMDHMS         			  		  
+							, PBLS_DIV_CD 
+							, OCCUR_POINT_SCORE 
+							, POINT_VALID_PERD 
+							, APPLY_POINT_STA_YMD 
+							, APPLY_POINT_END_YMD 
+							, COUPN_BAS_NO 
+							, COUPN_ISSUE_CNT
+        			  		)
+			   
+			           
+			           SELECT  /* CampCpnPntIssue.saveCamHis */ 
+								FN_CRM_AUTO_SEQ('CDH')  
+								, B.ITG_CUST_NO 
+								, B.CAMP_TGT_GRP_BAS_NO 
+								, B.CAMP_BAS_NO 
+								, B.CUST_NM 
+								, B.MPHON_NO 
+								, B.EMAIL_ADDR 
+								, 'CRM' DSP_CHL_CD  								
+								, TO_CHAR( SYSDATE 
+								, 'YYYYMMDD') || A.DSP_HOUR  DSP_YMDHMS 
+								, '960' PBLS_DIV_CD 
+								, A.APPLY_POINT 
+								, A.APPLY_POINT_VALID_PERD 
+								, TO_CHAR(SYSDATE,'YYYYMMDD') APPLY_POINT_STA_YMD  								
+								, TO_CHAR(ADD_MONTHS(SYSDATE
+								, NVL( A.APPLY_POINT_VALID_PERD , 0) ),'YYYYMMDD') APPLY_POINT_END_YMD 
+								, A.APPLY_COUPN_BAS_NO 
+								, A.COUPN_ISSUE_CNT
+			           
+			           	FROM CRM_CAMP_BAS A
+						LEFT JOIN  CRM_CAMP_TGTR_BAS  B ON A.CAMP_BAS_NO = B.CAMP_BAS_NO						
+						LEFT JOIN CRM_CUST_BAS C ON B.ITG_CUST_NO = C.ITG_CUST_NO
+			           	WHERE CAMP_TGT_GRP_BAS_NO = 							
+							(
+								SELECT CAMP_TGT_GRP_BAS_NO FROM CRM_CAMP_TGT_GRP_BAS A
+						        WHERE CAMP_BAS_NO=#{campBasNo} AND CUST_GRP_NO=#{applyGrpNo}
+						    )
+     					 AND B.ITG_CUST_NO IS NOT NULL
+     					 /* AND C.MSHIP_SBSC_YN = 'Y' */
+     					 
+     					 <if test="prntsCampBasNo != null and prntsCampBasNo != '' ">
+                      
+	                       /* 2차 캠페인 일 경우 처리 */
+	                       AND B.ITG_CUST_NO  IN (
+	                     		<include refid="sqlPosBos"/>
+	                     	)
+	                     	
+	                     </if>
+						
+					<choose>
+                        <when test=" campBasNo != '' and applyGrpNo != '' ">  
+                         </when>
+                         <otherwise>
+                    		AND 1 = 2    
+                         </otherwise>
+                     </choose>
+			
+        
+    </insert> 
+    
+    
+    
+    <sql id="sqlCols">
+                      CLIENT                    /*CLIENT        */
+                    , CAMPAIGN_ID                    /*CAMPAIGN_ID        */
+                    , MEMBER_SEQ                    /*MEMBER_SEQ        */
+                    , SEND_TYPE                    /*SEND_TYPE        */
+                    , SUBJECT                    /*SUBJECT        */
+                    , MSG                    /*MSG        */
+                    , DESTEL                    /*DESTEL        */
+                    , SRCTEL                    /*SRCTEL        */
+                     , RESERVETIME                    /*RESERVETIME        */
+<!--                     , SENDTIME                    /*SENDTIME        */ -->
+<!--                     , REVTIME                    /*REVTIME        */ -->
+                    , SENDRESULT                    /*SENDRESULT        */
+<!--                     , TRANSRESULT                    /*TRANSRESULT        */ -->
+                     , FILE_CNT                    /*FILE_CNT        */
+<!--                     , FILE_CNT_REAL                    /*FILE_CNT_REAL        */ -->
+                     , FILE_TYPE1                    /*FILE_TYPE1        */
+                    , FILE_PATH1                    /*FILE_PATH1        */
+<!--                     , FILE_TYPE2                    /*FILE_TYPE2        */ -->
+<!--                     , FILE_PATH2                    /*FILE_PATH2        */ -->
+<!--                     , FILE_TYPE3                    /*FILE_TYPE3        */ -->
+<!--                     , FILE_PATH3                    /*FILE_PATH3        */ -->
+<!--                     , INTERFACE_DATE                    /*INTERFACE_DATE        */ -->
+<!--                     , INTERFACE_FL                    /*INTERFACE_FL        */ -->
+<!--                     , SMS_TEST                    /*SMS_TEST        */ -->
+                    , ETC3                    /*ETC3        */
+                    , DUMMY1                    /*DUMMY1        */
+                    , DUMMY2                    /*DUMMY2        */
+                    , DUMMY3                    /*DUMMY3        */
+                    , DUMMY4                    /*DUMMY4        */
+                    , DUMMY5                    /*DUMMY5        */
+                    , DUMMY6                    /*DUMMY6        */
+                    , DUMMY7                    /*DUMMY7        */
+                    , DUMMY8                    /*DUMMY8        */
+                    , DUMMY9                    /*DUMMY9        */
+                    , DUMMY10                    /*DUMMY10        */
+<!--                     , SENDER_KEY                    /*SENDER_KEY        */ -->
+<!--                     , TEMPLATE_CODE                    /*TEMPLATE_CODE        */ -->
+<!--                     , K_MSG                    /*K_MSG        */ -->
+<!--                     , K_RESERVETIME                    /*K_RESERVETIME        */ -->
+<!--                     , K_SENDTIME                    /*K_SENDTIME        */ -->
+<!--                     , K_RSLTDATE                    /*K_RSLTDATE        */ -->
+<!--                     , K_TRANSRESULT                    /*K_TRANSRESULT        */ -->
+<!--                      , K_ERR_ISSEND                    /*K_ERR_ISSEND        */ -->
+<!--                      , MSG_TYPE                    /*MSG_TYPE        */ -->
+<!--                      , KKO_HEADER                    /*KKO_HEADER        */ -->
+<!--                      , KKO_BTN_TYPE                    /*KKO_BTN_TYPE        */ -->
+<!--                      , KKO_BTN_INFO                    /*KKO_BTN_INFO        */ -->
+<!--                      , IMG_URL                    /*IMG_URL        */ -->
+<!--                      , IMG_LINK                    /*IMG_LINK        */ -->
+<!--                     , K_WIDE                    /*K_WIDE        */ -->
+<!--                      , K_TITLE                    /*K_TITLE        */ -->
+<!--                      , AD_FLAG                    /*AD_FLAG        */ -->
+                    , REV_ID                    /*REV_ID        */
+<!--                     , MSG_JDT                    /*MSG_JDT        */ -->
+
+                    , BARCODE_TYPE                    /*BARCODE_TYPE        */
+                    , BARCODE_WIDTH                    /*BARCODE_WIDTH        */
+                    , BARCODE_HEIGHT                    /*BARCODE_HEIGHT        */
+                    , BARCODE_POS_X                    /*BARCODE_POS_X        */
+                    , BARCODE_POS_Y                    /*BARCODE_POS_Y        */
+                    , BARCODE_VALUE                    /*BARCODE_VALUE        */
+                   
+    </sql>
+    
+    
+    <insert id="insertMsgIf">
+    
+
+    	 INSERT ALL  /* com.ceragem.batch.crm.dao.CampCpnPntIssueDao.insertMsgIf */ INTO EON.MSG_IF (
+                    <include refid="sqlCols"/>
+                 ) 
+      
+         
+                  SELECT   /* com.ceragem.batch.crm.dao.CampCpnPntIssueDao.insertMsgIf */
+                    'CRM'
+                    , A.CAMP_BAS_NO
+                    , NVL((SELECT MAX( NVL( TO_NUMBER(MEMBER_SEQ), 0) ) FROM  EON.MSG_IF WHERE CAMPAIGN_ID =  A.CAMP_BAS_NO), 0 ) + ROWNUM  RNUM
+                    , 2 SEND_TYPE
+                    , C.Z023_TITLE SUBJECT
+                    , FN_GET_MSG(
+                          D.ITG_CUST_NO
+                        , D.CUST_NM 
+                        , ( SELECT COMN_CD_NM FROM CRM_COMN_CD_BAS F WHERE F.TOP_COMN_CD = 'MB020' AND  F.COMN_CD = D.MSHIP_GRADE_CD )
+                       
+                   
+                    <choose>
+                      <when test="joinTbl == 'CRM_COUPN_PBLS_HST'  ">  
+                        , ( SELECT COUPN_BAS_NM FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+                        , 
+						   (
+	                        CASE WHEN ( SELECT NVL(USE_STD_DAY_COND_CD, 'N') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO ) = 'Y' THEN 
+	                           
+	                                TO_CHAR( SYSDATE + NVL( 
+	                                ( SELECT COUPN_USE_POSS_DAY FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                                ,  730  ),'YYYY.MM.DD')
+	                           
+	                        ELSE
+	                        
+	                           ( SELECT TO_CHAR(  TO_DATE(TO_USE_STD_DAY , 'YYYYMMDD'), 'YYYY.MM.DD') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                        
+	                        END )
+
+                      	, NULL
+                      	, COUPN_PBLS_BAS_NO
+                       </when>
+                       
+                       <when test="joinTbl == 'CRM_POINT_HST' ">  
+                        , ( SELECT COUPN_BAS_NM FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+                        , 
+                        
+                        	(
+	                        CASE WHEN ( SELECT NVL(USE_STD_DAY_COND_CD, 'N') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO ) = 'Y' THEN 
+	                           
+	                                TO_CHAR( SYSDATE + NVL( 
+	                                ( SELECT COUPN_USE_POSS_DAY FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                                , 730 ),'YYYY.MM.DD')
+	                           
+	                        ELSE
+	                        
+	                           ( SELECT TO_CHAR(  TO_DATE(TO_USE_STD_DAY , 'YYYYMMDD'), 'YYYY.MM.DD') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                        
+	                        END )
+	                        
+                      	, NVL(B.OCCUR_POINT_SCORE, 0)
+                      	, (
+	                  		SELECT COUPN_PBLS_BAS_NO FROM crm_coupn_pbls_hst M WHERE CAMP_NO =  A.CAMP_BAS_NO AND ITG_CUST_NO = B.ITG_CUST_NO
+							AND TO_CHAR( M.REG_DT, 'YYYYMMDD') =  TO_CHAR(  B.REG_DT , 'YYYYMMDD')  AND ROWNUM=1
+						  )
+                       </when>
+                       
+                       
+                       <otherwise>
+                       	, NULL
+                       	, NULL
+                  		, NVL(B.OCCUR_POINT_SCORE, 0)
+                      	, NULL
+                       </otherwise>
+                    </choose>       
+                    
+                        , C.Z023_CONTENT
+                    ) MSG
+                
+                    , DAMO.DECRYPT_VAR_B64('AES_256',  D.MPHON_NO , '') DESTEL
+                    , '15775570' SRCTEL   
+                    , TO_CHAR( TO_DATE(TO_CHAR( TRUNC( SYSDATE ),  'YYYY-MM-DD' ) || A.DSP_HOUR || ':00:00' , 'YYYY-MM-DD HH24:MI:SS' ) , 'YYYY-MM-DD HH24:MI:SS') RESERVETIME
+                    , '00000' SENDRESULT
+                    
+			        , (CASE WHEN C.Z023_BARCODE_ORG_IMG IS NOT NULL THEN 1 ELSE 0 END )  FILE_CNT
+                    , (CASE WHEN C.Z023_BARCODE_ORG_IMG IS NOT NULL THEN 'I' ELSE NULL END ) FILE_TYPE1 
+                    , (CASE WHEN C.Z023_BARCODE_ORG_IMG IS NOT NULL THEN  '/app/eon/webmgr/app/mmsimg/' || C.Z023_BARCODE_ORG_IMG ELSE NULL END ) FILE_PATH1
+                    
+                    , 'crm_1' ETC3
+                    , NULL DUMMY1
+                    , NULL DUMMY2
+                    , NULL DUMMY3
+                    , NULL DUMMY4
+                    , NULL DUMMY5
+                    , NULL DUMMY6
+                    , NULL DUMMY7
+                    , A.CAMP_BAS_NO DUMMY8
+                    , NULL DUMMY9
+                    , B.ITG_CUST_NO DUMMY10
+                    , B.ITG_CUST_NO REV_ID
+                    , C.Z023_BARCODE_TYPE
+                    , C.Z023_BARCODE_WIDTH
+                    , C.Z023_BARCODE_HEIGHT
+                    , C.Z023_BARCODE_POS_X
+                    , C.Z023_BARCODE_POS_Y
+                    
+                     <choose>
+                      <when test="joinTbl == 'CRM_COUPN_PBLS_HST' ">  
+                        , B.COUPN_PBLS_BAS_NO BARCODE_VALUE
+                       </when>
+                       
+                       <when test="joinTbl == 'CRM_POINT_HST' ">  
+                        , (
+	                  		SELECT COUPN_PBLS_BAS_NO FROM crm_coupn_pbls_hst M WHERE CAMP_NO =  A.CAMP_BAS_NO AND ITG_CUST_NO = B.ITG_CUST_NO
+							AND TO_CHAR( M.REG_DT, 'YYYYMMDD') =  TO_CHAR(  B.REG_DT , 'YYYYMMDD')  AND ROWNUM=1
+						) BARCODE_VALUE
+                       </when>
+                       <otherwise>                       
+                  		, NULL BARCODE_VALUE
+                       </otherwise>
+                    </choose>      
+                    
+
+                    FROM CRM_CAMP_BAS A
+                    LEFT JOIN ${joinTbl} B ON A.CAMP_BAS_NO = ${joinCol}  /* B.CAMP_NO  */ 
+                    LEFT JOIN EON.WSOMZ023 C ON TO_CHAR(C.Z023_SEQ) = A.DSP_CTNT_TYPE_NO  AND C.Z023_USRID IN ( 'crm_1', 'EONSMSEMTC' )
+                    LEFT JOIN CRM_CUST_BAS D ON B.ITG_CUST_NO = D.ITG_CUST_NO
+                    WHERE A.CAMP_BAS_NO=#{campBasNo} AND A.APPLY_GRP_NO=#{applyGrpNo}
+                     AND B.ITG_CUST_NO IS NOT NULL  
+                     AND NVL( D.SMS_RCV_AGREE_YN, 'N') = 'Y' 
+			         AND C.Z023_TITLE IS NOT NULL   
+			         AND TO_CHAR( B.REG_DT, 'YYYYMMDD') = TO_CHAR( SYSDATE, 'YYYYMMDD') 
+                      
+                      
+                     <if test="prntsCampBasNo != null and prntsCampBasNo != '' ">
+                     
+                       /* 2차 캠페인 일 경우 처리 */
+                       AND B.ITG_CUST_NO  IN (
+                     		<include refid="sqlPosBos"/>
+                     	)
+                     	
+                     </if>
+                     
+                         
+                     <choose>
+                        <when test=" campBasNo != '' and applyGrpNo != '' ">  
+                         </when>
+                         <otherwise>
+                     AND 1 = 2    
+                         </otherwise>
+                    </choose>
+                    
+                    
+    </insert>
+    
+  
+    
+    
+    
+     <sql id="sqlPshCols">
+                      CLIENT                    /*CLIENT        */
+                    , CAMPAIGN_ID                    /*CAMPAIGN_ID        */
+                    , MEMBER_SEQ                    /*MEMBER_SEQ        */
+                    , SEND_GUBUN                    /*SEND_GUBUN        */
+                    , SUBJECT                    /*SUBJECT        */
+                    , PUSH_APP_ID                    /*PUSH_APP_ID        */
+                    , PUSH_APP_OS                    /*PUSH_APP_OS        */
+                    , PUSH_MSG                    /*PUSH_MSG        */
+                    , PUSH_TKN_INFO                    /*PUSH_TKN_INFO        */
+                    , PUSH_RESERVETIME                    /*PUSH_RESERVETIME        */
+                    , PUSH_SEND_INTERVAL                    /*PUSH_SEND_INTERVAL        */
+                    , DESTEL                    /*DESTEL        */
+                    , SRCTEL                    /*SRCTEL        */
+                    , SENDRESULT                    /*SENDRESULT        */
+                    , PUSH_SENDTIME                    /*PUSH_SENDTIME        */
+                    , PUSH_TRANSRESULT                    /*PUSH_TRANSRESULT        */
+                    , PUSH_RESULTTIME                    /*PUSH_RESULTTIME        */
+                    , SND_RETRY_CNT                    /*SND_RETRY_CNT        */
+                    , PUSH_CP_ID                    /*PUSH_CP_ID        */
+                    , SNDR_ID                    /*SNDR_ID        */
+                    , SNDR_DEPT                    /*SNDR_DEPT        */
+                    , MSG_JDT                    /*MSG_JDT        */
+                    , MRKN_YN                    /*MRKN_YN        */
+                    , REV_ID                    /*REV_ID        */
+    </sql>
+    
+    
+         
+    <insert id="insertPushIf">
+    
+
+                INSERT /* com.ceragem.batch.crm.dao.CampCpnPntIssueDao.insertPushIf */ INTO EON.PUSH_IF (
+       		 		<include refid="sqlPshCols"/>
+                 ) 
+        
+             
+
+					SELECT   /* com.ceragem.batch.crm.dao.CampCpnPntIssueDao.insertPushIf */
+				      'CRM'
+				    , A.CAMP_BAS_NO
+				    , NVL((SELECT MAX(  NVL( TO_NUMBER(MEMBER_SEQ), 0)  ) FROM  EON.PUSH_IF WHERE CAMPAIGN_ID = A.CAMP_BAS_NO) , 0) + ROWNUM  RNUM
+				    , 'B' SEND_GUBUN
+				    , C.Z023_TITLE SUBJECT
+				    , 'AP_206220001'
+				    , NVL( D.APP_PUSH_OS_CD , 1) APP_PUSH_OS_CD
+				    , FN_GET_MSG(
+			              B.ITG_CUST_NO
+			            , D.CUST_NM 
+			            , ( SELECT COMN_CD_NM FROM CRM_COMN_CD_BAS F WHERE F.TOP_COMN_CD = 'MB020' AND  F.COMN_CD = D.MSHIP_GRADE_CD )
+			         
+			        <choose>
+                      <when test="joinTbl == 'CRM_COUPN_PBLS_HST'  ">  
+                        , ( SELECT COUPN_BAS_NM FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+                        , 
+
+							(
+	                        CASE WHEN ( SELECT NVL(USE_STD_DAY_COND_CD, 'N') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO ) = 'Y' THEN 
+	                           
+	                                TO_CHAR( SYSDATE + NVL( 
+	                                ( SELECT COUPN_USE_POSS_DAY FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                                , 730 ),'YYYY.MM.DD')
+	                           
+	                        ELSE
+	                        
+	                           ( SELECT TO_CHAR(  TO_DATE(TO_USE_STD_DAY , 'YYYYMMDD'), 'YYYY.MM.DD') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                        
+	                        END )
+                      	, NULL
+                      	, COUPN_PBLS_BAS_NO
+                       </when>
+                       
+                       <when test="joinTbl == 'CRM_POINT_HST' ">  
+                        , ( SELECT COUPN_BAS_NM FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+                        , 
+
+							(
+	                        CASE WHEN ( SELECT NVL(USE_STD_DAY_COND_CD, 'N') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO ) = 'Y' THEN 
+	                           
+	                                TO_CHAR( SYSDATE + NVL( 
+	                                ( SELECT COUPN_USE_POSS_DAY FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                                , 730) ),'YYYY.MM.DD')
+	                           
+	                        ELSE
+	                        
+	                           ( SELECT TO_CHAR(  TO_DATE(TO_USE_STD_DAY , 'YYYYMMDD'), 'YYYY.MM.DD') FROM CRM_MSHIP_COUPN_BAS E WHERE A.APPLY_COUPN_BAS_NO = E.MSHIP_COUPN_BAS_NO )
+	                        
+	                        END )
+	                        
+                      	, NVL(B.OCCUR_POINT_SCORE, 0) 
+                      	, (
+	                  		SELECT COUPN_PBLS_BAS_NO FROM crm_coupn_pbls_hst M WHERE CAMP_NO =  A.CAMP_BAS_NO AND ITG_CUST_NO = B.ITG_CUST_NO
+							AND TO_CHAR( M.REG_DT, 'YYYYMMDD') =  TO_CHAR(  B.REG_DT , 'YYYYMMDD')  AND ROWNUM=1
+						  )
+                       </when>
+                       
+                       
+                       <otherwise>
+                       	, NULL
+                       	, NULL
+                  		, NVL(B.OCCUR_POINT_SCORE, 0)
+                      	, NULL
+                       </otherwise>
+                    </choose>              
+			            
+                       
+			            , C.Z023_CONTENT
+			        ) MSG
+			   		, NVL(D.APP_PUSH_TOKN, 1) APP_PUSH_TOKN
+			        , TO_CHAR( TO_DATE(TO_CHAR( TRUNC( SYSDATE ),  'YYYY-MM-DD' ) || A.DSP_HOUR || ':00:00' , 'YYYY-MM-DD HH24:MI:SS' ) , 'YYYYMMDDHH24MISS') PUSH_RESERVETIME
+			        , 180 PUSH_SEND_INTERVAL
+			        , DAMO.DECRYPT_VAR_B64('AES_256',  D.MPHON_NO , '') DESTEL
+			        , '15775570' SRCTEL   
+			        , 'P0' SENDRESULT
+			        , NULL PUSH_SENDTIME			        
+			        , NULL PUSH_TRANSRESULT
+			        , NULL PUSH_RESULTTIME
+			        , 0 SND_RETRY_CNT
+			        , A.CAMP_BAS_NO PUSH_CP_ID
+			        , 'crm_1' SNDR_ID
+			        , '141359' SNDR_DEPT
+			        , SYSDATE MSG_JDT
+			        , 'Y' MRKN_YN 
+			        , B.ITG_CUST_NO			       
+
+			        FROM CRM_CAMP_BAS A
+			        LEFT JOIN ${joinTbl} B ON A.CAMP_BAS_NO = ${joinCol}  /* B.CAMP_NO  */ 
+			        LEFT JOIN EON.WSOMZ023 C ON TO_CHAR(C.Z023_SEQ) = A.DSP_CTNT_TYPE_NO  AND C.Z023_USRID IN ( 'crm_1', 'EONSMSEMTC' )
+			        LEFT JOIN CRM_CUST_BAS D ON B.ITG_CUST_NO = D.ITG_CUST_NO
+			        
+			        WHERE A.CAMP_BAS_NO=#{campBasNo} AND A.APPLY_GRP_NO=#{applyGrpNo}
+			         AND TO_CHAR( B.REG_DT, 'YYYYMMDD') = TO_CHAR( SYSDATE, 'YYYYMMDD') 
+			         AND NVL( D.PUSH_RCV_AGREE_YN, 'N') = 'Y'
+			         AND B.ITG_CUST_NO IS NOT NULL	
+			         AND C.Z023_TITLE IS NOT NULL 
+			         
+			         
+			         <if test="prntsCampBasNo != null and prntsCampBasNo != '' ">
+                     
+                       /* 2차 캠페인 일 경우 처리 */
+                       AND B.ITG_CUST_NO  IN (
+                     		<include refid="sqlPosBos"/>
+                     	)
+                     	
+                     </if>
+			         
+    </insert>
+    
+</mapper>

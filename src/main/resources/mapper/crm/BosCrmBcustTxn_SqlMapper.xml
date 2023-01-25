@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.CrmBosBcustTxnDao">
+    <sql id="sqlPkConditions">
+                WHERE CUSTNO            =       #{custno}
+                  AND CRMCUSTNO         =       #{crmcustno}
+    </sql>
+    <sql id="sqlCols">
+                      CUSTNO                    /*고객번호        */
+                    , CRMCUSTNO                    /*통합고객번호        */
+                    , CUSTNM                    /*고객명        */
+                    , BTHD                    /*생년월일        */
+                    , MOBNO                    /*모바일번호        */
+                    , TELNO                    /*전화번호        */
+                    , BCUSTREASON                    /*부실고객사유        */
+                    , BCUSTREGDT                    /*부실고객등록일        */
+    </sql>
+    <sql id="sqlSelectCols">
+                      A.CUSTNO                    /*고객번호        */
+                    , A.CRMCUSTNO                    /*통합고객번호        */
+                    , A.CUSTNM                    /*고객명        */
+                    , A.BTHD                    /*생년월일        */
+                    , DAMO.DECRYPT_VAR_B64('AES_256',A.MOBNO,'') MOBNO                    /*모바일번호        */
+                    , DAMO.DECRYPT_VAR_B64('AES_256',A.TELNO,'') TELNO                    /*전화번호        */
+                    , A.BCUSTREASON                    /*부실고객사유        */
+                    , A.BCUSTREGDT                    /*부실고객등록일        */
+    </sql>
+    <sql id="sqlConditions">
+        <where>
+            <if test="custno != null and custno != ''">
+                      AND A.CUSTNO          =       #{custno}
+            </if>
+            <if test="crmcustno != null and crmcustno != ''">
+                      AND A.CRMCUSTNO       =       #{crmcustno}
+            </if>
+            <if test="custnm != null and custnm != ''">
+                      AND A.CUSTNM          =       #{custnm}
+            </if>
+            <if test="bthd != null and bthd != ''">
+                      AND A.BTHD            =       #{bthd}
+            </if>
+            <if test="mobno != null and mobno != ''">
+                      AND A.MOBNO           =       #{mobno}
+            </if>
+            <if test="telno != null and telno != ''">
+                      AND A.TELNO           =       #{telno}
+            </if>
+            <if test="bcustreason != null and bcustreason != ''">
+                      AND A.BCUSTREASON     =       #{bcustreason}
+            </if>
+            <if test="bcustregdt != null and bcustregdt != ''">
+                      AND A.BCUSTREGDT      =       #{bcustregdt}
+            </if>
+        </where>
+    </sql>
+    <sql id="sqlOrderBy">
+        <choose>
+            <when test="colSortName ==null or colSortName == ''">
+                ORDER BY      REG_DT DESC
+            </when>
+            <when test="colSortName.equals('custno')">
+                ORDER BY      CUSTNO
+            </when>
+            <when test="colSortName.equals('crmcustno')">
+                ORDER BY      CRMCUSTNO
+            </when>
+            <when test="colSortName.equals('custnm')">
+                ORDER BY      CUSTNM
+            </when>
+            <when test="colSortName.equals('bthd')">
+                ORDER BY      BTHD
+            </when>
+            <when test="colSortName.equals('mobno')">
+                ORDER BY      MOBNO
+            </when>
+            <when test="colSortName.equals('telno')">
+                ORDER BY      TELNO
+            </when>
+            <when test="colSortName.equals('bcustreason')">
+                ORDER BY      BCUSTREASON
+            </when>
+            <when test="colSortName.equals('bcustregdt')">
+                ORDER BY      BCUSTREGDT
+            </when>
+            <otherwise>
+                ORDER BY      REG_DT
+            </otherwise>
+        </choose>
+        <if test="colSortName !=null and colSortDir !='' and colSortDir !=null and colSortDir !='' and colSortDir.equals('desc')">
+            DESC
+        </if>
+    </sql>
+    <select id="selectListCount" resultType="int">
+                SELECT /* com.ceragem.batch.crm.dao.CrmBosBcustTxnDao.selectListCount */ COUNT(1)
+                 FROM CRM_BOS_BCUST_TXN A
+        <include refid="sqlConditions"/>
+    </select>
+    <select id="selectList" resultType="com.ceragem.batch.crm.bos.model.BosCrmBcustTxnVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosBcustTxnDao.selectList */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_BCUST_TXN A
+        <include refid="sqlConditions"/>
+        <include refid="sqlOrderBy"/>
+    </select>
+    <select id="select" resultType="com.ceragem.batch.crm.bos.model.BosCrmBcustTxnVo">
+               SELECT /* com.ceragem.batch.crm.dao.CrmBosBcustTxnDao.select */ <include refid="sqlSelectCols"/>
+                 FROM CRM_BOS_BCUST_TXN A
+        <include refid="sqlPkConditions"/>
+    </select>
+    <insert id="insert">
+                INSERT /* com.ceragem.batch.crm.dao.CrmBosBcustTxnDao.insert */ INTO CRM_BOS_BCUST_TXN (
+        <include refid="sqlCols"/>
+                 ) VALUES (
+                       #{custno}
+                     , #{crmcustno}
+                     , #{custnm}
+                     , #{bthd}
+                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{mobno},'')
+                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{telno},'')
+                     , #{bcustreason}
+                     , #{bcustregdt}
+                 )
+    </insert>
+    <update id="update">
+               UPDATE /* com.ceragem.batch.crm.dao.CrmBosBcustTxnDao.update */ CRM_BOS_BCUST_TXN
+                  SET CUSTNO                                  =         #{custno}
+                    , CRMCUSTNO                               =         #{crmcustno}
+                    , CUSTNM                                  =         #{custnm}
+                    , BTHD                                    =         #{bthd}
+                    , MOBNO                                   =         DAMO.ENCRYPT_VAR_B64('AES_256',#{mobno},'')
+                    , TELNO                                   =         DAMO.ENCRYPT_VAR_B64('AES_256',#{telno},'')
+                    , BCUSTREASON                             =         #{bcustreason}
+                    , BCUSTREGDT                              =         #{bcustregdt}
+        <include refid="sqlPkConditions"/>
+    </update>
+    <delete id="delete">
+               DELETE /* com.ceragem.batch.crm.dao.CrmBosBcustTxnDao.delete */
+                 FROM CRM_BOS_BCUST_TXN
+        <include refid="sqlPkConditions"/>
+    </delete>
+</mapper>

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceragem.batch.crm.dao.AiccDao">
+    
+    <select id="selectOrganization" resultType="com.ceragem.batch.crm.model.AiccJadeOrgVo">
+               SELECT /* com.ceragem.batch.crm.dao.AiccDao.selectOrganization  */ DEPT_ID
+                    , DEPT_NM
+                    , DEPT_NM_ENG
+                    , DEPT_ID_UP
+                    , DEPT_TP
+                    , LEVEL_DS
+                    , PHONE_NO
+                    , FAX_NO
+                    , ORDER_DS
+                    , COMPANY_CD
+                    , STATUS
+                    , IF_DT
+                    , REG_DT
+                    , DEPT_ID_REG
+                    , USER_ID_REG
+                    , UPD_DT
+                    , DEPT_ID_UPD
+                    , USER_ID_UPD
+                    , DEPT_BIZ_TP
+                    , USER_ID_MNG
+                    , DEPT_NM_FULL
+                    , FG_RECV
+                    , CD_HQ
+                    , CD_BRANCH_TYPE
+                    , FG_DISPLAY_DASH
+                 FROM SYS_DEPARTMENT 
+                WHERE DEPT_ID = #{orgId}
+    </select>
+    <select id="selectOrganizationCount" resultType="int">
+               SELECT /* com.ceragem.batch.crm.dao.AiccDao.selectOrganizationCount  */ COUNT(1) CNT
+                 FROM SYS_DEPARTMENT 
+                WHERE DEPT_ID = #{orgId}
+    </select>
+    <insert id="insertOrganization">
+            INSERT /* com.ceragem.batch.crm.dao.AiccDao.insertOrganization  */ INTO SYS_DEPARTMENT (
+                      DEPT_ID
+                    , DEPT_NM
+                    , LEVEL_DS
+                    , ORDER_DS
+                    , DEPT_ID_UP
+                    , STATUS
+                    , IF_DT
+                    , REG_DT
+                    , DEPT_ID_REG
+                    , USER_ID_REG
+                    , UPD_DT
+                    , DEPT_ID_UPD
+                    , USER_ID_UPD
+            ) VALUES (
+                      #{orgId}
+                    , #{orgNm}
+                    , #{lvlNo}
+                    , #{orgOdrg}
+                    , #{upOrgId}
+                    , 'A'
+                    , SYSDATE
+                    , SYSDATE
+                    , 'BATCH'
+                    , 'BATCH'
+                    , SYSDATE
+                    , 'BATCH'
+                    , 'BATCH'
+            )
+    </insert>
+    <update id="updateOrganization">
+                  UPDATE /* com.ceragem.batch.crm.dao.AiccDao.insertOrganization  */  SYS_DEPARTMENT
+                     SET DEPT_NM                 =              #{orgNm}    
+                       , LEVEL_DS                =              #{lvlNo}    
+                       , ORDER_DS                =              #{orgOdrg}  
+                       , DEPT_ID_UP              =              #{upOrgId}  
+                       , STATUS                  =              'A'         
+                       , IF_DT                   =              SYSDATE     
+                       , UPD_DT                  =              SYSDATE     
+                       , DEPT_ID_UPD             =              'BATCH'     
+                       , USER_ID_UPD             =              'BATCH'     
+                   WHERE DEPT_ID = #{orgId}
+    </update>
+     <select id="selectEmployee" resultType="com.ceragem.batch.crm.model.AiccJadeHrVo">
+               SELECT /* com.ceragem.batch.crm.dao.AiccDao.selectOrganization  */  USER_ID
+                    , EMP_TP
+                    , EMP_NO
+                    , USER_NM
+                    , USER_NM_ENG
+                    , DEPT_ID
+                    , DEPT_ID_REAL
+                    , COMPANY_CD
+                    , DUTY_CD
+                    , POSITION_CD
+                    , POSITION_NM
+                    , TITLE_CD
+                    , EMAIL_DS
+                    , PHONE_NO
+                    , MOBILE_NO
+                    , FAX_NO
+                    , OFFICE_PHONE_NO
+                    , INCUMBENT_CD
+                    , JOIN_DT
+                    , RETIRE_DT
+                    , CHRG_CD
+                    , IF_DT
+                    , REG_DT
+                    , DEPT_ID_REG
+                    , USER_ID_REG
+                    , UPD_DT
+                    , DEPT_ID_UPD
+                    , USER_ID_UPD
+                    , PORTAL_ID
+                    , FG_RECV
+                    , FG_LOCK_ACCOUNT
+                    , FG_DEL
+                    , USER_DESC
+                 FROM SYS_USER 
+                WHERE USER_ID = #{empId}
+    </select>
+    <select id="selectEmployeeCount" resultType="int">
+               SELECT /* com.ceragem.batch.crm.dao.AiccDao.selectOrganization  */  COUNT(1) CNT
+                 FROM SYS_USER 
+                WHERE USER_ID = #{empId}
+    </select>
+    <insert id="insertEmployee">
+            INSERT /* com.ceragem.batch.crm.dao.AiccDao.insertEmployee  */ INTO SYS_USER (
+                          USER_ID
+                        , EMP_NO
+                        , DEPT_ID
+                        , USER_NM
+                        , COMPANY_CD
+                        , DUTY_CD
+                        , PHONE_NO
+                        , EMAIL_DS
+                        , JOIN_DT
+                        , RETIRE_DT
+                        , MOBILE_NO
+                        , IF_DT
+                        , INCUMBENT_CD
+                        , FG_DEL
+                        , USER_ID_REG
+                        , REG_DT
+                        , USER_ID_UPD
+                        , UPD_DT
+                        , DEPT_ID_REG
+                        , DEPT_ID_UPD
+               ) VALUES ( #{empId}
+                        , #{empId}
+                        , #{orgId}
+                        , #{empNm}
+                        , #{cmpCd}
+                        , #{dutyCd}
+                        , ''
+                        , ''
+                        , TO_DATE(#{encoYmd},'YYYYMMDD')
+                        , TO_DATE(#{retireYmd},'YYYYMMDD')
+                        , ''
+                        , SYSDATE
+                        , DECODE(#{retireYmd}, NULL, 'Y', 'N')
+                        , 'N'
+                        , 'BATCH'
+                        , SYSDATE
+                        , 'BATCH'
+                        , SYSDATE
+                        , 'BATCH'
+                        , 'BATCH'
+              )
+    </insert>
+    <update id="updateEmployee">
+    
+                UPDATE /* com.ceragem.batch.crm.dao.AiccDao.updateEmployee  */  SYS_USER
+                   SET EMP_NO                             =                  #{empId}   
+                     , DEPT_ID                            =                  #{orgId}                                       
+                     , USER_NM                            =                  #{empNm}                                       
+                     , COMPANY_CD                         =                  #{cmpCd}                                       
+                     , DUTY_CD                            =                  #{dutyCd}                                      
+                     , JOIN_DT                            =                  TO_DATE(#{encoYmd},'YYYYMMDD')                 
+                     , RETIRE_DT                          =                  TO_DATE(#{retireYmd},'YYYYMMDD')               
+                     , IF_DT                              =                  SYSDATE                                            
+                     , INCUMBENT_CD                       =                  DECODE(#{retireYmd}, NULL, 'Y', 'N')                                       
+                     , FG_DEL                             =                  'N'           
+                     , UPD_DT                             =                  SYSDATE     
+                     , DEPT_ID_UPD                        =                  'BATCH'     
+                     , USER_ID_UPD                        =                  'BATCH'     
+                 WHERE USER_ID = #{empId}                                                                           
+    </update>
+     <select id="selectLoginCount" resultType="int">
+               SELECT /* com.ceragem.batch.crm.dao.AiccDao.selectLoginCount  */  COUNT(1) CNT
+                 FROM SYS_LOGIN
+                WHERE USER_ID = #{empId}
+    </select>
+    
+    <insert id="insertLogin">
+            INSERT /* com.ceragem.batch.crm.dao.AiccDao.insertLogin  */ INTO SYS_LOGIN (
+                         USER_ID
+                       , LOGIN_ID
+                       , PASSWD
+                       , CHNG_DT_PASSWD
+                       , LOGIN_DT
+                       , REG_DT
+                       , DEPT_ID_REG
+                       , USER_ID_REG
+                       , CNT_ERROR_PWD
+                       , LOGIN_FAIL_CNT
+                       , LANG_CD
+                       , STATUS
+                       , LOGIN_YN
+                       , FG_ADMIN
+                       , LOGIN_CNT
+               ) VALUES ( #{empId}
+                        , #{emailAddr}
+                        , ''
+                        , SYSDATE
+                        , SYSDATE
+                        , SYSDATE
+                        , 'BATCH'
+                        , 'BATCH'
+                        , 0
+                        , 0
+                        , 'ko'
+                        , '00'
+                        , DECODE(#{retireYmd}, NULL, 'Y', 'N')   
+                        , 'N'
+                        , 0
+              )
+    </insert>
+    <update id="updateLogin">
+    
+                  UPDATE /* com.ceragem.batch.crm.dao.AiccDao.updateLogin  */  SYS_LOGIN
+                     SET LOGIN_ID                                     =                 #{emailAddr}    
+                       , LANG_CD                                      =                 'ko'            
+                       , STATUS                                       =                 '00'            
+                       , LOGIN_YN                                     =                  DECODE(#{retireYmd}, NULL, 'Y', 'N')              
+                       , FG_ADMIN                                     =                 'N'             
+                       , LOGIN_CNT                                    =                 0               
+                   WHERE USER_ID = #{empId}                                                                           
+    </update>
+    
+    
+     <select id="selectUserIpCount" resultType="int">
+               SELECT /* com.ceragem.batch.crm.dao.AiccDao.selectUserIpCount  */  COUNT(1) CNT
+                 FROM SYS_USER_IP
+                WHERE USER_IP_ID = #{empId}||'****'
+    </select>
+    <insert id="insertUserIp">
+            INSERT /* com.ceragem.batch.crm.dao.AiccDao.UserIp  */ INTO SYS_USER_IP (
+                          USER_IP_ID
+                        , USER_ID
+                        , USER_IP
+                        , REG_DT
+                        , DEPT_ID_REG
+                        , USER_ID_REG
+                        , UPD_DT
+                        , DEPT_ID_UPD
+                        , USER_ID_UPD
+               ) VALUES ( #{empId}||'****'
+                        , #{empId}
+                        , '*.*.*.*'
+                        , SYSDATE
+                        , 'BATCH'
+                        , 'BATCH'
+                        , SYSDATE
+                        , 'BATCH'
+                        , 'BATCH'
+              )
+    </insert>
+    
+    
+    <select id="selectRoleCount" resultType="int">
+               SELECT /* com.ceragem.batch.crm.dao.AiccDao.selectRoleCount  */  COUNT(1) CNT
+                 FROM AP_ROLE_COMPOSITION
+                WHERE ROLE_COMPOSITION_CODE = #{empId}
+    </select>
+    <insert id="insertRole">
+            INSERT /* com.ceragem.batch.crm.dao.AiccDao.insertRole  */ INTO AP_ROLE_COMPOSITION (
+                          ROLE_ID
+                        , ROLE_COMPOSITION_TYPE
+                        , ROLE_COMPOSITION_CODE
+                        , REG_USER_ID
+                        , REG_DATETIME
+                        , UPD_USER_ID
+                        , UPD_DATETIME
+               ) VALUES ( '50000426'
+                        , 'U'
+                        , #{empId}
+                        , 'BATCH'
+                        , SYSDATE
+                        , 'BATCH'
+                        , SYSDATE
+              )
+    </insert>
+</mapper>

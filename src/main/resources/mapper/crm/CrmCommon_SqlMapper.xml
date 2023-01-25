@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ceragem.batch.crm.dao.CrmCommonDao">
+    <sql id="pagingHeader">
+SELECT T.*
+  FROM ( SELECT ROWNUM AS ROW_INDEX
+              , A.*
+           FROM (
+    </sql>
+    <sql id="pagingFooter">
+                  ) A ) T
+ WHERE   T.ROW_INDEX BETWEEN NVL(#{firstRecordIndex},1) AND NVL(#{lastRecordIndex},30)
+    </sql>
+    <select id="getAutoSeq" resultType="String">
+        SELECT FN_CRM_AUTO_SEQ(#{prefix}, #{suffix}) 
+          FROM DUAL
+    </select>
+    <select id="encryptText" resultType="String">
+        SELECT /*com.ceragem.api.crm.dao.CrmCommonDao.encryptText*/ DAMO.ENCRYPT_VAR_B64('AES_256',#{value},'') 
+          FROM DUAL
+    </select>
+     <select id="decryptText" resultType="String">
+        SELECT /*com.ceragem.api.crm.dao.CrmCommonDao.decryptText*/ DAMO.DECRYPT_VAR_B64('AES_256',#{value},'') 
+          FROM DUAL
+    </select> 
+</mapper>
