@@ -88,7 +88,7 @@
 	        , CUT.GNDR_CD
 	        , CUT.BIRTHDAY
 	        , RE.TOT_ORD_AMT
-	        , DAMO.DECRYPT_VAR_B64('AES_256',CUT.MPHON_NO,'') AS MPHON_NO
+	        , CUT.MPHON_NO AS MPHON_NO
 		 FROM (
 		    SELECT 
 		        GRP.ITG_CUST_NO

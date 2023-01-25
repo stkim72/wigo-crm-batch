@@ -143,7 +143,7 @@
                     , ENCO_YMD                  /*입사년월일        */
                     , RETIRE_YMD                /*퇴사년월일        */
                     , EMP_TYPE_CD               /*사원유형코드 (C050)       */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.MPHON_NO,'')  MPHON_NO              /*이동전화번호        */
+                    , A.MPHON_NO  MPHON_NO              /*이동전화번호        */
                     , REG_DT                    /*등록일시        */
                     , AMDR_ID                   /*수정자ID        */
                     , AMD_DT                    /*수정일시        */
@@ -177,7 +177,7 @@
                     , ENCO_YMD                  /*입사년월일        */
                     , RETIRE_YMD                /*퇴사년월일        */
                     , EMP_TYPE_CD               /*사원유형코드 (C050)       */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.MPHON_NO,'')  MPHON_NO                 /*이동전화번호        */
+                    , A.MPHON_NO  MPHON_NO                 /*이동전화번호        */
                     , REG_DT                    /*등록일시        */
                     , AMDR_ID                   /*수정자ID        */
                     , AMD_DT                    /*수정일시        */
@@ -204,14 +204,14 @@
                      , #{jobId}
                      , #{dutyCd}
                      , #{empGradeCd}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{telNo},'') 
+                     , #{telNo} 
                      , #{birthday}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'')
+                     , #{emailAddr}
                      , #{statusCd}
                      , #{encoYmd}
                      , #{retireYmd}
                      , #{empTypeCd}
-                     ,  DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'')
+                     ,  #{mphonNo}
                      , SYSDATE
                      , #{amdrId}
                      , SYSDATE
@@ -234,14 +234,14 @@
                     , JOB_ID              =         #{jobId}
                     , DUTY_CD             =         #{dutyCd}
                     , EMP_GRADE_CD        =         #{empGradeCd} /*사원등급코드 */
-                    , TEL_NO              =         DAMO.ENCRYPT_VAR_B64('AES_256',#{telNo},'')
+                    , TEL_NO              =         #{telNo}
                     , BIRTHDAY            =         #{birthday}
-                    , EMAIL_ADDR          =         DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'')
+                    , EMAIL_ADDR          =         #{emailAddr}
                     , STATUS_CD           =         #{statusCd}
                     , ENCO_YMD            =         #{encoYmd}
                     , RETIRE_YMD          =         #{retireYmd}
                     , EMP_TYPE_CD         =         #{empTypeCd}
-                    , MPHON_NO            =         DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'')
+                    , MPHON_NO            =         #{mphonNo}
                     , AMDR_ID             =         #{amdrId}
                     , AMD_DT              =         SYSDATE
 <!--                     , ORG_NM -->

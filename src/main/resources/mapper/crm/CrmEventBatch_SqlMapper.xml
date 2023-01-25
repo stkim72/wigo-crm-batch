@@ -9,7 +9,7 @@
                  , A.BIRTHDAY                    /*생년월일        */
                  , B.EXP_POINT_SCORE  
                  , A.REMAIN_POINT_SCORE
-                 , DAMO.DECRYPT_VAR_B64('AES_256',A.MPHON_NO,'') MPHON_NO  /*이동전화번호암호화값     MPHON_NO */
+                 , A.MPHON_NO MPHON_NO  /*이동전화번호암호화값     MPHON_NO */
                  , TO_CHAR(TO_DATE(#{ymd},'YYYYMMDD'),'YYYY-MM-DD')  EXP_DT
               FROM CRM_CUST_BAS A 
         INNER JOIN (SELECT A.ITG_CUST_NO
@@ -37,7 +37,7 @@
                  , A.BIRTHDAY                    /*생년월일        */
                  , B.EXP_POINT_SCORE  
                  , A.REMAIN_POINT_SCORE
-                 , DAMO.DECRYPT_VAR_B64('AES_256',A.MPHON_NO,'') MPHON_NO  /*이동전화번호암호화값     MPHON_NO */
+                 , A.MPHON_NO MPHON_NO  /*이동전화번호암호화값     MPHON_NO */
                  , TO_CHAR(ADD_MONTHS( SYSDATE , 1),'YYYY-MM') EXP_DT
               FROM CRM_CUST_BAS A 
         INNER JOIN (SELECT A.ITG_CUST_NO

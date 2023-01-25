@@ -20,8 +20,8 @@
                     , A.CRMCUSTNO                    /*통합고객번호        */
                     , A.CUSTNM                    /*고객명        */
                     , A.BTHD                    /*생년월일        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.MOBNO,'') MOBNO                    /*모바일번호        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.TELNO,'') TELNO                    /*전화번호        */
+                    , A.MOBNO MOBNO                    /*모바일번호        */
+                    , A.TELNO TELNO                    /*전화번호        */
                     , A.BCUSTREASON                    /*부실고객사유        */
                     , A.BCUSTREGDT                    /*부실고객등록일        */
     </sql>
@@ -114,8 +114,8 @@
                      , #{crmcustno}
                      , #{custnm}
                      , #{bthd}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{mobno},'')
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{telno},'')
+                     , #{mobno}
+                     , #{telno}
                      , #{bcustreason}
                      , #{bcustregdt}
                  )
@@ -126,8 +126,8 @@
                     , CRMCUSTNO                               =         #{crmcustno}
                     , CUSTNM                                  =         #{custnm}
                     , BTHD                                    =         #{bthd}
-                    , MOBNO                                   =         DAMO.ENCRYPT_VAR_B64('AES_256',#{mobno},'')
-                    , TELNO                                   =         DAMO.ENCRYPT_VAR_B64('AES_256',#{telno},'')
+                    , MOBNO                                   =         #{mobno}
+                    , TELNO                                   =         #{telno}
                     , BCUSTREASON                             =         #{bcustreason}
                     , BCUSTREGDT                              =         #{bcustregdt}
         <include refid="sqlPkConditions"/>

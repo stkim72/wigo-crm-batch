@@ -220,7 +220,7 @@
                     , B.ENCO_YMD
                     , B.RETIRE_YMD
                     , B.EMP_TYPE_CD
-                    , DAMO.DECRYPT_VAR_B64('AES_256',B.MPHON_NO,'')  MPHON_NO
+                    , B.MPHON_NO  MPHON_NO
                     , (SELECT LISTAGG(GRP_CD, ',') WITHIN GROUP(ORDER BY GRP_CD) FROM CRM_GRP_USER_REL WHERE USER_CD = A.USER_CD) GRP_CDS 
                  FROM CRM_USER_BAS A 
                  LEFT JOIN CRM_EMP_BAS B ON A.USER_CD = B.EMP_ID

@@ -105,13 +105,13 @@
                     , A.CORP_TEL_NO                    /*법인전화번호        */
                     , A.FORN_YN                    /*외국인여부        */
                     , A.REP_NM                    /*대표명        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.MPHON_NO,'') MPHON_NO  /*이동전화번호암호화값     MPHON_NO */
+                    , A.MPHON_NO MPHON_NO  /*이동전화번호암호화값     MPHON_NO */
                     , A.MPHON_BK_DGT_NO                    /*이동전화뒤자리번호        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.EMAIL_ADDR,'') EMAIL_ADDR                    /*이메일주소        */
+                    , A.EMAIL_ADDR EMAIL_ADDR                    /*이메일주소        */
                     , A.PIC_NM                    /*담당자명        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.PIC_MPHON_NO,'') PIC_MPHON_NO                    /*담당자이동전화번호        */
+                    , A.PIC_MPHON_NO PIC_MPHON_NO                    /*담당자이동전화번호        */
                     , A.PIC_MPHON_BK_DGT_NO                    /*담당자이동전화뒤자리번호        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.PIC_EMAIL_ADDR,'')  PIC_EMAIL_ADDR                    /*담당자이메일주소        */
+                    , A.PIC_EMAIL_ADDR  PIC_EMAIL_ADDR                    /*담당자이메일주소        */
                     , TO_CHAR(A.INDI_INFO_VALID_PERD_STA_DT,'YYYYMMDDHH24MISS')    INDI_INFO_VALID_PERD_STA_DT                    /*개인정보유효기간시작일시        */
                     , TO_CHAR(A.INDI_INFO_VALID_PERD_END_DT,'YYYYMMDDHH24MISS')    INDI_INFO_VALID_PERD_END_DT                    /*개인정보유효기간종료일시        */
                     , A.CUST_STATUS_CD                    /*고객상태코드        */
@@ -122,7 +122,7 @@
                     , A.DISTRCT_CD
                     , A.ZIP_CD                    /*우편번호        */
                     , A.ADDR_1_CTNTS                    /*주소1내용        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.ADDR_2_CTNTS,'') ADDR_2_CTNTS                    /*주소2내용        */
+                    , A.ADDR_2_CTNTS ADDR_2_CTNTS                    /*주소2내용        */
                     , A.RCMD_STOR_NO                    /*추천매장번호        */
                     , A.RCMDR_CUST_NO                    /*추천인고객번호        */
                     , A.RCMD_EXECVDEMP_NO                    /*추천임직원번호        */
@@ -224,25 +224,25 @@
                   AND A.REP_NM          =       #{repNm}
         </if>
         <if test="mphonNo != null and mphonNo != ''">
-                  AND A.MPHON_NO        =       DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'')
+                  AND A.MPHON_NO        =       #{mphonNo}
         </if>
         <if test="mphonBkDgtNo != null and mphonBkDgtNo != ''">
                   AND A.MPHON_BK_DGT_NO =       #{mphonBkDgtNo}
         </if>
         <if test="emailAddr != null and emailAddr != ''">
-                  AND A.EMAIL_ADDR      =       DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'')
+                  AND A.EMAIL_ADDR      =       #{emailAddr}
         </if>
         <if test="picNm != null and picNm != ''">
                   AND A.PIC_NM          =       #{picNm}
         </if>
         <if test="picMphonNo != null and picMphonNo != ''">
-                  AND A.PIC_MPHON_NO    =       DAMO.ENCRYPT_VAR_B64('AES_256',#{picMphonNo},'')
+                  AND A.PIC_MPHON_NO    =       #{picMphonNo}
         </if>
         <if test="picMphonBkDgtNo != null and picMphonBkDgtNo != ''">
                   AND A.PIC_MPHON_BK_DGT_NO=       #{picMphonBkDgtNo}
         </if>
         <if test="picEmailAddr != null and picEmailAddr != ''">
-                  AND A.PIC_EMAIL_ADDR  =       DAMO.ENCRYPT_VAR_B64('AES_256',#{picEmailAddr},'')
+                  AND A.PIC_EMAIL_ADDR  =       #{picEmailAddr}
         </if>
         <if test="indiInfoValidPerdStaDt != null and indiInfoValidPerdStaDt != ''">
                   AND A.INDI_INFO_VALID_PERD_STA_DT=       TO_DATE(#{indiInfoValidPerdStaDt},'YYYYMMDDHH24MISS')
@@ -312,7 +312,7 @@
                   AND A.ADDR_1_CTNTS    =       #{addr1Ctnts}
         </if>
         <if test="addr2Ctnts != null and addr2Ctnts != ''">
-                  AND A.ADDR_2_CTNTS    =       DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'')
+                  AND A.ADDR_2_CTNTS    =       #{addr2Ctnts}
         </if>
         <if test="rcmdStorNo != null and rcmdStorNo != ''">
                   AND A.RCMD_STOR_NO    =       #{rcmdStorNo}
@@ -936,13 +936,13 @@
                      , #{corpTelNo}
                      , NVL(#{fornYn},'N')
                      , #{repNm}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'')
+                     , #{mphonNo}
                      , SUBSTRB(#{mphonNo},-4)
                      , #{emailAddr}
                      , #{picNm}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{picMphonNo},'') 
+                     , #{picMphonNo} 
                      , #{picMphonBkDgtNo}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{picEmailAddr},'')
+                     , #{picEmailAddr}
                      , TO_DATE(#{indiInfoValidPerdStaDt},'YYYYMMDDHH24MISS')
                      , TO_DATE(#{indiInfoValidPerdEndDt},'YYYYMMDDHH24MISS')
                      , NVL(#{custStatusCd},'001')
@@ -953,7 +953,7 @@
                      , #{distrctCd}
                      , #{zipCd}
                      , #{addr1Ctnts}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'')
+                     , #{addr2Ctnts}
                      , #{rcmdStorNo}
                      , #{rcmdrCustNo}
                      , #{rcmdExecvdempNo}
@@ -1034,13 +1034,13 @@
                     , CORP_TEL_NO                             =         #{corpTelNo}
                     , FORN_YN                                 =         NVL(#{fornYn},'N')
                     , REP_NM                                  =         #{repNm}
-                    , MPHON_NO                                =         DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'')
+                    , MPHON_NO                                =         #{mphonNo}
                     , MPHON_BK_DGT_NO                         =         #{mphonBkDgtNo}
-                    , EMAIL_ADDR                              =         DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'') 
+                    , EMAIL_ADDR                              =         #{emailAddr} 
                     , PIC_NM                                  =         #{picNm}
-                    , PIC_MPHON_NO                            =         DAMO.ENCRYPT_VAR_B64('AES_256',#{picMphonNo},'')
+                    , PIC_MPHON_NO                            =         #{picMphonNo}
                     , PIC_MPHON_BK_DGT_NO                     =         #{picMphonBkDgtNo}
-                    , PIC_EMAIL_ADDR                          =         DAMO.ENCRYPT_VAR_B64('AES_256',#{picEmailAddr},'') 
+                    , PIC_EMAIL_ADDR                          =         #{picEmailAddr} 
                     , INDI_INFO_VALID_PERD_STA_DT             =         TO_DATE(#{indiInfoValidPerdStaDt},'YYYYMMDDHH24MISS')
                     , INDI_INFO_VALID_PERD_END_DT             =         TO_DATE(#{indiInfoValidPerdEndDt},'YYYYMMDDHH24MISS')
                     , CUST_STATUS_CD                          =         NVL(#{custStatusCd},'001')
@@ -1051,7 +1051,7 @@
                     , DISTRCT_CD                              =         #{distrctCd}
                     , ZIP_CD                                  =         #{zipCd}
                     , ADDR_1_CTNTS                            =         #{addr1Ctnts}
-                    , ADDR_2_CTNTS                            =         DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'')
+                    , ADDR_2_CTNTS                            =         #{addr2Ctnts}
                     , RCMD_STOR_NO                            =         #{rcmdStorNo}
                     , RCMDR_CUST_NO                           =         #{rcmdrCustNo}
                     , RCMD_EXECVDEMP_NO                       =         #{rcmdExecvdempNo}
@@ -1111,7 +1111,7 @@
     </update>
     <update id="updateEncPhone">
                UPDATE /* com.ceragem.batch.crm.dao.CrmCustBasDao.updateEncPhone */ CRM_CUST_BAS
-                  SET MPHON_NO                        =         DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'')
+                  SET MPHON_NO                        =         #{mphonNo}
         <include refid="sqlPkConditions"/>
     </update>
     <delete id="delete">
@@ -1296,13 +1296,13 @@
                      , #{itgCustNo}
                      , #{cntplcTypeCd}
                      , NVL(#{repCntplcYn},'N')
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{telNo} ,'')
+                     , #{telNo} 
                      , SUBSTRB(#{telNo},-4)
                      , #{distrctCd}
                      , #{zipCd}
                      , #{addr1Ctnts}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts} ,'')
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'')
+                     , #{addr2Ctnts} 
+                     , #{emailAddr}
                      , NVL(#{delYn},'N')
                      , #{amdrId}
                      , SYSDATE
@@ -1378,7 +1378,7 @@
                      , ROW_NUMBER() OVER (ORDER BY CORP_DIV_YN, ITG_CUST_NO DESC) RNUM
                   FROM CRM_CUST_BAS A
                  WHERE CUST_NM = #{custNm}
-                   AND MPHON_NO = DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'')
+                   AND MPHON_NO = #{mphonNo}
                    AND CUST_STATUS_CD != '003'
                   ) A
                WHERE RNUM = 1
@@ -1441,9 +1441,9 @@
                     , CORP_TEL_NO                             =         #{corpTelNo}
                     , FORN_YN                                 =         NVL(#{fornYn},'N')
                     , REP_NM                                  =         #{repNm}
-                    , MPHON_NO                                =         CASE WHEN #{mphonNo} LIKE 'QF%' THEN  #{mphonNo} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'') END
+                    , MPHON_NO                                =         CASE WHEN #{mphonNo} LIKE 'QF%' THEN  #{mphonNo} ELSE #{mphonNo} END
                     , MPHON_BK_DGT_NO                         =         #{mphonBkDgtNo}
-                    , EMAIL_ADDR                              =         CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'') END 
+                    , EMAIL_ADDR                              =         CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE #{emailAddr} END 
                     , PIC_NM                                  =         #{picNm}
                     , PIC_MPHON_NO                            =         #{picMphonNo}
                     , PIC_MPHON_BK_DGT_NO                     =         #{picMphonBkDgtNo}
@@ -1458,7 +1458,7 @@
                     , DISTRCT_CD                              =         #{distrctCd}
                     , ZIP_CD                                  =         #{zipCd}
                     , ADDR_1_CTNTS                            =         #{addr1Ctnts}
-                    , ADDR_2_CTNTS                            =         CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'') END 
+                    , ADDR_2_CTNTS                            =         CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE #{addr2Ctnts} END 
                     , RCMD_STOR_NO                            =         #{rcmdStorNo}
                     , RCMDR_CUST_NO                           =         #{rcmdrCustNo}
                     , RCMD_EXECVDEMP_NO                       =         #{rcmdExecvdempNo}

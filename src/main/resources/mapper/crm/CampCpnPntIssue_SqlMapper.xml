@@ -709,7 +709,7 @@
                         , C.Z023_CONTENT
                     ) MSG
                 
-                    , DAMO.DECRYPT_VAR_B64('AES_256',  D.MPHON_NO , '') DESTEL
+                    ,   D.MPHON_NO  DESTEL
                     , '15775570' SRCTEL   
                     , TO_CHAR( TO_DATE(TO_CHAR( TRUNC( SYSDATE ),  'YYYY-MM-DD' ) || A.DSP_HOUR || ':00:00' , 'YYYY-MM-DD HH24:MI:SS' ) , 'YYYY-MM-DD HH24:MI:SS') RESERVETIME
                     , '00000' SENDRESULT
@@ -900,7 +900,7 @@
 			   		, NVL(D.APP_PUSH_TOKN, 1) APP_PUSH_TOKN
 			        , TO_CHAR( TO_DATE(TO_CHAR( TRUNC( SYSDATE ),  'YYYY-MM-DD' ) || A.DSP_HOUR || ':00:00' , 'YYYY-MM-DD HH24:MI:SS' ) , 'YYYYMMDDHH24MISS') PUSH_RESERVETIME
 			        , 180 PUSH_SEND_INTERVAL
-			        , DAMO.DECRYPT_VAR_B64('AES_256',  D.MPHON_NO , '') DESTEL
+			        ,   D.MPHON_NO  DESTEL
 			        , '15775570' SRCTEL   
 			        , 'P0' SENDRESULT
 			        , NULL PUSH_SENDTIME			        

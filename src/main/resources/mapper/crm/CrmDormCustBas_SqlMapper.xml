@@ -889,9 +889,9 @@
                      , #{corpTelNo}
                      , NVL(#{fornYn},'N')
                      , #{repNm}
-                     , CASE WHEN #{mphonNo} LIKE 'QF%' THEN  #{mphonNo} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{mphonNo},'') END
+                     , CASE WHEN #{mphonNo} LIKE 'QF%' THEN  #{mphonNo} ELSE #{mphonNo} END
                      , #{mphonBkDgtNo}
-                     , CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'') END
+                     , CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE #{emailAddr} END
                      , #{picNm}
                      , #{picMphonNo}
                      , #{picMphonBkDgtNo}
@@ -905,7 +905,7 @@
                      , #{custDivCd}
                      , #{zipCd}
                      , #{addr1Ctnts}
-                     , CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'') END
+                     , CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE #{addr2Ctnts} END
                      , #{rcmdStorNo}
                      , #{rcmdrCustNo}
                      , #{rcmdExecvdempNo}
@@ -975,9 +975,9 @@
                     , CORP_TEL_NO                             =         #{corpTelNo}
                     , FORN_YN                                 =         NVL(#{fornYn},'N')
                     , REP_NM                                  =         #{repNm}
-                    , MPHON_NO                                =         DAMO.DECRYPT_VAR_B64('AES_256',#{mphonNo},'') 
+                    , MPHON_NO                                =         #{mphonNo} 
                     , MPHON_BK_DGT_NO                         =         #{mphonBkDgtNo}
-                    , EMAIL_ADDR                              =         CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{emailAddr},'') END
+                    , EMAIL_ADDR                              =         CASE WHEN #{emailAddr} LIKE 'QF%' THEN  #{emailAddr} ELSE #{emailAddr} END
                     , PIC_NM                                  =         #{picNm}
                     , PIC_MPHON_NO                            =         #{picMphonNo}
                     , PIC_MPHON_BK_DGT_NO                     =         #{picMphonBkDgtNo}
@@ -991,7 +991,7 @@
                     , CUST_DIV_CD                             =         #{custDivCd}
                     , ZIP_CD                                  =         #{zipCd}
                     , ADDR_1_CTNTS                            =         #{addr1Ctnts}
-                    , ADDR_2_CTNTS                            =         CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE DAMO.ENCRYPT_VAR_B64('AES_256',#{addr2Ctnts},'') END
+                    , ADDR_2_CTNTS                            =         CASE WHEN #{addr2Ctnts} LIKE 'QF%' THEN  #{addr2Ctnts} ELSE #{addr2Ctnts} END
                     , RCMD_STOR_NO                            =         #{rcmdStorNo}
                     , RCMDR_CUST_NO                           =         #{rcmdrCustNo}
                     , RCMD_EXECVDEMP_NO                       =         #{rcmdExecvdempNo}

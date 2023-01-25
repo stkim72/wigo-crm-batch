@@ -346,9 +346,9 @@
                     , TO_CHAR(A.UPD_DT,'YYYYMMDDHH24MISS')    UPD_DT                    /*수정일시        */
                     , A.POST_NO                    /*설치-우편번호        */
                     , A.BASS_ADDR                    /*설치-기본주소        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.DTL_ADDR,'')   DTL_ADDR                 /*설치-상세주소        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.MOB_NO,'') MOB_NO                    /*설치-모바일번호        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.TEL_NO,'') TEL_NO                    /*설치-전화번호        */
+                    , A.DTL_ADDR   DTL_ADDR                 /*설치-상세주소        */
+                    , A.MOB_NO MOB_NO                    /*설치-모바일번호        */
+                    , A.TEL_NO TEL_NO                    /*설치-전화번호        */
                     , A.PARTCLR_MATTER                    /*설치-특이사항        */
                     , A.IST_CUST_NM                    /*설치-설치고객명        */
                     , A.CARD_NO                    /*정기결제-카드번호        */
@@ -410,8 +410,8 @@
                     , A.PTAXBIL_YN                    /*선세금계산서발급여부        */
                     , A.PTAXBIL_DE                    /*선세금계산서기준일자        */
                     , A.PTAXBIL_CHRGR_SN                    /*선세금계산서담당자        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.CHRGR_EMAIL,'') CHRGR_EMAIL                    /*담당자이메일        */
-                    , DAMO.DECRYPT_VAR_B64('AES_256',A.CHRGR_CTTPC,'') CHRGR_CTTPC                    /*담당자연락처        */
+                    , A.CHRGR_EMAIL CHRGR_EMAIL                    /*담당자이메일        */
+                    , A.CHRGR_CTTPC CHRGR_CTTPC                    /*담당자연락처        */
                     , A.CHRGR_DEPT_NM                    /*담당자부서명        */
                     , A.RCMDR_MBRSH_ID                    /*추천고객멤버십아이디        */
                     , A.RCMDR_MBRSH_NM                    /*추천고객멤버십이름        */
@@ -1697,9 +1697,9 @@
                      , TO_DATE(SUBSTR(#{updDt},1,19),'YYYY-MM-DD HH24:MI:SS') 
                      , #{postNo}
                      , #{bassAddr}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{dtlAddr},'')
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{mobNo},'')
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{telNo},'')
+                     , #{dtlAddr}
+                     , #{mobNo}
+                     , #{telNo}
                      , #{partclrMatter}
                      , #{istCustNm}
                      , ''
@@ -1762,8 +1762,8 @@
                      , #{ptaxbilYn}
                      , #{ptaxbilDe}
                      , #{ptaxbilChrgrSn}
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{chrgrEmail},'')
-                     , DAMO.ENCRYPT_VAR_B64('AES_256',#{chrgrCttpc},'')
+                     , #{chrgrEmail}
+                     , #{chrgrCttpc}
                      , #{chrgrDeptNm}
                      , #{rcmdrMbrshId}
                      , #{rcmdrMbrshNm}
@@ -1911,9 +1911,9 @@
                     , REG_DT                                  =         TO_DATE( SUBSTR(#{regDt},1,19) ,'YYYY-MM-DD HH24:MI:SS')
                     , POST_NO                                 =         #{postNo}
                     , BASS_ADDR                               =         #{bassAddr}
-                    , DTL_ADDR                                =         DAMO.ENCRYPT_VAR_B64('AES_256',#{dtlAddr},'')
-                    , MOB_NO                                  =         DAMO.ENCRYPT_VAR_B64('AES_256',#{mobNo},'')
-                    , TEL_NO                                  =         DAMO.ENCRYPT_VAR_B64('AES_256',#{telNo},'')
+                    , DTL_ADDR                                =         #{dtlAddr}
+                    , MOB_NO                                  =         #{mobNo}
+                    , TEL_NO                                  =         #{telNo}
                     , PARTCLR_MATTER                          =         #{partclrMatter}
                     , IST_CUST_NM                             =         #{istCustNm}
 <!--                     , CARD_NO                                 =         #{cardNo} -->
@@ -1975,8 +1975,8 @@
                     , PTAXBIL_YN                              =         #{ptaxbilYn}
                     , PTAXBIL_DE                              =         #{ptaxbilDe}
                     , PTAXBIL_CHRGR_SN                        =         #{ptaxbilChrgrSn}
-                    , CHRGR_EMAIL                             =         DAMO.ENCRYPT_VAR_B64('AES_256',#{chrgrEmail},'') 
-                    , CHRGR_CTTPC                             =         DAMO.ENCRYPT_VAR_B64('AES_256',#{chrgrCttpc},'') 
+                    , CHRGR_EMAIL                             =         #{chrgrEmail} 
+                    , CHRGR_CTTPC                             =         #{chrgrCttpc} 
                     , CHRGR_DEPT_NM                           =         #{chrgrDeptNm}
                     , RCMDR_MBRSH_ID                          =         #{rcmdrMbrshId}
                     , RCMDR_MBRSH_NM                          =         #{rcmdrMbrshNm}

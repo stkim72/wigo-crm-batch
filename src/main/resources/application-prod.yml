@@ -7,13 +7,13 @@ spring:
   datasource:
     hikari:
       connection-timeout: 60000
-      maximum-pool-size: 100
+      maximum-pool-size: 1
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=glcmdb51p)(PORT=51401))(ADDRESS=(PROTOCOL=TCP)(HOST=glcmdb52p)(PORT=51401))(LOAD_BALANCE=OFF)(FAILOVER=ON))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=PCRMDB)))
-    username: CRMCON
-    password: ENC(tXsLiMFNX9RxlhodmsaY15Pgi9GF15rb)
-    aiccuser: AICC
-    aiccpwd: ENC(za3DupcobcLkhPUfpnntSQ==)
+    url: jdbc:log4jdbc:oracle:thin:@S3.MOARA.ORG:6030:ORCL
+    username: CERAGEM
+    password: ceragem
+    aiccuser: CERAGEM
+    aiccpwd: ceragem
     
   jade:
     token-url: https://cerahr.ceragem.com:9950/restful/getToken
@@ -25,13 +25,12 @@ spring:
     org-param: ZjH2yGNkSXC63TMeuSX5Hw==
     hr-param: 438MVz40Ca2tE2C+CR1RDQ== 
   api:
-    lab-url: https://prd-parent-api.ceragem.com/membership/
-    base-url: https://api.ceragem.com
+    lab-url: https://dev-parent-api.ceragem.com/membership/
+    bos-url: https://mapone.ceragem.com/crm
+    base-url: http://localhost:8082
     url:
       token-url: /api/v1.0/token/CRM
       point: /crm/v1.0/point
-#    bos-url: https://mapone.ceragem.com/crm
-    bos-url: https://onemap.ceragem.com/crm
   eon:
     sms-sender-no:  15775570
     sms-sender-name: 세라젬
@@ -39,10 +38,11 @@ spring:
     user: crm_1
     mail-addr: noreply@creagem.com
     mail-name: 세라젬
+    
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor
-    
+   
 # Log
 logging:
   config: classpath:logback-prod.xml

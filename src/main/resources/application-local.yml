@@ -9,11 +9,11 @@ spring:
       connection-timeout: 60000
       maximum-pool-size: 1
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@172.23.1.91:8122:DCRMDB
-    username: crmown
-    password: ENC(qRxmm5UziuyVJHN5JGZ5rg==)
-    aiccuser: aicc
-    aiccpwd: ENC(PLG4vrXc+U+ZtloJTRGUiQ==)
+    url: jdbc:log4jdbc:oracle:thin:@S3.MOARA.ORG:6030:ORCL
+    username: CERAGEM
+    password: ceragem
+    aiccuser: CERAGEM
+    aiccpwd: ceragem
     
   jade:
     token-url: https://cerahr.ceragem.com:9950/restful/getToken
@@ -27,8 +27,7 @@ spring:
   api:
     lab-url: https://dev-parent-api.ceragem.com/membership/
     bos-url: https://mapone.ceragem.com/crm
-#    base-url: http://localhost:8082
-    base-url: https://dev-api.ceragem.com
+    base-url: http://localhost:8082
     url:
       token-url: /api/v1.0/token/CRM
       point: /crm/v1.0/point

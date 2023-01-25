@@ -432,7 +432,7 @@
 				    ) MSG
 				                    
 				                    
-				    , DAMO.DECRYPT_VAR_B64('AES_256', C.MPHON_NO , '') DESTEL
+				    ,  C.MPHON_NO  DESTEL
 				    , '15775570' SRCTEL
 				    , TO_CHAR( TO_CHAR(SYSDATE, 'YYYY-MM-DD ') || '10:00:00') RESERVETIME
 				    , 'K'

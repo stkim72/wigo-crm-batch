@@ -18,11 +18,11 @@ SELECT T.*
           FROM DUAL
     </select>
     <select id="encryptText" resultType="String">
-        SELECT /*com.ceragem.api.crm.dao.CrmCommonDao.encryptText*/ DAMO.ENCRYPT_VAR_B64('AES_256',#{value},'') 
+        SELECT /*com.ceragem.api.crm.dao.CrmCommonDao.encryptText*/ #{value} 
           FROM DUAL
     </select>
      <select id="decryptText" resultType="String">
-        SELECT /*com.ceragem.api.crm.dao.CrmCommonDao.decryptText*/ DAMO.DECRYPT_VAR_B64('AES_256',#{value},'') 
+        SELECT /*com.ceragem.api.crm.dao.CrmCommonDao.decryptText*/ #{value} 
           FROM DUAL
     </select> 
 </mapper>
