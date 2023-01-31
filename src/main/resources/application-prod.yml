@@ -33,11 +33,11 @@ spring:
       point: /crm/v1.0/point
   eon:
     sms-sender-no:  15775570
-    sms-sender-name: 세라젬
+    sms-sender-name: 위고
     talk-sender-key : senderkey_001
     user: crm_1
     mail-addr: noreply@creagem.com
-    mail-name: 세라젬
+    mail-name: 위고
     
 jasypt:
   encryptor:
