@@ -102,8 +102,8 @@
                     , (SELECT COUNT(*) FROM CRM_MSHIP_COUPN_BAS WHERE USE_YN='Y' AND  MSHIP_COUPN_BAS_NO = A.APPLY_COUPN_BAS_NO) CHK_CPN  /* 쿠폰사용유무체크        */
                     , (SELECT COUNT(*) FROM CRM_CAMP_TGTR_BAS WHERE CAMP_BAS_NO = A.CAMP_BAS_NO) CHK_TGTR  /* 그룹인원체크        */
                     , A.DSP_CHL_CD /* 발송채널 - 사용안함 */
-                    , (SELECT Z023_DUMMY1 FROM EON.WSOMZ023   WHERE  TO_CHAR( Z023_SEQ ) = A.DSP_CTNT_TYPE_NO  AND Z023_USRID IN ( 'crm_1', 'EONSMSEMTC' ) ) TMPLT_TYPE_CD  /* 템플릿에 등록된 발송 채널        */
-                    , (SELECT Z023_GROUP FROM EON.WSOMZ023   WHERE  TO_CHAR( Z023_SEQ ) = A.DSP_CTNT_TYPE_NO  AND Z023_USRID IN ( 'crm_1', 'EONSMSEMTC' ) ) TMPLT_GROUP  /* 템플릿 그룹번호        */
+                    , NULL TMPLT_TYPE_CD  /* 템플릿에 등록된 발송 채널        */
+                    , NULL TMPLT_GROUP  /* 템플릿 그룹번호        */
                 
                 	, SALE_OCCUR_STA_YMD
                 	, SALE_OCCUR_END_YMD
